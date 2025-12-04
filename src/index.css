@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html,
+  body,
+  #root {
+    @apply h-full;
+  }
+
+  body {
+    /* 🔽 updated to Smoky Graphite */
+    background-color: #111215;
+    @apply text-white font-sans;
+  }
+}
