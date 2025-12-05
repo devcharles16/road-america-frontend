@@ -1,13 +1,14 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+
 import { sendStatusUpdate } from "./notifications/transportStatus.js";
 import {
   sendNewQuoteAlert,
   sendQuoteConfirmationEmail,
 } from "./notifications/adminAlerts.js";
 
-
+import shipmentsRouter from "./routes/shipmentsRouter.js";
 
 dotenv.config();
 
@@ -62,7 +63,7 @@ app.post("/api/notifications/status", async (req, res) => {
 
 /**
  * POST /api/notifications/new-quote
- * Body: { name, email, phone, pickup, dropoff, vehicle, transportType }
+ * Body: { name, email, phone, pickup, dropoff, vehicle, transportType, referenceId }
  */
 app.post("/api/notifications/new-quote", async (req, res) => {
   try {
@@ -77,7 +78,6 @@ app.post("/api/notifications/new-quote", async (req, res) => {
       referenceId,
     } = req.body;
 
-    // Fire both admin + customer emails in parallel
     const [adminResult, customerResult] = await Promise.all([
       sendNewQuoteAlert({
         name,
@@ -100,7 +100,6 @@ app.post("/api/notifications/new-quote", async (req, res) => {
       }),
     ]);
 
-    // Log failures but still return success to the frontend
     if (!adminResult.success) {
       console.error("Admin alert failed:", adminResult.error || adminResult.err);
     }
@@ -118,6 +117,8 @@ app.post("/api/notifications/new-quote", async (req, res) => {
   }
 });
 
+// 🔹 Mount shipments router here: this gives you /api/shipments
+app.use("/api/shipments", shipmentsRouter);
 
 app.listen(PORT, () => {
   console.log(`Email notification server running on port ${PORT}`);
