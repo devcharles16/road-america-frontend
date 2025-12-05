@@ -1,4 +1,3 @@
-// routes/shipmentsRouter.js
 import express from "express";
 
 const router = express.Router();
@@ -6,7 +5,7 @@ const router = express.Router();
 /**
  * TEMP in-memory storage.
  * This resets whenever the server restarts.
- * We'll replace this with Supabase later.
+ * Later we’ll move this to Supabase to persist data.
  */
 let shipments = [];
 
@@ -17,9 +16,9 @@ function generateId() {
 
 /**
  * PUBLIC: Create a new transport request (quote submission)
- * This will handle: POST /api/shipments
+ * POST /api/shipments
  */
-router.post("/", async (req, res) => {
+router.post("/shipments", async (req, res) => {
   try {
     const input = req.body;
     const now = new Date().toISOString();
@@ -60,15 +59,107 @@ router.post("/", async (req, res) => {
 });
 
 /**
- * (Optional) ADMIN: List all shipments
- * This will handle: GET /api/shipments
+ * ADMIN/EMPLOYEE: List all shipments
+ * GET /api/shipments
  */
-router.get("/", async (req, res) => {
+router.get("/shipments", async (req, res) => {
   try {
     return res.json(shipments);
   } catch (err) {
     console.error("Error listing shipments:", err);
     return res.status(500).json({ message: "Server error listing shipments" });
+  }
+});
+
+/**
+ * ADMIN/EMPLOYEE: Update a shipment's status
+ * PATCH /api/shipments/:id/status
+ */
+router.patch("/shipments/:id/status", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    const idx = shipments.findIndex((s) => s.id === id);
+    if (idx === -1) {
+      return res.status(404).json({ message: "Shipment not found" });
+    }
+
+    shipments[idx] = {
+      ...shipments[idx],
+      status,
+      updatedAt: new Date().toISOString(),
+    };
+
+    return res.json(shipments[idx]);
+  } catch (err) {
+    console.error("Error updating shipment status:", err);
+    return res
+      .status(500)
+      .json({ message: "Server error updating shipment status" });
+  }
+});
+
+/**
+ * CLIENT: List shipments for the currently logged-in client
+ * GET /api/my-shipments
+ *
+ * For now we just filter by ?email=... so you can test.
+ * Later we’ll hook into Supabase auth for real user-specific data.
+ */
+router.get("/my-shipments", async (req, res) => {
+  try {
+    const email = req.query.email;
+    if (!email) {
+      return res
+        .status(400)
+        .json({ message: "email query param required for now" });
+    }
+
+    const myShipments = shipments.filter(
+      (s) =>
+        s.customerEmail &&
+        s.customerEmail.toLowerCase() === String(email).toLowerCase()
+    );
+
+    return res.json(myShipments);
+  } catch (err) {
+    console.error("Error listing my shipments:", err);
+    return res
+      .status(500)
+      .json({ message: "Server error listing client shipments" });
+  }
+});
+
+/**
+ * PUBLIC: Track a specific shipment by reference ID + email
+ * GET /api/track?referenceId=...&email=...
+ */
+router.get("/track", async (req, res) => {
+  try {
+    const { referenceId, email } = req.query;
+
+    if (!referenceId || !email) {
+      return res
+        .status(400)
+        .json({ message: "referenceId and email are required" });
+    }
+
+    const shipment = shipments.find(
+      (s) =>
+        s.referenceId === referenceId &&
+        s.customerEmail &&
+        s.customerEmail.toLowerCase() === String(email).toLowerCase()
+    );
+
+    if (!shipment) {
+      return res.status(404).json({ message: "Shipment not found" });
+    }
+
+    return res.json(shipment);
+  } catch (err) {
+    console.error("Error tracking shipment:", err);
+    return res.status(500).json({ message: "Server error tracking shipment" });
   }
 });
 

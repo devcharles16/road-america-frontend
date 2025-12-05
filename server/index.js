@@ -118,7 +118,7 @@ app.post("/api/notifications/new-quote", async (req, res) => {
 });
 
 // 🔹 Mount shipments router here: this gives you /api/shipments
-app.use("/api/shipments", shipmentsRouter);
+app.use("/api", shipmentsRouter)
 
 app.listen(PORT, () => {
   console.log(`Email notification server running on port ${PORT}`);
