@@ -1,5 +1,6 @@
 // src/pages/QuotePage.tsx
 import { useState } from "react";
+import { API_BASE_URL } from "../config/api";
 import {
   createTransportRequest,
   type RunningCondition,
@@ -53,38 +54,65 @@ const QuotePage = () => {
   }
 
   async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-    setCreatedShipment(null);
+  e.preventDefault();
+  setLoading(true);
+  setError(null);
+  setCreatedShipment(null);
 
-    try {
-      const created = await createTransportRequest({
-        pickupCity: form.pickupCity,
-        pickupState: form.pickupState,
-        deliveryCity: form.deliveryCity,
-        deliveryState: form.deliveryState,
-        vehicleYear: form.vehicleYear || undefined,
-        vehicleMake: form.vehicleMake || undefined,
-        vehicleModel: form.vehicleModel || undefined,
-        vin: form.vin || undefined,
-        runningCondition: form.runningCondition,
+  try {
+    // 1️⃣ Create the transport request (what you already had)
+    const created = await createTransportRequest({
+      pickupCity: form.pickupCity,
+      pickupState: form.pickupState,
+      deliveryCity: form.deliveryCity,
+      deliveryState: form.deliveryState,
+      vehicleYear: form.vehicleYear || undefined,
+      vehicleMake: form.vehicleMake || undefined,
+      vehicleModel: form.vehicleModel || undefined,
+      vin: form.vin || undefined,
+      runningCondition: form.runningCondition,
+      transportType: form.transportType,
+      customerName: form.name,
+      customerEmail: form.email,
+      customerPhone: form.phone || undefined,
+    });
+
+    setCreatedShipment(created);
+
+    // 2️⃣ Fire the email notification to your backend (Resend runs there)
+    //    This should NOT block the user experience if it fails
+    const vehicleSummary = `${form.vehicleYear} ${form.vehicleMake} ${form.vehicleModel}`.trim();
+    const pickup = `${form.pickupCity}, ${form.pickupState}`;
+    const dropoff = `${form.deliveryCity}, ${form.deliveryState}`;
+
+    // Do this in a "best-effort" way — log errors but don't show user an error
+    fetch(`${API_BASE_URL}/api/notifications/new-quote`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: form.name,
+        email: form.email,
+        phone: form.phone,
+        pickup,
+        dropoff,
+        vehicle: vehicleSummary,
         transportType: form.transportType,
-        customerName: form.name,
-        customerEmail: form.email,
-        customerPhone: form.phone || undefined,
-      });
+        referenceId: created.referenceId, // assuming your backend returns this
+      }),
+    }).catch((notifyErr) => {
+      console.error("Failed to send new quote notification:", notifyErr);
+    });
 
-      setCreatedShipment(created);
-      // If you want to clear the form after submit, uncomment:
-      // setForm(defaultForm);
-    } catch (err) {
-      console.error(err);
-      setError("Something went wrong submitting your quote request.");
-    } finally {
-      setLoading(false);
-    }
+    // If you want to clear the form after submit, uncomment:
+    // setForm(defaultForm);
+  } catch (err) {
+    console.error(err);
+    setError("Something went wrong submitting your quote request.");
+  } finally {
+    setLoading(false);
   }
+}
+
 
   return (
     <section className="bg-brand-dark py-12 text-white">

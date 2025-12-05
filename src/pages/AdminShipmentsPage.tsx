@@ -1,5 +1,7 @@
 // src/pages/AdminShipmentsPage.tsx
 import { useEffect, useState } from "react";
+import { API_BASE_URL } from "../config/api";
+
 import {
   listShipments,
   updateShipmentStatus,
@@ -58,6 +60,51 @@ const AdminShipmentsPage = () => {
       setSavingId(id);
       setError(null);
       const updated = await updateShipmentStatus(id, status);
+      
+      async function handleStatusChange(id: string, status: TransportStatus) {
+  try {
+    setSavingId(id);
+    setError(null);
+
+    // 1️⃣ Update status in Supabase (existing behavior)
+    const updated = await updateShipmentStatus(id, status);
+
+    // Update UI
+    setShipments((prev) =>
+      prev.map((s) => (s.id === id ? updated : s))
+    );
+
+    // 2️⃣ Fire Status Update Email Notification (NEW)
+    // Build route + vehicle summary
+    const pickup = `${updated.pickupCity}, ${updated.pickupState}`;
+    const dropoff = `${updated.deliveryCity}, ${updated.deliveryState}`;
+    const vehicle = `${updated.vehicleYear} ${updated.vehicleMake} ${updated.vehicleModel}`.trim();
+
+    // Non-blocking email call
+    fetch(`${API_BASE_URL}/api/notifications/status`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        orderId: updated.referenceId,
+        status: updated.status,
+        customerEmail: updated.customerEmail,
+        customerName: updated.customerName,
+        pickup,
+        dropoff,
+        vehicle,
+      }),
+    }).catch((err) =>
+      console.error("Failed to send status update email:", err)
+    );
+
+  } catch (err) {
+    console.error(err);
+    setError("Something went wrong while updating status.");
+  } finally {
+    setSavingId(null);
+  }
+}
+
       setShipments((prev) =>
         prev.map((s) => (s.id === id ? updated : s))
       );
