@@ -304,9 +304,29 @@ function CallToActionSection() {
           >
             Get a Quote
           </button>
-          <button className="rounded-full border border-white/30 px-8 py-3 text-sm font-semibold text-white hover:border-white">
-            Talk to a Transport Specialist
-          </button>
+         <button
+  onClick={() => {
+    const w = window as any;
+
+    const openChat = () => {
+      if (!w.tidioChatApi) return;
+      w.tidioChatApi.open();
+      w.tidioChatApi.messageFromVisitor(
+        "Hi, I'd like to talk to a transport specialist."
+      );
+    };
+
+    if (w.tidioChatApi) {
+      openChat();
+    } else {
+      document.addEventListener("tidioChat-ready", openChat, { once: true });
+    }
+  }}
+  className="rounded-full border border-white/30 px-8 py-3 text-sm font-semibold text-white hover:border-white"
+>
+  Talk to a Transport Specialist
+</button>
+
         </div>
       </div>
     </section>
