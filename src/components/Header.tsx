@@ -22,9 +22,16 @@ const Header = () => {
     <header className="bg-black/40 backdrop-blur-md border-b border-white/10 sticky top-0 z-50">
       <div className="mx-auto max-w-7xl px-4 py-4 flex items-center justify-between">
 
-        {/* Logo */}
-        <Link to="/" className="text-sm md:text-xl font-bold tracking-wide text-white">
-          Road America Auto Transport
+        {/* Logo Block */}
+        <Link to="/" className="flex items-center gap-3">
+          <img
+            src="/logo.png" // Make sure your file is in public/logo.png
+            alt="Road America Auto Transport"
+            className="h-10 w-auto object-contain"
+          />
+          <span className="text-sm md:text-xl font-bold tracking-wide text-white whitespace-nowrap">
+            Road America Auto Transport
+          </span>
         </Link>
 
         {/* Desktop Navigation */}
@@ -57,7 +64,7 @@ const Header = () => {
             </NavLink>
           ))}
 
-          {/* Subtle Admin Link */}
+          {/* Admin Link */}
           <NavLink
             to="/admin/login"
             className={({ isActive }) =>
