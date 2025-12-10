@@ -14,6 +14,9 @@ import AboutPage from "./pages/AboutPage";
 import PrivacyPage from "./pages/PrivacyPage";
 import TermsPage from "./pages/TermsPage";
 import ClientRegisterPage from "./pages/ClientRegisterPage";
+import BlogListPage from "./pages/BlogListPage";
+import BlogPostPage from "./pages/BlogPostPage";
+import AdminBlogPage from "./pages/AdminBlogPage";
 
 
 
@@ -30,6 +33,8 @@ function App() {
   <Route path="/quote" element={<QuotePage />} />
   <Route path="/track" element={<TrackingPage />} />
   <Route path="/about" element={<AboutPage />} />
+    <Route path="/blog" element={<BlogListPage />} />
+  <Route path="/blog/:slug" element={<BlogPostPage />} />
 
 
   {/* Client portal */}
@@ -41,6 +46,7 @@ function App() {
   <Route path="/admin/login" element={<AdminLoginPage />} />
   <Route path="/admin/shipments" element={<AdminShipmentsPage />} />
   <Route path="/admin/users" element={<AdminUsersPage />} />
+   <Route path="/admin/blog" element={<AdminBlogPage />} />
 
    {/* Terms and Privacy */}
   <Route path="/privacy" element={<PrivacyPage />} />

@@ -125,6 +125,14 @@ const Header = () => {
               >
                 Admin Login
               </Link>
+
+              <Link
+  to="/admin/blog"
+  className="rounded-full border border-white/30 px-4 py-2 text-[11px] font-semibold text-white hover:border-brand-redSoft"
+>
+  Blog
+</Link>
+
             </div>
           </div>
         </div>
