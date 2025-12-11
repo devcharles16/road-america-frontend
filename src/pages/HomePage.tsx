@@ -1,6 +1,6 @@
 // src/pages/HomePage.tsx
 import { useNavigate, Link } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 const services = [
   {
