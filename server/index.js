@@ -442,6 +442,108 @@ app.delete(
     }
   }
 );
+// ---------- ADMIN USER MANAGEMENT ROUTES (ADMIN ONLY) ----------
+
+// GET /api/admin/users - list all profiles
+app.get(
+  "/api/admin/users",
+  requireAuth,
+  requireRole("admin"),
+  async (req, res) => {
+    try {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("id, email, role, full_name, created_at")
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        console.error("Error fetching admin users:", error);
+        return res
+          .status(500)
+          .json({ error: "Failed to fetch users." });
+      }
+
+      return res.json(data || []);
+    } catch (err) {
+      console.error("Unexpected error in GET /api/admin/users:", err);
+      return res.status(500).json({ error: "Unexpected error." });
+    }
+  }
+);
+
+// POST /api/admin/users - create a new user with a role
+app.post(
+  "/api/admin/users",
+  requireAuth,
+  requireRole("admin"),
+  async (req, res) => {
+    const { email, password, role, fullName } = req.body || {};
+
+    if (!email || !password || !role) {
+      return res
+        .status(400)
+        .json({ error: "email, password, and role are required." });
+    }
+
+    const allowedRoles = ["admin", "employee", "client"];
+    if (!allowedRoles.includes(role)) {
+      return res
+        .status(400)
+        .json({ error: "Invalid role. Must be admin, employee, or client." });
+    }
+
+    try {
+      // 1) Create Supabase auth user (requires service role key in supabaseClient)
+      const { data: created, error: createError } =
+        await supabase.auth.admin.createUser({
+          email,
+          password,
+          email_confirm: true,
+          user_metadata: {
+            full_name: fullName || null,
+          },
+        });
+
+      if (createError) {
+        console.error("Error creating Supabase auth user:", createError);
+        return res
+          .status(500)
+          .json({ error: "Failed to create auth user." });
+      }
+
+      const user = created?.user;
+      if (!user) {
+        return res
+          .status(500)
+          .json({ error: "Auth user not returned from Supabase." });
+      }
+
+      // 2) Insert profile row with role mapping
+      const { data: profile, error: profileError } = await supabase
+        .from("profiles")
+        .insert({
+          id: user.id,
+          email,
+          role,
+          full_name: fullName || null,
+        })
+        .select("id, email, role, full_name, created_at")
+        .single();
+
+      if (profileError) {
+        console.error("Error inserting profile row:", profileError);
+        return res
+          .status(500)
+          .json({ error: "User created, but failed to save profile." });
+      }
+
+      return res.status(201).json(profile);
+    } catch (err) {
+      console.error("Unexpected error in POST /api/admin/users:", err);
+      return res.status(500).json({ error: "Unexpected error." });
+    }
+  }
+);
 
 // 🔹 Mount shipments router here: this gives you /api/shipments
 app.use("/api", shipmentsRouter)
