@@ -232,11 +232,13 @@ function mapPostRow(row) {
     excerpt: row.excerpt,
     content: row.content,
     status: row.status,
+    imageUrl: row.image_url || null,
     publishedAt: row.published_at,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
 }
+
 
 
 // ---------- PUBLIC BLOG ROUTES ----------
@@ -325,7 +327,7 @@ app.post(
   requireAuth,
   requireRole("admin"),
   async (req, res) => {
-    const { title, slug, excerpt, content, status } = req.body || {};
+    const { title, slug, excerpt, content, status, imageUrl } = req.body || {};
     if (!title) {
       return res.status(400).json({ error: "Title is required." });
     }
@@ -345,6 +347,7 @@ app.post(
           content: content || "",
           status: safeStatus,
           published_at: publishedAt,
+          image_url: imageUrl || null,
         })
         .select("*")
         .single();
@@ -369,7 +372,7 @@ app.patch(
   requireRole("admin"),
   async (req, res) => {
     const { id } = req.params;
-    const { title, slug, excerpt, content, status } = req.body || {};
+    const { title, slug, excerpt, content, status, imageUrl } = req.body || {};
 
     const updates = {};
     if (title !== undefined) updates.title = title;
@@ -384,6 +387,9 @@ app.patch(
       } else {
         updates.published_at = null;
       }
+    }
+    if (imageUrl !== undefined) {
+      updates.image_url = imageUrl || null;
     }
 
     try {

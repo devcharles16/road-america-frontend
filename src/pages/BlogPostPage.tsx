@@ -63,20 +63,30 @@ const BlogPostPage = () => {
         </Link>
 
         <h1 className="mt-3 text-3xl font-display font-semibold">
-          {post.title}
-        </h1>
-        {post.publishedAt && (
-          <p className="mt-2 text-xs text-white/60">
-            {new Date(post.publishedAt).toLocaleDateString()}
-          </p>
-        )}
+  {post.title}
+</h1>
+{post.publishedAt && (
+  <p className="mt-2 text-xs text-white/60">
+    {new Date(post.publishedAt).toLocaleDateString()}
+  </p>
+)}
 
-        <article className="mt-6 prose prose-invert prose-sm max-w-none">
-          {/* For now content is plain text; later we can support Markdown */}
-          <p className="whitespace-pre-line text-sm text-white/80">
-            {post.content}
-          </p>
-        </article>
+{post.imageUrl && (
+  <div className="mt-6 mb-4 rounded-2xl overflow-hidden border border-white/10">
+    <img
+      src={post.imageUrl}
+      alt={post.title}
+      className="w-full max-h-96 object-cover"
+    />
+  </div>
+)}
+
+<article className="mt-6 prose prose-invert prose-sm max-w-none">
+  <p className="whitespace-pre-line text-sm text-white/80">
+    {post.content}
+  </p>
+</article>
+
       </div>
     </main>
   );

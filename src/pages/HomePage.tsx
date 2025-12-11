@@ -1,5 +1,6 @@
 // src/pages/HomePage.tsx
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import { useState, useEffect } from "react";
 
 const services = [
   {
@@ -46,8 +47,49 @@ const blogPosts = [
   },
 ];
 
+
+// Predefined sample shipments
+const sampleShipments = [
+  {
+    pickup: "Miami, FL",
+    delivery: "Dallas, TX",
+    vehicle: "2023 BMW M4",
+    status: "In Transit",
+    progress: 0.66, // 66%
+    eta: "ETA: 2–3 business days · Fully insured carrier",
+  },
+  {
+    pickup: "Los Angeles, CA",
+    delivery: "Seattle, WA",
+    vehicle: "2020 Tesla Model X",
+    status: "Driver Assigned",
+    progress: 0.33,
+    eta: "Pickup scheduled · Carrier confirmed",
+  },
+  {
+    pickup: "Atlanta, GA",
+    delivery: "New York, NY",
+    vehicle: "2022 Mercedes GLE",
+    status: "Delivered",
+    progress: 1.0,
+    eta: "Delivered · Signed & completed",
+  },
+  {
+    pickup: "Chicago, IL",
+    delivery: "Phoenix, AZ",
+    vehicle: "2019 Honda Accord",
+    status: "Submitted",
+    progress: 0.1,
+    eta: "Awaiting carrier assignment",
+  },
+];
+
 function HeroSection() {
   const navigate = useNavigate();
+
+  const [shipment] = useState(() => {
+  return sampleShipments[Math.floor(Math.random() * sampleShipments.length)];
+});
 
   return (
     <section className="relative overflow-hidden bg-gradient-to-r from-black via-brand-gray to-brand-red py-20">
@@ -110,46 +152,49 @@ function HeroSection() {
               <span>#{`RAU-10234`}</span>
             </div>
 
-            <div className="rounded-2xl bg-black/40 p-4">
-              <div className="flex items-center justify-between text-xs text-white/80">
-                <div>
-                  <p className="text-[11px] uppercase tracking-wide text-white/50">
-                    Pickup
-                  </p>
-                  <p className="font-semibold">Miami, FL</p>
-                </div>
-                <div className="text-brand-red">┃┃┃</div>
-                <div className="text-right">
-                  <p className="text-[11px] uppercase tracking-wide text-white/50">
-                    Delivery
-                  </p>
-                  <p className="font-semibold">Dallas, TX</p>
-                </div>
-              </div>
+<div className="rounded-2xl bg-black/40 p-4 transition-all duration-500">
+  <div className="flex items-center justify-between text-xs text-white/80">
+    <div>
+      <p className="text-[11px] uppercase tracking-wide text-white/50">
+        Pickup
+      </p>
+      <p className="font-semibold">{shipment.pickup}</p>
+    </div>
 
-              <div className="mt-6 flex items-center justify-between text-xs text-white/70">
-                <div>
-                  <p className="text-[11px] uppercase text-white/50">Vehicle</p>
-                  <p>2023 BMW M4</p>
-                </div>
-                <div>
-                  <p className="text-[11px] uppercase text-white/50">
-                    Status
-                  </p>
-                  <p className="rounded-full bg-brand-red/20 px-3 py-1 text-[11px] font-semibold text-brand-redSoft">
-                    In Transit
-                  </p>
-                </div>
-              </div>
+    <div className="text-brand-red">┃┃┃</div>
 
-              <div className="mt-4 h-1.5 rounded-full bg-white/10">
-                <div className="h-full w-2/3 rounded-full bg-brand-redSoft" />
-              </div>
+    <div className="text-right">
+      <p className="text-[11px] uppercase tracking-wide text-white/50">
+        Delivery
+      </p>
+      <p className="font-semibold">{shipment.delivery}</p>
+    </div>
+  </div>
 
-              <p className="mt-3 text-[11px] text-white/60">
-                ETA: 2–3 business days · Fully insured carrier
-              </p>
-            </div>
+  <div className="mt-6 flex items-center justify-between text-xs text-white/70">
+    <div>
+      <p className="text-[11px] uppercase text-white/50">Vehicle</p>
+      <p>{shipment.vehicle}</p>
+    </div>
+
+    <div>
+      <p className="text-[11px] uppercase text-white/50">Status</p>
+      <p className="rounded-full bg-brand-red/20 px-3 py-1 text-[11px] font-semibold text-brand-redSoft">
+        {shipment.status}
+      </p>
+    </div>
+  </div>
+
+  <div className="mt-4 h-1.5 rounded-full bg-white/10">
+    <div
+      className="h-full rounded-full bg-brand-redSoft transition-all duration-500"
+      style={{ width: `${shipment.progress * 100}%` }}
+    />
+  </div>
+
+  <p className="mt-3 text-[11px] text-white/60">{shipment.eta}</p>
+</div>
+
           </div>
         </div>
       </div>
@@ -251,9 +296,12 @@ function BlogPreviewSection() {
               Education and tips to help your shipment go smoothly.
             </p>
           </div>
-          <button className="text-xs font-semibold text-brand-red hover:text-brand-redSoft">
-            View all articles →
-          </button>
+          <Link
+  to="/blog"
+  className="text-brand-redSoft hover:text-brand-red text-sm font-semibold"
+>
+  View all articles →
+</Link>
         </div>
 
         <div className="grid gap-6 md:grid-cols-3">

@@ -12,10 +12,12 @@ export type BlogPost = {
   excerpt?: string | null;
   content: string;
   status: BlogStatus;
+  imageUrl?: string | null;
   publishedAt?: string | null;
   createdAt: string;
   updatedAt: string;
 };
+
 
 async function handleResponse<T>(res: Response): Promise<T> {
   if (!res.ok) {
@@ -66,6 +68,7 @@ type BlogInput = {
   excerpt?: string;
   content: string;
   status: BlogStatus;
+  imageUrl?: string | null;
 };
 
 export async function adminCreatePost(input: BlogInput): Promise<BlogPost> {

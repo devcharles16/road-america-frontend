@@ -17,13 +17,16 @@ const emptyForm = {
   excerpt: "",
   content: "",
   status: "draft" as BlogStatus,
+  imageUrl: "",
 };
+
 
 const AdminBlogPage = () => {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [form, setForm] = useState(emptyForm);
   const [editingId, setEditingId] = useState<string | null>(null);
   const navigate = useNavigate();
@@ -71,8 +74,54 @@ const AdminBlogPage = () => {
       excerpt: post.excerpt || "",
       content: post.content,
       status: post.status,
+      imageUrl: post.imageUrl || "",
     });
   }
+  async function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
+  const file = e.target.files?.[0];
+  if (!file) return;
+
+  try {
+    setUploadingImage(true);
+    setError(null);
+
+    // Get current session to use user id for folder path
+    const { data } = await supabase.auth.getUser();
+    const userId = data.user?.id || "unknown-admin";
+
+    const ext = file.name.split(".").pop();
+    const fileName = `${userId}/${Date.now()}.${ext || "jpg"}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("blog-images")
+      .upload(fileName, file);
+
+    if (uploadError) {
+      console.error(uploadError);
+      setError("Failed to upload image.");
+      return;
+    }
+
+    const { data: urlData } = supabase.storage
+      .from("blog-images")
+      .getPublicUrl(fileName);
+
+    const publicUrl = urlData?.publicUrl;
+
+    if (!publicUrl) {
+      setError("Could not get image URL after upload.");
+      return;
+    }
+
+    setForm((f) => ({ ...f, imageUrl: publicUrl }));
+  } catch (err: any) {
+    console.error(err);
+    setError(err?.message || "Unexpected error uploading image.");
+  } finally {
+    setUploadingImage(false);
+  }
+}
+
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
@@ -86,6 +135,7 @@ const AdminBlogPage = () => {
           excerpt: form.excerpt || undefined,
           content: form.content,
           status: form.status,
+          imageUrl: form.imageUrl || undefined,
         });
         setPosts((prev) =>
           prev.map((p) => (p.id === updated.id ? updated : p))
@@ -97,6 +147,7 @@ const AdminBlogPage = () => {
           excerpt: form.excerpt || undefined,
           content: form.content,
           status: form.status,
+          imageUrl: form.imageUrl || undefined,
         });
         setPosts((prev) => [created, ...prev]);
       }
@@ -220,6 +271,34 @@ const AdminBlogPage = () => {
                 className="w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-xs text-white outline-none focus:border-brand-redSoft"
               />
             </div>
+<div>
+  <label className="block text-[11px] text-white/70 mb-1">
+    Featured image
+  </label>
+  {form.imageUrl && (
+    <div className="mb-2">
+      <img
+        src={form.imageUrl}
+        alt="Blog featured"
+        className="h-32 w-full max-w-xs rounded-lg object-cover border border-white/15"
+      />
+    </div>
+  )}
+  <div className="flex items-center gap-3 text-[11px]">
+    <input
+      type="file"
+      accept="image/*"
+      onChange={handleImageChange}
+      className="text-xs text-white/70"
+    />
+    {uploadingImage && (
+      <span className="text-white/60">Uploading…</span>
+    )}
+  </div>
+  <p className="mt-1 text-[10px] text-white/40">
+    Recommended: 1200x630px JPG or PNG.
+  </p>
+</div>
 
             <div>
               <label className="block text-[11px] text-white/70 mb-1">

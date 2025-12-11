@@ -44,23 +44,35 @@ const BlogListPage = () => {
           <div className="mt-8 space-y-6">
             {posts.map((post) => (
               <Link
-                key={post.id}
-                to={`/blog/${post.slug}`}
-                className="block rounded-2xl border border-white/10 bg-black/50 p-5 hover:border-brand-redSoft hover:bg-black/70 transition"
-              >
-                <h2 className="text-lg font-semibold">{post.title}</h2>
-                {post.publishedAt && (
-                  <p className="mt-1 text-[11px] uppercase tracking-wide text-white/50">
-                    {new Date(post.publishedAt).toLocaleDateString()}
-                  </p>
-                )}
-                {post.excerpt && (
-                  <p className="mt-2 text-sm text-white/70">{post.excerpt}</p>
-                )}
-                <p className="mt-3 text-[11px] text-brand-redSoft">
-                  Read article →
-                </p>
-              </Link>
+  key={post.id}
+  to={`/blog/${post.slug}`}
+  className="block rounded-2xl border border-white/10 bg-black/50 overflow-hidden hover:border-brand-redSoft hover:bg-black/70 transition"
+>
+  {post.imageUrl && (
+    <div className="h-40 w-full overflow-hidden">
+      <img
+        src={post.imageUrl}
+        alt={post.title}
+        className="h-full w-full object-cover"
+      />
+    </div>
+  )}
+  <div className="p-5">
+    <h2 className="text-lg font-semibold">{post.title}</h2>
+    {post.publishedAt && (
+      <p className="mt-1 text-[11px] uppercase tracking-wide text-white/50">
+        {new Date(post.publishedAt).toLocaleDateString()}
+      </p>
+    )}
+    {post.excerpt && (
+      <p className="mt-2 text-sm text-white/70">{post.excerpt}</p>
+    )}
+    <p className="mt-3 text-[11px] text-brand-redSoft">
+      Read article →
+    </p>
+  </div>
+</Link>
+
             ))}
           </div>
         )}
