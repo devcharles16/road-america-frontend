@@ -17,7 +17,8 @@ import ClientRegisterPage from "./pages/ClientRegisterPage";
 import BlogListPage from "./pages/BlogListPage";
 import BlogPostPage from "./pages/BlogPostPage";
 import AdminBlogPage from "./pages/AdminBlogPage";
-
+import AdminLayout from "./layouts/AdminLayout";
+import AdminDashboardPage from "./pages/AdminDashboardPage";
 
 
 
@@ -43,10 +44,19 @@ function App() {
   <Route path="/my-shipments" element={<MyShipmentsPage />} />
 
   {/* Admin */}
+  
   <Route path="/admin/login" element={<AdminLoginPage />} />
-  <Route path="/admin/shipments" element={<AdminShipmentsPage />} />
-  <Route path="/admin/users" element={<AdminUsersPage />} />
-   <Route path="/admin/blog" element={<AdminBlogPage />} />
+
+  <Route path="/admin" element={<AdminLayout />}>
+    {/* /admin */}
+    <Route index element={<AdminDashboardPage />} />
+    {/* /admin/shipments */}
+    <Route path="shipments" element={<AdminShipmentsPage />} />
+    {/* /admin/users */}
+    <Route path="users" element={<AdminUsersPage />} />
+    {/* /admin/blog */}
+    <Route path="blog" element={<AdminBlogPage />} />
+  </Route>
 
    {/* Terms and Privacy */}
   <Route path="/privacy" element={<PrivacyPage />} />
