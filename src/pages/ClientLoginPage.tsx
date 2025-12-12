@@ -41,7 +41,7 @@ const ClientLoginPage = () => {
           Client Portal
         </p>
         <h1 className="mt-2 font-display text-2xl font-semibold">
-          Client Login
+          Login
         </h1>
         <p className="mt-2 text-sm text-white/70">
           Log in to view your active and past shipments. Use the email and

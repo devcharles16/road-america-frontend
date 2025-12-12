@@ -14,7 +14,7 @@ const Header = () => {
   ];
 
   const clientLinks = [
-    { label: "Client Login", to: "/login" },
+    { label: "Login", to: "/login" },
     { label: "Register", to: "/register" },
   ];
 

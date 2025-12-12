@@ -19,6 +19,8 @@ import BlogPostPage from "./pages/BlogPostPage";
 import AdminBlogPage from "./pages/AdminBlogPage";
 import AdminLayout from "./layouts/AdminLayout";
 import AdminDashboardPage from "./pages/AdminDashboardPage";
+import { RequireRoles } from "./routes/RequireRoles";
+
 
 
 
@@ -47,16 +49,29 @@ function App() {
   
   <Route path="/admin/login" element={<AdminLoginPage />} />
 
-  <Route path="/admin" element={<AdminLayout />}>
-    {/* /admin */}
-    <Route index element={<AdminDashboardPage />} />
-    {/* /admin/shipments */}
-    <Route path="shipments" element={<AdminShipmentsPage />} />
-    {/* /admin/users */}
-    <Route path="users" element={<AdminUsersPage />} />
-    {/* /admin/blog */}
-    <Route path="blog" element={<AdminBlogPage />} />
-  </Route>
+<Route
+  path="/admin"
+  element={
+    <RequireRoles allowed={["admin", "employee"]}>
+      <AdminLayout />
+    </RequireRoles>
+  }
+>
+  <Route index element={<AdminDashboardPage />} />
+  <Route path="shipments" element={<AdminShipmentsPage />} />
+  <Route path="blog" element={<AdminBlogPage />} />
+
+  {/* ADMIN ONLY */}
+  <Route
+    path="users"
+    element={
+      <RequireRoles allowed={["admin"]}>
+        <AdminUsersPage />
+      </RequireRoles>
+    }
+  />
+</Route>
+
 
    {/* Terms and Privacy */}
   <Route path="/privacy" element={<PrivacyPage />} />
