@@ -31,13 +31,6 @@ const AdminBlogPage = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  async function ensureSession() {
-    const { data } = await supabase.auth.getSession();
-    if (!data.session) {
-      navigate("/admin/login");
-    }
-  }
-
   async function load() {
     try {
       setLoading(true);
@@ -55,10 +48,11 @@ const AdminBlogPage = () => {
     }
   }
 
-  useEffect(() => {
-    ensureSession().then(load);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+useEffect(() => {
+  load();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, []);
+
 
   function startNew() {
     setEditingId(null);
