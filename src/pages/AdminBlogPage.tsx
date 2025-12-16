@@ -29,7 +29,7 @@ const AdminBlogPage = () => {
   const [uploadingImage, setUploadingImage] = useState(false);
   const [form, setForm] = useState(emptyForm);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
 
   async function load() {
     try {
