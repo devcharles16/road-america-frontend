@@ -1,3 +1,4 @@
+ console.log("LOGIN PAGE RENDER");
 // src/pages/AdminLoginPage.tsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -10,30 +11,32 @@ const AdminLoginPage = () => {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
+async function handleSubmit(e: React.FormEvent) {
+  e.preventDefault();
+  setLoading(true);
+  setError(null);
 
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: email.trim(),
-        password,
-      });
+  try {
+    console.log("SUBMIT CLICKED (before sign-in)");
 
-      if (error || !data.session) {
-        throw error || new Error("No session returned");
-      }
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: email.trim(),
+      password,
+    });
 
-      // If login works, backend will enforce role (admin/employee)
-      navigate("/admin/shipments");
-    } catch (err) {
-      console.error(err);
-      setError("Invalid email or password.");
-    } finally {
-      setLoading(false);
-    }
+    if (error) throw error;
+    if (!data.session) throw new Error("No session returned");
+
+    // Go to admin root; RequireRoles + AuthContext will handle role/redirect
+    navigate("/admin", { replace: true });
+  } catch (err) {
+    console.error(err);
+    setError("Invalid email or password.");
+  } finally {
+    setLoading(false);
   }
+}
+
 
   return (
     <section className="bg-brand-dark py-12 text-white min-h-[70vh] flex items-center">

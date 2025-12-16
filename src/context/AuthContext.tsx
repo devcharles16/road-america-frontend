@@ -1,3 +1,4 @@
+
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 
@@ -23,7 +24,7 @@ async function fetchRole(userId: string): Promise<Role> {
     console.error("Failed to fetch role from profiles:", error);
     return null;
   }
-
+  console.log("fetchRole role:", data?.role);
   return (data?.role as Role) ?? null;
 }
 
@@ -32,9 +33,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [role, setRole] = useState<Role>(null);
   const [loading, setLoading] = useState(true);
 
-  const refreshProfile = async () => {
-    setLoading(true);
-
+const refreshProfile = async () => {
+  setLoading(true);
+  try {
     const { data } = await supabase.auth.getUser();
     const u = data?.user ?? null;
     setUser(u);
@@ -45,16 +46,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } else {
       setRole(null);
     }
-
+  } catch (err) {
+    console.error("refreshProfile failed:", err);
+    setUser(null);
+    setRole(null);
+  } finally {
     setLoading(false);
-  };
+  }
+};
+
 
   useEffect(() => {
     // Initial load
     refreshProfile();
 
     // Keep role in sync on login/logout
-    const { data: sub } = supabase.auth.onAuthStateChange(async (_event, session) => {
+const { data: sub } = supabase.auth.onAuthStateChange(
+  async (_event, session) => {
+    setLoading(true);
+    try {
       const u = session?.user ?? null;
       setUser(u);
 
@@ -65,8 +75,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setRole(null);
       }
 
+      console.log("Auth change event, user:", session?.user?.email);
+    } catch (err) {
+      console.error("onAuthStateChange failed:", err);
+      setUser(null);
+      setRole(null);
+    } finally {
       setLoading(false);
-    });
+    }
+  }
+);
+
 
     return () => {
       sub.subscription.unsubscribe();

@@ -15,10 +15,14 @@ export function RequireRoles({
   if (loading) {
     return <div className="p-6 text-white/60">Loading…</div>;
   }
+if (role === null) {
+  return <div className="p-6 text-white/60">Checking permissions…</div>;
+}
 
-  if (!role || !allowed.includes(role)) {
-    return <Navigate to="/admin/login" replace />;
-  }
+if (!allowed.includes(role)) {
+  return <Navigate to="/admin/login" replace />;
+}
+
 
   return children;
 }
