@@ -2,6 +2,8 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { registerClient } from "../services/authService";
+import { supabase } from "../lib/supabaseClient";
+
 
 const ClientRegisterPage = () => {
   const [name, setName] = useState("");
@@ -26,16 +28,34 @@ const ClientRegisterPage = () => {
 
     setLoading(true);
     try {
-      const result = await registerClient({
-        name: name.trim() || undefined,
-        email: email.trim(),
-        phone: phone.trim() || undefined,
-        password,
-      });
+     await registerClient({
+  fullName: name.trim() || undefined,
+  email: email.trim(),
+  password,
+});
+// Save phone into profiles (optional)
+if (phone.trim()) {
+  const { data } = await supabase.auth.getUser();
+  const userId = data.user?.id;
+
+  if (userId) {
+    const { error: phoneError } = await supabase
+      .from("profiles")
+      .update({ phone: phone.trim() })
+      .eq("id", userId);
+
+    if (phoneError) {
+      console.error("Failed to save phone to profile:", phoneError);
+      // Don't block registration success just because phone save failed
+    }
+  }
+}
 
       setSuccess(
-        `Account created for ${result.email}. You can now log in to view your shipments.`
-      );
+  `Account created for ${email}. You can now log in to view your shipments.`
+  
+);
+
       // Optionally auto-redirect after a short delay
       setTimeout(() => {
         navigate("/login");

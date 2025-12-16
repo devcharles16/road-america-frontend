@@ -34,8 +34,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setRole(null);
       return;
     }
+console.log("fetchRole userId:", userId);
 
     setRole((data?.role as Role) ?? null);
+    console.log("fetchRole data:", data, "error:", error);
+
   }
 
   const refreshProfile = async () => {
