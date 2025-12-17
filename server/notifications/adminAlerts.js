@@ -2,8 +2,23 @@
 import { sendEmail } from "../utils/email.js";
 
 const adminEmail = process.env.ADMIN_ALERT_EMAIL;
+function splitVehicle(vehicle = "") {
+  if (!vehicle) return { year: "-", make: "-", model: "-" };
+
+  const parts = vehicle.trim().split(/\s+/);
+
+  const year =
+    parts.length && /^\d{4}$/.test(parts[0]) ? parts.shift() : "-";
+
+  const make = parts.length ? parts.shift() : "-";
+  const model = parts.length ? parts.join(" ") : "-";
+
+  return { year, make, model };
+}
 
 export async function sendNewQuoteAlert(payload) {
+  const { year, make, model } = splitVehicle(vehicle);
+
   const {
     name,
     email,
@@ -49,10 +64,19 @@ export async function sendNewQuoteAlert(payload) {
             <td style="padding:4px 8px;font-weight:600;">Dropoff:</td>
             <td style="padding:4px 8px;">${dropoff || "-"}</td>
           </tr>
-          <tr>
-            <td style="padding:4px 8px;font-weight:600;">Vehicle:</td>
-            <td style="padding:4px 8px;">${vehicle || "-"}</td>
-          </tr>
+         <tr>
+  <td style="padding:4px 8px;font-weight:600;">Vehicle Year:</td>
+  <td style="padding:4px 8px;">${year}</td>
+</tr>
+<tr>
+  <td style="padding:4px 8px;font-weight:600;">Make:</td>
+  <td style="padding:4px 8px;">${make}</td>
+</tr>
+<tr>
+  <td style="padding:4px 8px;font-weight:600;">Model:</td>
+  <td style="padding:4px 8px;">${model}</td>
+</tr>
+
           <tr>
             <td style="padding:4px 8px;font-weight:600;">Transport Type:</td>
             <td style="padding:4px 8px;">${transportType || "-"}</td>
@@ -80,6 +104,8 @@ export async function sendNewQuoteAlert(payload) {
 
 // ✨ NEW: Customer-facing quote confirmation email
 export async function sendQuoteConfirmationEmail(payload) {
+  const { year, make, model } = splitVehicle(vehicle);
+
   const {
     name,
     email,
@@ -141,9 +167,18 @@ export async function sendQuoteConfirmationEmail(payload) {
                   <td style="padding:4px 0;">${dropoff || "-"}</td>
                 </tr>
                 <tr>
-                  <td style="padding:4px 0;width:34%;color:#aaaaaa;">Vehicle:</td>
-                  <td style="padding:4px 0;">${vehicle || "-"}</td>
-                </tr>
+  <td style="padding:4px 0;width:34%;color:#aaaaaa;">Year:</td>
+  <td style="padding:4px 0;">${year}</td>
+</tr>
+<tr>
+  <td style="padding:4px 0;width:34%;color:#aaaaaa;">Make:</td>
+  <td style="padding:4px 0;">${make}</td>
+</tr>
+<tr>
+  <td style="padding:4px 0;width:34%;color:#aaaaaa;">Model:</td>
+  <td style="padding:4px 0;">${model}</td>
+</tr>
+
                 <tr>
                   <td style="padding:4px 0;width:34%;color:#aaaaaa;">Transport Type:</td>
                   <td style="padding:4px 0;">${transportType || "-"} transport</td>
