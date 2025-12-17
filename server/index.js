@@ -169,16 +169,16 @@ app.post("/api/notifications/new-quote", async (req, res) => {
       phone,
       pickup,
       dropoff,
-      vehicle, // old format
+      vehicle: vehicleRaw, // renamed to avoid TDZ issues
       vehicleYear,
       vehicleMake,
-      vehicleModel, // new format
+      vehicleModel,
       transportType,
       referenceId,
     } = req.body || {};
 
     const vehicleText =
-      (vehicle && String(vehicle).trim()) ||
+      (vehicleRaw && String(vehicleRaw).trim()) ||
       [vehicleYear, vehicleMake, vehicleModel].filter(Boolean).join(" ").trim() ||
       "-";
 
