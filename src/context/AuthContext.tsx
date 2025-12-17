@@ -13,34 +13,28 @@ type AuthContextValue = {
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
-
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<any | null>(null);
   const [role, setRole] = useState<Role>(null);
   const [roleError, setRoleError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // prevents stale async updates (StrictMode safe)
   const requestIdRef = useRef(0);
 
   async function fetchRole(userId: string, requestId: number): Promise<void> {
-
     const { data, error } = await supabase
       .from("profiles")
       .select("role")
       .eq("id", userId)
       .single();
 
-    // Ignore stale responses
     if (requestIdRef.current !== requestId) return;
 
     if (error) {
-
       setRole(null);
       setRoleError(error.message);
       return;
     }
-
 
     setRoleError(null);
     setRole((data?.role as Role) ?? null);
@@ -53,14 +47,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const { data, error } = await supabase.auth.getUser();
       if (error) {
-        console.error("[Auth] getSession error:", error);
+        setUser(null);
+        setRole(null);
+        setRoleError(error.message);
+        return;
       }
 
       const u = data?.user ?? null;
 
       if (requestIdRef.current !== requestId) return;
 
-      console.log("[Auth] refreshProfile user:", u?.email, u?.id);
       setUser(u);
 
       if (u?.id) {
@@ -69,11 +65,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setRole(null);
         setRoleError(null);
       }
-    } catch (err) {
-      console.error("[Auth] refreshProfile failed:", err);
+    } catch {
       setUser(null);
       setRole(null);
-      setRoleError("refreshProfile failed");
+      setRoleError("Failed to refresh profile.");
     } finally {
       if (requestIdRef.current === requestId) {
         setLoading(false);
@@ -92,7 +87,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const u = session?.user ?? null;
         if (requestIdRef.current !== requestId) return;
 
-        console.log("[Auth] onAuthStateChange user:", u?.email, u?.id);
         setUser(u);
 
         if (u?.id) {
@@ -101,11 +95,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setRole(null);
           setRoleError(null);
         }
-      } catch (err) {
-        console.error("[Auth] onAuthStateChange failed:", err);
+      } catch {
         setUser(null);
         setRole(null);
-        setRoleError("onAuthStateChange failed");
+        setRoleError("Auth state change failed.");
       } finally {
         if (requestIdRef.current === requestId) {
           setLoading(false);

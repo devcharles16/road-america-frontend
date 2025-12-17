@@ -51,10 +51,10 @@ if (phone.trim()) {
   }
 }
 
-      setSuccess(
-  `Account created for ${email}. You can now log in to view your shipments.`
-  
+setSuccess(
+  `Account created for ${email}. Please check your email to confirm your account before logging in.`
 );
+
 
       // Optionally auto-redirect after a short delay
       setTimeout(() => {
