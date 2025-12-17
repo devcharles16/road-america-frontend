@@ -103,6 +103,7 @@ const QuotePage = () => {
   vehicleModel: form.vehicleModel || undefined,
 
   transportType: form.transportType,
+  runningCondition: form.runningCondition,
   referenceId: created.referenceId,
 }),
 

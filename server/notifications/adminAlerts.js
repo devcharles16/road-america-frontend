@@ -24,6 +24,7 @@ export async function sendNewQuoteAlert(payload) {
     pickup,
     dropoff,
     vehicle: vehicleRaw,
+    runningCondition,
     transportType,
     referenceId,
   } = payload;
@@ -77,6 +78,11 @@ export async function sendNewQuoteAlert(payload) {
             <td style="padding:4px 8px;">${model}</td>
           </tr>
           <tr>
+  <td style="padding:4px 8px;font-weight:600;">Running Condition:</td>
+  <td style="padding:4px 8px;">${runningCondition || "-"}</td>
+</tr>
+
+          <tr>
             <td style="padding:4px 8px;font-weight:600;">Transport Type:</td>
             <td style="padding:4px 8px;">${transportType || "-"}</td>
           </tr>
@@ -110,6 +116,7 @@ export async function sendQuoteConfirmationEmail(payload) {
     pickup,
     dropoff,
     vehicle: vehicleRaw,
+    runningCondition,
     transportType,
     referenceId,
   } = payload;
@@ -175,6 +182,11 @@ export async function sendQuoteConfirmationEmail(payload) {
                   <td style="padding:4px 0;width:34%;color:#aaaaaa;">Model:</td>
                   <td style="padding:4px 0;">${model}</td>
                 </tr>
+                <tr>
+  <td style="padding:4px 0;width:34%;color:#aaaaaa;">Condition:</td>
+  <td style="padding:4px 0;">${runningCondition || "-"}</td>
+</tr>
+
                 <tr>
                   <td style="padding:4px 0;width:34%;color:#aaaaaa;">Transport Type:</td>
                   <td style="padding:4px 0;">${transportType || "-"} transport</td>

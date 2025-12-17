@@ -173,6 +173,7 @@ app.post("/api/notifications/new-quote", async (req, res) => {
       vehicleYear,
       vehicleMake,
       vehicleModel,
+      runningCondition,
       transportType,
       referenceId,
     } = req.body || {};
@@ -189,6 +190,7 @@ app.post("/api/notifications/new-quote", async (req, res) => {
       pickup,
       dropoff,
       vehicle: vehicleText,
+      runningCondition,
       transportType,
       referenceId,
     });
@@ -199,6 +201,7 @@ app.post("/api/notifications/new-quote", async (req, res) => {
       pickup,
       dropoff,
       vehicle: vehicleText,
+      runningCondition,
       transportType,
       referenceId,
     });
