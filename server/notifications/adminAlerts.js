@@ -17,18 +17,18 @@ function splitVehicle(vehicle = "") {
 }
 
 export async function sendNewQuoteAlert(payload) {
-  const { year, make, model } = splitVehicle(vehicle);
-
   const {
     name,
     email,
     phone,
     pickup,
     dropoff,
-    vehicle,
+    vehicle: vehicleRaw,
     transportType,
     referenceId,
   } = payload;
+
+  const { year, make, model } = splitVehicle(vehicleRaw);
 
   const subject = "🚗 New Transport Quote Request – Road America";
 
@@ -64,19 +64,18 @@ export async function sendNewQuoteAlert(payload) {
             <td style="padding:4px 8px;font-weight:600;">Dropoff:</td>
             <td style="padding:4px 8px;">${dropoff || "-"}</td>
           </tr>
-         <tr>
-  <td style="padding:4px 8px;font-weight:600;">Vehicle Year:</td>
-  <td style="padding:4px 8px;">${year}</td>
-</tr>
-<tr>
-  <td style="padding:4px 8px;font-weight:600;">Make:</td>
-  <td style="padding:4px 8px;">${make}</td>
-</tr>
-<tr>
-  <td style="padding:4px 8px;font-weight:600;">Model:</td>
-  <td style="padding:4px 8px;">${model}</td>
-</tr>
-
+          <tr>
+            <td style="padding:4px 8px;font-weight:600;">Vehicle Year:</td>
+            <td style="padding:4px 8px;">${year}</td>
+          </tr>
+          <tr>
+            <td style="padding:4px 8px;font-weight:600;">Make:</td>
+            <td style="padding:4px 8px;">${make}</td>
+          </tr>
+          <tr>
+            <td style="padding:4px 8px;font-weight:600;">Model:</td>
+            <td style="padding:4px 8px;">${model}</td>
+          </tr>
           <tr>
             <td style="padding:4px 8px;font-weight:600;">Transport Type:</td>
             <td style="padding:4px 8px;">${transportType || "-"}</td>
@@ -102,19 +101,20 @@ export async function sendNewQuoteAlert(payload) {
   });
 }
 
+
 // ✨ NEW: Customer-facing quote confirmation email
 export async function sendQuoteConfirmationEmail(payload) {
-  const { year, make, model } = splitVehicle(vehicle);
-
   const {
     name,
     email,
     pickup,
     dropoff,
-    vehicle,
+    vehicle: vehicleRaw,
     transportType,
     referenceId,
   } = payload;
+
+  const { year, make, model } = splitVehicle(vehicleRaw);
 
   if (!email) {
     return { success: false, error: "No customer email provided" };
@@ -125,8 +125,7 @@ export async function sendQuoteConfirmationEmail(payload) {
   const html = `
     <div style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background:#0b0b0b; padding:24px; color:#f5f5f5;">
       <div style="max-width:600px;margin:0 auto;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);background:linear-gradient(135deg,#101010,#181818);">
-        
-        <!-- Header -->
+
         <div style="padding:20px 24px;border-bottom:1px solid rgba(255,255,255,0.08);background:linear-gradient(to right,#8C0000,#2b0000);">
           <h1 style="margin:0;font-size:20px;letter-spacing:0.08em;text-transform:uppercase;color:#ffffff;">
             Road America Auto Transport
@@ -136,12 +135,11 @@ export async function sendQuoteConfirmationEmail(payload) {
           </p>
         </div>
 
-        <!-- Body -->
         <div style="padding:24px;">
           <p style="font-size:15px;margin:0 0 16px;">Hi ${name || "there"},</p>
 
           <p style="font-size:14px;margin:0 0 14px;">
-            Thank you for requesting a transport quote with 
+            Thank you for requesting a transport quote with
             <strong style="color:#ffffff;">Road America Auto Transport</strong>.
           </p>
 
@@ -149,7 +147,6 @@ export async function sendQuoteConfirmationEmail(payload) {
             We’ve received your details and a transport specialist will review your route and send a tailored quote shortly.
           </p>
 
-          <!-- Summary Card -->
           <div style="margin:18px 0;padding:14px 16px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);">
             ${referenceId ? `
             <p style="margin:0 0 8px;font-size:12px;color:#aaaaaa;">
@@ -167,18 +164,17 @@ export async function sendQuoteConfirmationEmail(payload) {
                   <td style="padding:4px 0;">${dropoff || "-"}</td>
                 </tr>
                 <tr>
-  <td style="padding:4px 0;width:34%;color:#aaaaaa;">Year:</td>
-  <td style="padding:4px 0;">${year}</td>
-</tr>
-<tr>
-  <td style="padding:4px 0;width:34%;color:#aaaaaa;">Make:</td>
-  <td style="padding:4px 0;">${make}</td>
-</tr>
-<tr>
-  <td style="padding:4px 0;width:34%;color:#aaaaaa;">Model:</td>
-  <td style="padding:4px 0;">${model}</td>
-</tr>
-
+                  <td style="padding:4px 0;width:34%;color:#aaaaaa;">Year:</td>
+                  <td style="padding:4px 0;">${year}</td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 0;width:34%;color:#aaaaaa;">Make:</td>
+                  <td style="padding:4px 0;">${make}</td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 0;width:34%;color:#aaaaaa;">Model:</td>
+                  <td style="padding:4px 0;">${model}</td>
+                </tr>
                 <tr>
                   <td style="padding:4px 0;width:34%;color:#aaaaaa;">Transport Type:</td>
                   <td style="padding:4px 0;">${transportType || "-"} transport</td>
@@ -201,7 +197,6 @@ export async function sendQuoteConfirmationEmail(payload) {
           </p>
         </div>
 
-        <!-- Footer -->
         <div style="padding:14px 24px;border-top:1px solid rgba(255,255,255,0.08);font-size:11px;color:#8a8a8a;">
           <p style="margin:0;">
             This message was sent regarding your recent quote request with Road America Auto Transport.
@@ -217,3 +212,4 @@ export async function sendQuoteConfirmationEmail(payload) {
     html,
   });
 }
+
