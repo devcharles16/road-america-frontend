@@ -169,33 +169,39 @@ app.post("/api/notifications/new-quote", async (req, res) => {
       phone,
       pickup,
       dropoff,
-      vehicle,
+      vehicle, // old format
+      vehicleYear,
+      vehicleMake,
+      vehicleModel, // new format
       transportType,
       referenceId,
-    } = req.body;
+    } = req.body || {};
 
-    const [adminResult, customerResult] = await Promise.all([
-      sendNewQuoteAlert({
-        name,
-        email,
-        phone,
-        pickup,
-        dropoff,
-        vehicle,
-        transportType,
-        referenceId,
-      }),
-      sendQuoteConfirmationEmail({
-        name,
-        email,
-        pickup,
-        dropoff,
-        vehicle,
-        transportType,
-        referenceId,
-      }),
-    ]);
+    const vehicleText =
+      (vehicle && String(vehicle).trim()) ||
+      [vehicleYear, vehicleMake, vehicleModel].filter(Boolean).join(" ").trim() ||
+      "-";
 
+    await sendNewQuoteAlert({
+      name,
+      email,
+      phone,
+      pickup,
+      dropoff,
+      vehicle: vehicleText,
+      transportType,
+      referenceId,
+    });
+
+    await sendQuoteConfirmationEmail({
+      name,
+      email,
+      pickup,
+      dropoff,
+      vehicle: vehicleText,
+      transportType,
+      referenceId,
+    });
     if (!adminResult.success) {
       console.error("Admin alert failed:", adminResult.error || adminResult.err);
     }
@@ -206,10 +212,10 @@ app.post("/api/notifications/new-quote", async (req, res) => {
       );
     }
 
-    res.json({ success: true });
+    return res.json({ ok: true });
   } catch (err) {
-    console.error("New quote notification error:", err);
-    res.status(500).json({ success: false, message: "Server error" });
+    console.error("new-quote notification error:", err);
+    return res.status(500).json({ error: "Failed to send quote notifications." });
   }
 });
 
