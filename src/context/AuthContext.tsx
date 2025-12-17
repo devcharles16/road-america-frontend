@@ -6,39 +6,44 @@ export type Role = "admin" | "employee" | "client" | null;
 type AuthContextValue = {
   user: any | null;
   role: Role;
+  roleError: string | null;
   loading: boolean;
   refreshProfile: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<any | null>(null);
   const [role, setRole] = useState<Role>(null);
+  const [roleError, setRoleError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   // prevents stale async updates (StrictMode safe)
   const requestIdRef = useRef(0);
 
   async function fetchRole(userId: string, requestId: number): Promise<void> {
+
     const { data, error } = await supabase
       .from("profiles")
       .select("role")
       .eq("id", userId)
       .single();
 
-    if (requestIdRef.current !== requestId) return; // stale request
+    // Ignore stale responses
+    if (requestIdRef.current !== requestId) return;
 
     if (error) {
-      console.error("fetchRole failed:", error);
+
       setRole(null);
+      setRoleError(error.message);
       return;
     }
-console.log("fetchRole userId:", userId);
 
+
+    setRoleError(null);
     setRole((data?.role as Role) ?? null);
-    console.log("fetchRole data:", data, "error:", error);
-
   }
 
   const refreshProfile = async () => {
@@ -46,23 +51,29 @@ console.log("fetchRole userId:", userId);
     setLoading(true);
 
     try {
-      const { data } = await supabase.auth.getSession();
-      const session = data?.session ?? null;
-      const u = session?.user ?? null;
+      const { data, error } = await supabase.auth.getUser();
+      if (error) {
+        console.error("[Auth] getSession error:", error);
+      }
+
+      const u = data?.user ?? null;
 
       if (requestIdRef.current !== requestId) return;
 
+      console.log("[Auth] refreshProfile user:", u?.email, u?.id);
       setUser(u);
 
       if (u?.id) {
         await fetchRole(u.id, requestId);
       } else {
         setRole(null);
+        setRoleError(null);
       }
     } catch (err) {
-      console.error("refreshProfile failed:", err);
+      console.error("[Auth] refreshProfile failed:", err);
       setUser(null);
       setRole(null);
+      setRoleError("refreshProfile failed");
     } finally {
       if (requestIdRef.current === requestId) {
         setLoading(false);
@@ -81,17 +92,20 @@ console.log("fetchRole userId:", userId);
         const u = session?.user ?? null;
         if (requestIdRef.current !== requestId) return;
 
+        console.log("[Auth] onAuthStateChange user:", u?.email, u?.id);
         setUser(u);
 
         if (u?.id) {
           await fetchRole(u.id, requestId);
         } else {
           setRole(null);
+          setRoleError(null);
         }
       } catch (err) {
-        console.error("onAuthStateChange failed:", err);
+        console.error("[Auth] onAuthStateChange failed:", err);
         setUser(null);
         setRole(null);
+        setRoleError("onAuthStateChange failed");
       } finally {
         if (requestIdRef.current === requestId) {
           setLoading(false);
@@ -104,8 +118,8 @@ console.log("fetchRole userId:", userId);
   }, []);
 
   const value = useMemo(
-    () => ({ user, role, loading, refreshProfile }),
-    [user, role, loading]
+    () => ({ user, role, roleError, loading, refreshProfile }),
+    [user, role, roleError, loading]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

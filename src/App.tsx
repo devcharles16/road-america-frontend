@@ -20,7 +20,7 @@ import AdminBlogPage from "./pages/AdminBlogPage";
 import AdminLayout from "./layouts/AdminLayout";
 import AdminDashboardPage from "./pages/AdminDashboardPage";
 import { RequireRoles } from "./routes/RequireRoles";
-import AuthDebugBanner from "./components/AuthDebugBanner"
+
 
 
 
@@ -31,7 +31,7 @@ function App() {
     <div className="min-h-screen bg-brand-dark text-white flex flex-col">
       <Header />
       <main className="flex-1">
-        <AuthDebugBanner />
+    
         <Routes>
   <Route path="/" element={<HomePage />} />
   <Route path="/quote" element={<QuotePage />} />

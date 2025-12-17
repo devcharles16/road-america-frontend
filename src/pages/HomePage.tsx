@@ -91,6 +91,7 @@ function HeroSection() {
   return sampleShipments[Math.floor(Math.random() * sampleShipments.length)];
 });
 
+
   return (
     <section className="relative overflow-hidden bg-gradient-to-r from-black via-brand-gray to-brand-red py-20">
       <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_top,_#ffffff22,_transparent_60%)]" />
@@ -389,6 +390,7 @@ const HomePage = () => {
       <HowItWorksSection />
       <BlogPreviewSection />
       <CallToActionSection />
+
     </>
   );
 };
