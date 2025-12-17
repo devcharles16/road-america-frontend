@@ -61,12 +61,14 @@ const QuotePage = () => {
 
   try {
     // 1️⃣ Create the transport request (what you already had)
+    const normalizedYear = /^\d{4}$/.test(form.vehicleYear) ? form.vehicleYear : undefined;
+
     const created = await createTransportRequest({
       pickupCity: form.pickupCity,
       pickupState: form.pickupState,
       deliveryCity: form.deliveryCity,
       deliveryState: form.deliveryState,
-      vehicleYear: form.vehicleYear || undefined,
+      vehicleYear: normalizedYear,
       vehicleMake: form.vehicleMake || undefined,
       vehicleModel: form.vehicleModel || undefined,
       vin: form.vin || undefined,
@@ -81,7 +83,7 @@ const QuotePage = () => {
 
     // 2️⃣ Fire the email notification to your backend (Resend runs there)
     //    This should NOT block the user experience if it fails
-    const vehicleSummary = `${form.vehicleYear} ${form.vehicleMake} ${form.vehicleModel}`.trim();
+  
     const pickup = `${form.pickupCity}, ${form.pickupState}`;
     const dropoff = `${form.deliveryCity}, ${form.deliveryState}`;
 
@@ -90,15 +92,20 @@ const QuotePage = () => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        name: form.name,
-        email: form.email,
-        phone: form.phone,
-        pickup,
-        dropoff,
-        vehicle: vehicleSummary,
-        transportType: form.transportType,
-        referenceId: created.referenceId, // assuming your backend returns this
-      }),
+  name: form.name,
+  email: form.email,
+  phone: form.phone,
+  pickup,
+  dropoff,
+
+  vehicleYear: normalizedYear,
+  vehicleMake: form.vehicleMake || undefined,
+  vehicleModel: form.vehicleModel || undefined,
+
+  transportType: form.transportType,
+  referenceId: created.referenceId,
+}),
+
     }).catch((notifyErr) => {
       console.error("Failed to send new quote notification:", notifyErr);
     });
