@@ -169,7 +169,7 @@ app.post("/api/notifications/new-quote", async (req, res) => {
       phone,
       pickup,
       dropoff,
-      vehicle: vehicleRaw, // renamed to avoid TDZ issues
+      vehicle: vehicleRaw,
       vehicleYear,
       vehicleMake,
       vehicleModel,
@@ -182,7 +182,7 @@ app.post("/api/notifications/new-quote", async (req, res) => {
       [vehicleYear, vehicleMake, vehicleModel].filter(Boolean).join(" ").trim() ||
       "-";
 
-    await sendNewQuoteAlert({
+    const adminResult = await sendNewQuoteAlert({
       name,
       email,
       phone,
@@ -193,7 +193,7 @@ app.post("/api/notifications/new-quote", async (req, res) => {
       referenceId,
     });
 
-    await sendQuoteConfirmationEmail({
+    const customerResult = await sendQuoteConfirmationEmail({
       name,
       email,
       pickup,
@@ -202,10 +202,11 @@ app.post("/api/notifications/new-quote", async (req, res) => {
       transportType,
       referenceId,
     });
-    if (!adminResult.success) {
+
+    if (adminResult && adminResult.success === false) {
       console.error("Admin alert failed:", adminResult.error || adminResult.err);
     }
-    if (!customerResult.success) {
+    if (customerResult && customerResult.success === false) {
       console.error(
         "Customer confirmation failed:",
         customerResult.error || customerResult.err
@@ -218,6 +219,7 @@ app.post("/api/notifications/new-quote", async (req, res) => {
     return res.status(500).json({ error: "Failed to send quote notifications." });
   }
 });
+
 
 
 function slugify(str) {
