@@ -1,9 +1,27 @@
 // src/components/Header.tsx
 import { useState } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
+import { supabase } from "../lib/supabaseClient";
+import { useAuth } from "../context/AuthContext";
+
 
 const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const navigate = useNavigate();
+const { user, role, loading } = useAuth();
+
+const isLoggedIn = !!user;
+
+const displayName =
+  (user?.user_metadata?.full_name as string | undefined) ||
+  user?.email ||
+  "Account";
+
+const handleLogout = async () => {
+  await supabase.auth.signOut();
+  setMobileOpen(false);
+  navigate("/");
+};
 
   const navItems = [
     { label: "Home", to: "/" },
@@ -11,11 +29,6 @@ const Header = () => {
     { label: "Get a Quote", to: "/quote" },
     { label: "Track Shipment", to: "/track" },
     { label: "Blog", to: "/blog" },
-  ];
-
-  const clientLinks = [
-    { label: "Login", to: "/login" },
-    { label: "Register", to: "/register" },
   ];
 
   return (
@@ -50,31 +63,62 @@ const Header = () => {
             </NavLink>
           ))}
 
-          {clientLinks.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              className={({ isActive }) =>
-                `hover:text-brand-red transition ${
-                  isActive ? "text-brand-red" : "text-white/80"
-                }`
-              }
-            >
-              {item.label}
-            </NavLink>
-          ))}
+        {!loading && !isLoggedIn && (
+  <>
+    <NavLink
+      to="/login"
+      className={({ isActive }) =>
+        `hover:text-brand-red transition ${
+          isActive ? "text-brand-red" : "text-white/80"
+        }`
+      }
+    >
+      Login
+    </NavLink>
+
+    <NavLink
+      to="/register"
+      className={({ isActive }) =>
+        `hover:text-brand-red transition ${
+          isActive ? "text-brand-red" : "text-white/80"
+        }`
+      }
+    >
+      Register
+    </NavLink>
+  </>
+)}
+
+{!loading && isLoggedIn && (
+  <>
+    <span className="text-xs text-white/50">
+      Signed in as{" "}
+      <span className="text-white/80 font-semibold">
+        {displayName}
+        {role ? ` · ${role}` : ""}
+      </span>
+    </span>
+
+    <button
+      onClick={handleLogout}
+      className="rounded-full border border-white/25 px-4 py-1.5 text-xs font-semibold text-white hover:border-brand-redSoft"
+    >
+      Logout
+    </button>
+  </>
+)}
+
 
           {/* Admin Link */}
-          <NavLink
-            to="/admin/login"
-            className={({ isActive }) =>
-              `hover:text-brand-redSoft text-white/40 text-[11px] tracking-wide ${
-                isActive ? "text-brand-redSoft" : ""
-              }`
-            }
-          >
-            Admin
-          </NavLink>
+         {!loading && isLoggedIn && (role === "admin" || role === "employee") && (
+  <NavLink
+    to="/admin"
+    className="hover:text-brand-redSoft text-white/40 text-[11px] tracking-wide"
+  >
+    Admin
+  </NavLink>
+)}
+
         </nav>
 
         {/* Mobile menu button */}
@@ -107,16 +151,45 @@ const Header = () => {
             </div>
 
             <div className="pt-2 border-t border-white/10 flex flex-col gap-2">
-              {clientLinks.map((item) => (
-                <Link
-                  key={item.to}
-                  to={item.to}
-                  onClick={() => setMobileOpen(false)}
-                  className="block py-1 text-white/80 hover:text-brand-red"
-                >
-                  {item.label}
-                </Link>
-              ))}
+              {!loading && !isLoggedIn && (
+  <>
+    <Link
+      to="/login"
+      onClick={() => setMobileOpen(false)}
+      className="block py-1 text-white/80 hover:text-brand-red"
+    >
+      Login
+    </Link>
+
+    <Link
+      to="/register"
+      onClick={() => setMobileOpen(false)}
+      className="block py-1 text-white/80 hover:text-brand-red"
+    >
+      Register
+    </Link>
+  </>
+)}
+
+{!loading && isLoggedIn && (
+  <>
+    <div className="text-[11px] text-white/50">
+      Signed in as{" "}
+      <span className="text-white/80 font-semibold">
+        {displayName}
+        {role ? ` · ${role}` : ""}
+      </span>
+    </div>
+
+    <button
+      onClick={handleLogout}
+      className="text-left py-1 text-white/80 hover:text-brand-red"
+    >
+      Logout
+    </button>
+  </>
+)}
+
 
               <Link
                 to="/admin/login"
