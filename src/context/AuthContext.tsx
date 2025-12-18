@@ -36,13 +36,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Used to ignore stale async responses
   const requestIdRef = useRef(0);
 
-  const clearAuthState = useCallback(() => {
-    setUser(null);
-    setRole(null);
-    setRoleError(null);
-    setLoading(false);
-  }, []);
-
   const fetchRole = useCallback(async (userId: string, requestId: number) => {
     const { data, error } = await supabase
       .from("profiles")
