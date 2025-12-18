@@ -28,7 +28,8 @@ async function handleSubmit(e: React.FormEvent) {
     if (!data.session) throw new Error("No session returned");
 
     // Go to admin root; RequireRoles + AuthContext will handle role/redirect
-    navigate("/admin", { replace: true });
+   navigate("/post-login", { replace: true });
+
   } catch (err) {
     console.error(err);
     setError("Invalid email or password.");

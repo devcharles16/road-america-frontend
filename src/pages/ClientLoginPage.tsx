@@ -25,7 +25,8 @@ const ClientLoginPage = () => {
       }
 
       // ✅ After successful login, go to client portal
-      navigate("/my-shipments");
+      navigate("/post-login", { replace: true });
+
     } catch (err) {
       console.error(err);
       setError("Invalid email or password.");

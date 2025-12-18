@@ -23,6 +23,8 @@ import AdminDashboardPage from "./pages/AdminDashboardPage";
 import AdminShipmentsPage from "./pages/AdminShipmentsPage";
 import AdminBlogPage from "./pages/AdminBlogPage";
 import AdminUsersPage from "./pages/AdminUsersPage";
+import PostLoginRedirectPage from "./pages/PostLoginRedirectPage";
+
 
 import { RequireRoles } from "./routes/RequireRoles";
 
@@ -46,6 +48,9 @@ function App() {
           <Route path="/login" element={<ClientLoginPage />} />
           <Route path="/register" element={<ClientRegisterPage />} />
           <Route path="/my-shipments" element={<MyShipmentsPage />} />
+
+<Route path="/post-login" element={<PostLoginRedirectPage />} />
+
 
           {/* Footer-only pages */}
           <Route path="/privacy" element={<PrivacyPage />} />
