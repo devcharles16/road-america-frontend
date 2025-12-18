@@ -1,21 +1,36 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import type { Role } from "../context/AuthContext";
-import type { ReactElement } from "react";
 
 export function RequireRoles({
   allowed,
-  children,
+  redirectTo = "/login",
+  unauthorizedTo = "/",
 }: {
   allowed: Role[];
-  children: ReactElement;
+  redirectTo?: string;
+  unauthorizedTo?: string;
 }) {
   const { role, loading, user } = useAuth();
+  const location = useLocation();
 
-  if (loading) return <div className="p-6 text-white/60">Loading…</div>;
+  if (loading) {
+    return <div className="p-6 text-white/60">Loading…</div>;
+  }
 
-  // If user is logged in but role is missing, that's a profile/RLS problem.
-  if (user && role === null) {
+  // Not logged in
+  if (!user) {
+    return (
+      <Navigate
+        to={redirectTo}
+        replace
+        state={{ from: location }}
+      />
+    );
+  }
+
+  // Logged in but role missing (RLS / profile issue)
+  if (role === null) {
     return (
       <div className="p-6 text-white/70">
         Signed in, but no role found for this account. Please contact an administrator.
@@ -23,9 +38,11 @@ export function RequireRoles({
     );
   }
 
-  if (!role || !allowed.includes(role)) {
-    return <Navigate to="/admin/login" replace />;
+  // Logged in but wrong role
+  if (!allowed.includes(role)) {
+    return <Navigate to={unauthorizedTo} replace />;
   }
 
-  return children;
+  // Authorized
+  return <Outlet />;
 }

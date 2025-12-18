@@ -3,6 +3,12 @@ import cors from "cors";
 import dotenv from "dotenv";
 
 import supabase from "./supabaseClient.js";
+import {
+  requireAuth,
+  requireRole,
+  requireOneOf,
+} from "./middleware/auth.js";
+
 
 import { sendStatusUpdate } from "./notifications/transportStatus.js";
 import {
@@ -27,98 +33,7 @@ app.use(express.json());
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok", service: "road-america-email-api" });
 });
-// ---------- AUTH HELPERS (MUST COME BEFORE PROTECTED ROUTES) ----------
 
-async function getUserAndRole(req) {
-  const authHeader = req.headers.authorization || "";
-  const token = authHeader.startsWith("Bearer ")
-    ? authHeader.slice(7)
-    : null;
-
-  if (!token) {
-    return { user: null, role: null };
-  }
-
-  const { data, error } = await supabase.auth.getUser(token);
-
-  if (error || !data?.user) {
-    console.error("Error getting Supabase user:", error);
-    return { user: null, role: null };
-  }
-
-  const user = data.user;
-
-  const { data: profile, error: profileError } = await supabase
-    .from("profiles")
-    .select("role")
-    .eq("id", user.id)
-    .maybeSingle();
-
-  if (profileError) {
-    console.error("Error fetching user profile:", profileError);
-    return { user, role: null };
-  }
-
-  return { user, role: profile?.role || null };
-}
-
-function requireAuth(req, res, next) {
-  getUserAndRole(req)
-    .then(({ user, role }) => {
-      if (!user) {
-        return res.status(401).json({ error: "Missing auth token" });
-      }
-      req.user = user;
-      req.userRole = role;
-      next();
-    })
-    .catch((err) => {
-      console.error("Error in requireAuth:", err);
-      res.status(500).json({ error: "Auth check failed" });
-    });
-}
-
-function requireRole(role) {
-  return (req, res, next) => {
-    getUserAndRole(req)
-      .then(({ user, role: userRole }) => {
-        if (!user) {
-          return res.status(401).json({ error: "Missing auth token" });
-        }
-        if (userRole !== role) {
-          return res.status(403).json({ error: "Forbidden" });
-        }
-        req.user = user;
-        req.userRole = userRole;
-        next();
-      })
-      .catch((err) => {
-        console.error("Error in requireRole:", err);
-        res.status(500).json({ error: "Auth check failed" });
-      });
-  };
-}
-
-function requireOneOf(roles) {
-  return (req, res, next) => {
-    getUserAndRole(req)
-      .then(({ user, role: userRole }) => {
-        if (!user) {
-          return res.status(401).json({ error: "Missing auth token" });
-        }
-        if (!roles.includes(userRole)) {
-          return res.status(403).json({ error: "Forbidden" });
-        }
-        req.user = user;
-        req.userRole = userRole;
-        next();
-      })
-      .catch((err) => {
-        console.error("Error in requireOneOf:", err);
-        res.status(500).json({ error: "Auth check failed" });
-      });
-  };
-}
 
 /**
  * POST /api/notifications/status
@@ -557,7 +472,7 @@ app.post(
 );
 
 // 🔹 Mount shipments router here: this gives you /api/shipments
-app.use("/api", shipmentsRouter)
+app.use("/api", shipmentsRouter);
 
 app.listen(PORT, () => {
   console.log(`Email notification server running on port ${PORT}`);

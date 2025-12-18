@@ -25,7 +25,6 @@ import AdminBlogPage from "./pages/AdminBlogPage";
 import AdminUsersPage from "./pages/AdminUsersPage";
 import PostLoginRedirectPage from "./pages/PostLoginRedirectPage";
 
-
 import { RequireRoles } from "./routes/RequireRoles";
 
 function App() {
@@ -44,42 +43,35 @@ function App() {
           <Route path="/blog" element={<BlogListPage />} />
           <Route path="/blog/:slug" element={<BlogPostPage />} />
 
-          {/* Client portal */}
+          {/* Auth */}
           <Route path="/login" element={<ClientLoginPage />} />
           <Route path="/register" element={<ClientRegisterPage />} />
-          <Route path="/my-shipments" element={<MyShipmentsPage />} />
+          <Route path="/post-login" element={<PostLoginRedirectPage />} />
 
-<Route path="/post-login" element={<PostLoginRedirectPage />} />
-
+          {/* Client-protected */}
+          <Route element={<RequireRoles allowed={["client"]} />}>
+            <Route path="/my-shipments" element={<MyShipmentsPage />} />
+          </Route>
 
           {/* Footer-only pages */}
           <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/terms" element={<TermsPage />} />
 
-          {/* Admin */}
+          {/* Admin login */}
           <Route path="/admin/login" element={<AdminLoginPage />} />
 
-          <Route
-            path="/admin"
-            element={
-              <RequireRoles allowed={["admin", "employee"]}>
-                <AdminLayout />
-              </RequireRoles>
-            }
-          >
-            <Route index element={<AdminDashboardPage />} />
-            <Route path="shipments" element={<AdminShipmentsPage />} />
-            <Route path="blog" element={<AdminBlogPage />} />
+          {/* Admin + Employee */}
+          <Route element={<RequireRoles allowed={["admin", "employee"]} />}>
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<AdminDashboardPage />} />
+              <Route path="shipments" element={<AdminShipmentsPage />} />
+              <Route path="blog" element={<AdminBlogPage />} />
 
-            {/* Admin only */}
-            <Route
-              path="users"
-              element={
-                <RequireRoles allowed={["admin"]}>
-                  <AdminUsersPage />
-                </RequireRoles>
-              }
-            />
+              {/* Admin-only */}
+              <Route element={<RequireRoles allowed={["admin"]} />}>
+                <Route path="users" element={<AdminUsersPage />} />
+              </Route>
+            </Route>
           </Route>
         </Routes>
       </main>

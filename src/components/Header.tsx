@@ -1,14 +1,18 @@
 // src/components/Header.tsx
 import { useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { supabase } from "../lib/supabaseClient";
 import { useAuth } from "../context/AuthContext";
+
+console.log(
+  "Header sees client id:",
+  (globalThis as any).__SUPABASE_CLIENT__?.id
+);
 
 const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const navigate = useNavigate();
 
-  const { user, role, loading } = useAuth();
+  const { user, role, loading, logout } = useAuth();
   const isLoggedIn = !!user;
 
   const displayName =
@@ -16,10 +20,17 @@ const Header = () => {
     user?.email ||
     "Account";
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    setMobileOpen(false);
-    navigate("/");
+  const handleLogout = async (e?: React.MouseEvent) => {
+    e?.preventDefault();
+    e?.stopPropagation();
+
+    try {
+      await logout();                 // ✅ context-owned logout
+      setMobileOpen(false);
+      navigate("/", { replace: true });
+    } catch (err) {
+      console.error("Logout failed:", err);
+    }
   };
 
   const navItems = [
@@ -104,10 +115,7 @@ const Header = () => {
                 {displayName}
                 {!loading && role ? ` · ${role}` : ""}
               </span>
-              <button
-                onClick={handleLogout}
-                className="rounded-full border border-white/25 px-4 py-1.5 text-xs font-semibold text-white hover:border-brand-redSoft"
-              >
+              <button type="button" onClick={handleLogout}>
                 Logout
               </button>
             </>
@@ -165,10 +173,7 @@ const Header = () => {
                   <Link to="/register">Register</Link>
                 </>
               ) : (
-                <button
-                  onClick={handleLogout}
-                  className="text-left text-white/80"
-                >
+                <button type="button" onClick={handleLogout}>
                   Logout
                 </button>
               )}
