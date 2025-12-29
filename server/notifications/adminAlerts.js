@@ -143,7 +143,7 @@ export async function sendQuoteConfirmationEmail(payload) {
         </div>
 
         <div style="padding:24px;">
-          <p style="font-size:15px;margin:0 0 16px;">Hi ${name || "there"},</p>
+          <p style="font-size:15px;margin:0 0 16px;">Hi ${firstName || lastName},</p>
 
           <p style="font-size:14px;margin:0 0 14px;">
             Thank you for requesting a transport quote with
