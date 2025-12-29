@@ -25,6 +25,7 @@ import AdminBlogPage from "./pages/AdminBlogPage";
 import AdminUsersPage from "./pages/AdminUsersPage";
 import PostLoginRedirectPage from "./pages/PostLoginRedirectPage";
 
+import AuthPublicGate from "./routes/AuthPublicGate";
 import { RequireRoles } from "./routes/RequireRoles";
 
 function App() {
@@ -43,9 +44,33 @@ function App() {
           <Route path="/blog" element={<BlogListPage />} />
           <Route path="/blog/:slug" element={<BlogPostPage />} />
 
-          {/* Auth */}
-          <Route path="/login" element={<ClientLoginPage />} />
-          <Route path="/register" element={<ClientRegisterPage />} />
+          {/* Auth pages exist, but are NOT public while troubleshooting */}
+          <Route
+            path="/login"
+            element={
+              <AuthPublicGate>
+                <ClientLoginPage />
+              </AuthPublicGate>
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              <AuthPublicGate>
+                <ClientRegisterPage />
+              </AuthPublicGate>
+            }
+          />
+          <Route
+            path="/admin/login"
+            element={
+              <AuthPublicGate>
+                <AdminLoginPage />
+              </AuthPublicGate>
+            }
+          />
+
+          {/* Post-login redirect (you can keep this public or gate it too) */}
           <Route path="/post-login" element={<PostLoginRedirectPage />} />
 
           {/* Client-protected */}
@@ -56,9 +81,6 @@ function App() {
           {/* Footer-only pages */}
           <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/terms" element={<TermsPage />} />
-
-          {/* Admin login */}
-          <Route path="/admin/login" element={<AdminLoginPage />} />
 
           {/* Admin + Employee */}
           <Route element={<RequireRoles allowed={["admin", "employee"]} />}>

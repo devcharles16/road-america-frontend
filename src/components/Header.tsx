@@ -3,10 +3,8 @@ import { useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
-console.log(
-  "Header sees client id:",
-  (globalThis as any).__SUPABASE_CLIENT__?.id
-);
+const AUTH_PUBLIC_ENABLED =
+  import.meta.env.VITE_AUTH_PUBLIC_ENABLED === "true";
 
 const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -25,7 +23,7 @@ const Header = () => {
     e?.stopPropagation();
 
     try {
-      await logout();                 // ✅ context-owned logout
+      await logout();
       setMobileOpen(false);
       navigate("/", { replace: true });
     } catch (err) {
@@ -89,36 +87,39 @@ const Header = () => {
             </NavLink>
           )}
 
-          {/* Admin / Employee */}
-          {isAdminUser && (
-            <NavLink
-              to="/admin"
-              className={({ isActive }) =>
-                `hover:text-brand-redSoft transition ${
-                  isActive ? "text-brand-redSoft" : "text-white/80"
-                }`
-              }
-            >
-              Admin Dashboard
-            </NavLink>
-          )}
+          {/* Admin / Employee (HIDDEN during troubleshooting) */}
+{AUTH_PUBLIC_ENABLED && isAdminUser && (
+  <NavLink
+    to="/admin"
+    className={({ isActive }) =>
+      `hover:text-brand-redSoft transition ${
+        isActive ? "text-brand-redSoft" : "text-white/80"
+      }`
+    }
+  >
+    Admin Dashboard
+  </NavLink>
+)}
 
-          {/* Auth */}
-          {!isLoggedIn ? (
-            <>
-              <NavLink to="/login">Login</NavLink>
-              <NavLink to="/register">Register</NavLink>
-            </>
-          ) : (
-            <>
-              <span className="text-xs text-white/50">
-                {displayName}
-                {!loading && role ? ` · ${role}` : ""}
-              </span>
-              <button type="button" onClick={handleLogout}>
-                Logout
-              </button>
-            </>
+
+          {/* Auth UI (HIDDEN during troubleshooting) */}
+          {AUTH_PUBLIC_ENABLED && (
+            !isLoggedIn ? (
+              <>
+                <NavLink to="/login">Login</NavLink>
+                <NavLink to="/register">Register</NavLink>
+              </>
+            ) : (
+              <>
+                <span className="text-xs text-white/50">
+                  {displayName}
+                  {!loading && role ? ` · ${role}` : ""}
+                </span>
+                <button type="button" onClick={handleLogout}>
+                  Logout
+                </button>
+              </>
+            )
           )}
         </nav>
 
@@ -156,28 +157,32 @@ const Header = () => {
               </Link>
             )}
 
-            {isAdminUser && (
-              <Link
-                to="/admin"
-                onClick={() => setMobileOpen(false)}
-                className="block text-white/80"
-              >
-                Admin Dashboard
-              </Link>
-            )}
+           {AUTH_PUBLIC_ENABLED && isAdminUser && (
+  <Link
+    to="/admin"
+    onClick={() => setMobileOpen(false)}
+    className="block text-white/80"
+  >
+    Admin Dashboard
+  </Link>
+)}
 
-            <div className="pt-3 border-t border-white/10">
-              {!isLoggedIn ? (
-                <>
-                  <Link to="/login">Login</Link>
-                  <Link to="/register">Register</Link>
-                </>
-              ) : (
-                <button type="button" onClick={handleLogout}>
-                  Logout
-                </button>
-              )}
-            </div>
+
+            {/* Auth UI (mobile) */}
+            {AUTH_PUBLIC_ENABLED && (
+              <div className="pt-3 border-t border-white/10">
+                {!isLoggedIn ? (
+                  <>
+                    <Link to="/login">Login</Link>
+                    <Link to="/register">Register</Link>
+                  </>
+                ) : (
+                  <button type="button" onClick={handleLogout}>
+                    Logout
+                  </button>
+                )}
+              </div>
+            )}
           </div>
         </div>
       )}
