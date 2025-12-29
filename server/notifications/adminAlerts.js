@@ -90,7 +90,7 @@ export async function sendNewQuoteAlert(payload) {
       </table>
 
       <p style="font-size:12px;color:#666;margin-top:16px;">
-        Reply directly to this email to follow up with the customer.
+        Work this email from your HubSpot Ticket
       </p>
     </div>
   `;

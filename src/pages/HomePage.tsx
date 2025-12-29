@@ -5,15 +5,21 @@ import { useState } from "react";
 const services = [
   {
     title: "Open Transport",
-    description: "Most cost-effective option for standard vehicles.",
+    description: "Affordable, reliable shipping for most everyday vehicles.",
+    href: "/blog/open-vs-enclosed-auto-transport-which-option-is-best-for-your-vehicle",
+    ariaLabel: "Learn more about open auto transport",
   },
   {
     title: "Enclosed Transport",
-    description: "Extra protection for luxury, classic, or exotic vehicles.",
+    description: "Extra protection for classics, luxury, and high-value cars.",
+    href: "/blog/open-vs-enclosed-auto-transport-which-option-is-best-for-your-vehicle",
+    ariaLabel: "Learn more about enclosed auto transport",
   },
   {
-    title: "Non-Running Vehicles",
-    description: "Special handling for inoperable or salvage vehicles.",
+    title: "Inoperable Vehicles",
+    description: "Transport solutions for non-running vehicles.",
+    href: "/blog/how-to-transport-an-inoperable-vehicle-what-you-need-to-know-before-shipping-a-n",
+    ariaLabel: "Learn more about inoperable vehicle transport",
   },
 ];
 
@@ -238,9 +244,14 @@ function ServicesSection() {
               <p className="mt-2 text-sm text-gray-600">
                 {service.description}
               </p>
-              <button className="mt-4 text-xs font-semibold text-brand-red hover:text-brand-redSoft">
-                Learn more →
-              </button>
+              <Link
+  to={service.href}
+  aria-label={service.ariaLabel ?? `Learn more about ${service.title}`}
+  className="mt-4 inline-block text-xs font-semibold text-brand-red hover:text-brand-redSoft"
+>
+  Learn more →
+</Link>
+
             </article>
           ))}
         </div>

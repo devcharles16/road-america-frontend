@@ -79,19 +79,21 @@ app.post("/api/notifications/status", async (req, res) => {
 app.post("/api/notifications/new-quote", async (req, res) => {
   try {
     const {
-      name,
-      email,
-      phone,
-      pickup,
-      dropoff,
-      vehicle: vehicleRaw,
-      vehicleYear,
-      vehicleMake,
-      vehicleModel,
-      runningCondition,
-      transportType,
-      referenceId,
-    } = req.body || {};
+  firstName,
+  lastName,
+  email,
+  phone,
+  pickup,
+  dropoff,
+  vehicle: vehicleRaw,
+  vehicleYear,
+  vehicleMake,
+  vehicleModel,
+  runningCondition,
+  transportType,
+  referenceId,
+} = req.body || {};
+
 
     const vehicleText =
       (vehicleRaw && String(vehicleRaw).trim()) ||
@@ -99,7 +101,8 @@ app.post("/api/notifications/new-quote", async (req, res) => {
       "-";
 
     const adminResult = await sendNewQuoteAlert({
-      name,
+      firstName,
+      lastName,
       email,
       phone,
       pickup,
@@ -111,7 +114,8 @@ app.post("/api/notifications/new-quote", async (req, res) => {
     });
 
     const customerResult = await sendQuoteConfirmationEmail({
-      name,
+       firstName,
+       lastName,
       email,
       pickup,
       dropoff,

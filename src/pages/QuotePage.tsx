@@ -19,7 +19,8 @@ type QuoteFormState = {
   vin: string;
   runningCondition: RunningCondition;
   transportType: TransportType;
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   phone: string;
 };
@@ -35,7 +36,8 @@ const defaultForm: QuoteFormState = {
   vin: "",
   runningCondition: "running",
   transportType: "open",
-  name: "",
+  firstName: "",
+  lastName: "",
   email: "",
   phone: "",
 };
@@ -74,7 +76,8 @@ const QuotePage = () => {
       vin: form.vin || undefined,
       runningCondition: form.runningCondition,
       transportType: form.transportType,
-      customerName: form.name,
+      customerName: `${form.firstName} ${form.lastName}`.trim(),
+
       customerEmail: form.email,
       customerPhone: form.phone || undefined,
     });
@@ -92,7 +95,8 @@ const QuotePage = () => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-  name: form.name,
+  firstName: form.firstName,
+  lastName: form.lastName,
   email: form.email,
   phone: form.phone,
   pickup,
@@ -313,18 +317,33 @@ const QuotePage = () => {
             </h2>
             <div className="grid gap-4 md:grid-cols-3">
               <div className="md:col-span-1">
-                <label className="block text-xs text-white/70">
-                  Full Name
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  value={form.name}
-                  onChange={handleChange}
-                  className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
-                  required
-                />
-              </div>
+  <label className="block text-xs text-white/70">
+    First Name
+  </label>
+  <input
+    type="text"
+    name="firstName"
+    value={form.firstName}
+    onChange={handleChange}
+    className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+    required
+  />
+</div>
+
+<div className="md:col-span-1">
+  <label className="block text-xs text-white/70">
+    Last Name
+  </label>
+  <input
+    type="text"
+    name="lastName"
+    value={form.lastName}
+    onChange={handleChange}
+    className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+    required
+  />
+</div>
+
               <div className="md:col-span-1">
                 <label className="block text-xs text-white/70">
                   Email
