@@ -446,7 +446,7 @@ const QuotePage = () => {
               disabled={loading}
               className="inline-flex items-center justify-center rounded-full bg-brand-red px-8 py-3 text-sm font-semibold text-white shadow-soft-card hover:bg-brand-redSoft disabled:opacity-60"
             >
-              {loading ? "Submitting..." : "Submit Quote Request"}
+              {loading ? "Submitting..." : "Get My Transport Quote"}
             </button>
             <p className="text-xs text-white/60">
               By submitting, you agree to be contacted about your quote request.
