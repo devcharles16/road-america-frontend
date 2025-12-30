@@ -83,8 +83,19 @@ export async function createTransportRequest(
     body: JSON.stringify(input),
   });
 
-  return handleResponse<TransportRequest>(res);
+  // 🔍 TEMP DEBUG — remove after we confirm the issue
+  if (!res.ok) {
+    const text = await res.text();
+    console.error("Create shipment failed:", res.status, text);
+    throw new Error(`Create shipment failed: ${res.status}`);
+  }
+
+  const created = await res.json();
+  console.log("✅ Created shipment:", created);
+
+  return created;
 }
+
 
 /**
  * ADMIN/EMPLOYEE: List all shipments
