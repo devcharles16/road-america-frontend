@@ -18,16 +18,20 @@ function splitVehicle(vehicle = "") {
 
 export async function sendNewQuoteAlert(payload) {
   const {
-    name,
-    email,
-    phone,
-    pickup,
-    dropoff,
-    vehicle: vehicleRaw,
-    runningCondition,
-    transportType,
-    referenceId,
-  } = payload;
+  firstName,
+  lastName,
+  email,
+  phone,
+  pickup,
+  dropoff,
+  vehicle: vehicleRaw,
+  runningCondition,
+  transportType,
+  referenceId,
+} = payload;
+
+const fullName = [firstName, lastName].filter(Boolean).join(" ") || "-";
+
 
   const { year, make, model } = splitVehicle(vehicleRaw);
 
@@ -47,7 +51,7 @@ export async function sendNewQuoteAlert(payload) {
           </tr>` : ""}
           <tr>
             <td style="padding:4px 8px;font-weight:600;">Name:</td>
-            <td style="padding:4px 8px;">${name || "-"}</td>
+            <td style="padding:4px 8px;">${fullName}</td>
           </tr>
           <tr>
             <td style="padding:4px 8px;font-weight:600;">Email:</td>
@@ -111,7 +115,7 @@ export async function sendNewQuoteAlert(payload) {
 // ✨ NEW: Customer-facing quote confirmation email
 export async function sendQuoteConfirmationEmail(payload) {
   const {
-    name,
+    firstName,
     email,
     pickup,
     dropoff,
@@ -143,7 +147,7 @@ export async function sendQuoteConfirmationEmail(payload) {
         </div>
 
         <div style="padding:24px;">
-          <p style="font-size:15px;margin:0 0 16px;">Hi ${firstName || lastName},</p>
+          <p style="font-size:15px;margin:0 0 16px;">Hi ${firstName || "there"},</p>
 
           <p style="font-size:14px;margin:0 0 14px;">
             Thank you for requesting a transport quote with

@@ -79,69 +79,70 @@ app.post("/api/notifications/status", async (req, res) => {
 app.post("/api/notifications/new-quote", async (req, res) => {
   try {
     const {
-  firstName,
-  lastName,
-  email,
-  phone,
-  pickup,
-  dropoff,
-  vehicle: vehicleRaw,
-  vehicleYear,
-  vehicleMake,
-  vehicleModel,
-  runningCondition,
-  transportType,
-  referenceId,
-} = req.body || {};
-
-
-    const vehicleText =
-      (vehicleRaw && String(vehicleRaw).trim()) ||
-      [vehicleYear, vehicleMake, vehicleModel].filter(Boolean).join(" ").trim() ||
-      "-";
-
-    const adminResult = await sendNewQuoteAlert({
       firstName,
       lastName,
       email,
       phone,
       pickup,
       dropoff,
-      vehicle: vehicleText,
+      vehicle: vehicleRaw,
+      vehicleYear,
+      vehicleMake,
+      vehicleModel,
       runningCondition,
       transportType,
       referenceId,
-    });
+    } = req.body || {};
 
-    const customerResult = await sendQuoteConfirmationEmail({
-       firstName,
-       lastName,
-      email,
-      pickup,
-      dropoff,
-      vehicle: vehicleText,
-      runningCondition,
-      transportType,
-      referenceId,
-    });
+    const fullName = [firstName, lastName].filter(Boolean).join(" ").trim();
 
-    if (adminResult && adminResult.success === false) {
-      console.error("Admin alert failed:", adminResult.error || adminResult.err);
-    }
-    if (customerResult && customerResult.success === false) {
-      console.error(
-        "Customer confirmation failed:",
-        customerResult.error || customerResult.err
-      );
-    }
+    const vehicleText =
+      (vehicleRaw && String(vehicleRaw).trim()) ||
+      [vehicleYear, vehicleMake, vehicleModel].filter(Boolean).join(" ").trim() ||
+      "-";
 
-    return res.json({ ok: true });
+const adminResult = await sendNewQuoteAlert({
+  firstName,
+  lastName,
+  fullName,
+  email,
+  phone,
+  pickup,
+  dropoff,
+  vehicle: vehicleText,
+  runningCondition,
+  transportType,
+  referenceId,
+});
+
+const customerResult = await sendQuoteConfirmationEmail({
+  firstName,
+  lastName,
+  fullName,
+  email,
+  pickup,
+  dropoff,
+  vehicle: vehicleText,
+  runningCondition,
+  transportType,
+  referenceId,
+});
+
+// Use results (prevents "unused" + helps debugging)
+if (adminResult?.success === false) {
+  console.error("Admin alert failed:", adminResult.error || adminResult.err);
+}
+if (customerResult?.success === false) {
+  console.error("Customer confirmation failed:", customerResult.error || customerResult.err);
+}
+
+return res.json({ ok: true });
+
   } catch (err) {
     console.error("new-quote notification error:", err);
     return res.status(500).json({ error: "Failed to send quote notifications." });
   }
 });
-
 
 
 function slugify(str) {
