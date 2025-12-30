@@ -27,6 +27,9 @@ export async function sendNewQuoteAlert(payload) {
   vehicle: vehicleRaw,
   runningCondition,
   transportType,
+  preferredPickupWindow,
+preferredPickupDate,
+
   referenceId,
 } = payload;
 
@@ -48,17 +51,14 @@ export async function sendNewQuoteAlert(payload) {
             <td style="padding:4px 8px;">${referenceId}</td>
           </tr>` : ""}
           <tr>
-          <tr>
-            <td style="padding:4px 8px;font-weight:600;">First Name:</td>
-            <td style="padding:4px 8px;">${firstName || "-"}</td>
-          </tr>
-          <tr>
-            <td style="padding:4px 8px;font-weight:600;">Last Name:</td>
-            <td style="padding:4px 8px;">${lastName || "-"}</td>
-          </tr>
-
-
+  <td style="padding:4px 8px;font-weight:600;">First Name:</td>
+  <td style="padding:4px 8px;">${firstName || "-"}</td>
 </tr>
+<tr>
+  <td style="padding:4px 8px;font-weight:600;">Last Name:</td>
+  <td style="padding:4px 8px;">${lastName || "-"}</td>
+</tr>
+
           <tr>
             <td style="padding:4px 8px;font-weight:600;">Email:</td>
             <td style="padding:4px 8px;">${email || "-"}</td>
@@ -75,6 +75,16 @@ export async function sendNewQuoteAlert(payload) {
             <td style="padding:4px 8px;font-weight:600;">Dropoff:</td>
             <td style="padding:4px 8px;">${dropoff || "-"}</td>
           </tr>
+          <tr>
+  <td style="padding:4px 8px;font-weight:600;">Preferred Pickup Window:</td>
+  <td style="padding:4px 8px;">${preferredPickupWindow || "-"}</td>
+</tr>
+${preferredPickupWindow === "exact_date" ? `
+<tr>
+  <td style="padding:4px 8px;font-weight:600;">Preferred Pickup Date:</td>
+  <td style="padding:4px 8px;">${preferredPickupDate || "-"}</td>
+</tr>` : ""}
+
           <tr>
             <td style="padding:4px 8px;font-weight:600;">Vehicle Year:</td>
             <td style="padding:4px 8px;">${year}</td>
@@ -129,6 +139,9 @@ export async function sendQuoteConfirmationEmail(payload) {
     vehicle: vehicleRaw,
     runningCondition,
     transportType,
+    preferredPickupWindow,
+preferredPickupDate,
+
     referenceId,
   } = payload;
 
@@ -181,6 +194,16 @@ export async function sendQuoteConfirmationEmail(payload) {
                   <td style="padding:4px 0;width:34%;color:#aaaaaa;">Dropoff:</td>
                   <td style="padding:4px 0;">${dropoff || "-"}</td>
                 </tr>
+                <tr>
+  <td style="padding:4px 0;width:34%;color:#aaaaaa;">Pickup Window:</td>
+  <td style="padding:4px 0;">${preferredPickupWindow || "-"}</td>
+</tr>
+${preferredPickupWindow === "exact_date" ? `
+<tr>
+  <td style="padding:4px 0;width:34%;color:#aaaaaa;">Pickup Date:</td>
+  <td style="padding:4px 0;">${preferredPickupDate || "-"}</td>
+</tr>` : ""}
+
                 <tr>
                   <td style="padding:4px 0;width:34%;color:#aaaaaa;">Year:</td>
                   <td style="padding:4px 0;">${year}</td>

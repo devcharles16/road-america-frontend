@@ -74,8 +74,11 @@ app.post("/api/notifications/status", async (req, res) => {
 
 /**
  * POST /api/notifications/new-quote
- * Body: { name, email, phone, pickup, dropoff, vehicle, transportType, referenceId }
+ * Body: {firstName,lastName,email,phone, pickup, dropoff,vehicleYear,vehicleMake,
+ * vehicleModel,runningCondition,transportType,preferredPickupWindow,preferredPickupDate,referenceId
+ * }
  */
+
 app.post("/api/notifications/new-quote", async (req, res) => {
   try {
     const {
@@ -91,6 +94,8 @@ app.post("/api/notifications/new-quote", async (req, res) => {
       vehicleModel,
       runningCondition,
       transportType,
+       preferredPickupWindow,
+  preferredPickupDate,
       referenceId,
     } = req.body || {};
 
@@ -104,7 +109,6 @@ app.post("/api/notifications/new-quote", async (req, res) => {
 const adminResult = await sendNewQuoteAlert({
   firstName,
   lastName,
-  fullName,
   email,
   phone,
   pickup,
@@ -112,19 +116,22 @@ const adminResult = await sendNewQuoteAlert({
   vehicle: vehicleText,
   runningCondition,
   transportType,
+   preferredPickupWindow,
+  preferredPickupDate,
   referenceId,
 });
 
 const customerResult = await sendQuoteConfirmationEmail({
   firstName,
   lastName,
-  fullName,
   email,
   pickup,
   dropoff,
   vehicle: vehicleText,
   runningCondition,
   transportType,
+   preferredPickupWindow,
+  preferredPickupDate,
   referenceId,
 });
 

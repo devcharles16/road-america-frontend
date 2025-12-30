@@ -19,6 +19,9 @@ type QuoteFormState = {
   vin: string;
   runningCondition: RunningCondition;
   transportType: TransportType;
+  preferredPickupWindow: "exact_date" | "asap_1_3" | "this_week" | "next_1_2_weeks" | "flexible";
+  preferredPickupDate: string; // yyyy-mm-dd when exact_date selected
+
   firstName: string;
   lastName: string;
   email: string;
@@ -36,6 +39,8 @@ const defaultForm: QuoteFormState = {
   vin: "",
   runningCondition: "running",
   transportType: "open",
+  preferredPickupWindow: "asap_1_3",
+ preferredPickupDate: "",
   firstName: "",
   lastName: "",
   email: "",
@@ -108,6 +113,10 @@ const QuotePage = () => {
 
   transportType: form.transportType,
   runningCondition: form.runningCondition,
+  preferredPickupWindow: form.preferredPickupWindow,
+preferredPickupDate:
+  form.preferredPickupWindow === "exact_date" ? form.preferredPickupDate : undefined,
+
   referenceId: created.referenceId,
 }),
 
@@ -309,6 +318,49 @@ const QuotePage = () => {
               </div>
             </div>
           </div>
+{/* Preferred Pickup Window */}
+<div className="border-t border-white/10 pt-6">
+  <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-white/60">
+    Pickup Timing
+  </h2>
+
+  <div className="grid gap-4 md:grid-cols-2">
+    <div>
+      <label className="block text-xs text-white/70">
+        Preferred Pickup Window
+      </label>
+      <select
+        name="preferredPickupWindow"
+        value={form.preferredPickupWindow}
+        onChange={handleChange}
+        className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+        required
+      >
+        <option value="exact_date">Exact date</option>
+        <option value="asap_1_3">ASAP (1-3 days)</option>
+        <option value="this_week">This week</option>
+        <option value="next_1_2_weeks">Next 1-2 weeks</option>
+        <option value="flexible">Flexible / No rush</option>
+      </select>
+    </div>
+
+    {form.preferredPickupWindow === "exact_date" && (
+      <div>
+        <label className="block text-xs text-white/70">
+          Select Pickup Date
+        </label>
+        <input
+          type="date"
+          name="preferredPickupDate"
+          value={form.preferredPickupDate}
+          onChange={handleChange}
+          className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+          required
+        />
+      </div>
+    )}
+  </div>
+</div>
 
           {/* Contact info */}
           <div className="border-t border-white/10 pt-6">

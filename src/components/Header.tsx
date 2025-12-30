@@ -34,7 +34,7 @@ const Header = () => {
   const navItems = [
     { label: "Home", to: "/" },
     { label: "About", to: "/about" },
-    { label: "Get a Quote", to: "/quote" },
+    { label: "Get My Transport Quote", to: "/quote" },
     { label: "Track Shipment", to: "/track" },
     { label: "Blog", to: "/blog" },
   ];
