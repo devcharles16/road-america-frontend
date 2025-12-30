@@ -29,6 +29,21 @@ function formatPickupWindow(value) {
       return "-";
   }
 }
+function formatVehicleHeightMod(value) {
+  switch (value) {
+    case "stock":
+      return "Stock (no lift or lowering)";
+    case "lifted":
+      return "Lifted";
+    case "lowered":
+      return "Lowered";
+    case "not_sure":
+      return "Not sure";
+    default:
+      return "-";
+  }
+}
+
 
 
 export async function sendNewQuoteAlert(payload) {
@@ -41,6 +56,7 @@ export async function sendNewQuoteAlert(payload) {
   dropoff,
   vehicle: vehicleRaw,
   runningCondition,
+  vehicleHeightMod,
   transportType,
   preferredPickupWindow,
 
@@ -97,7 +113,7 @@ export async function sendNewQuoteAlert(payload) {
     ${formatPickupWindow(preferredPickupWindow)}
   </td>
 </tr>
- : ""}
+
 
           <tr>
             <td style="padding:4px 8px;font-weight:600;">Vehicle Year:</td>
@@ -114,6 +130,10 @@ export async function sendNewQuoteAlert(payload) {
           <tr>
   <td style="padding:4px 8px;font-weight:600;">Running Condition:</td>
   <td style="padding:4px 8px;">${runningCondition || "-"}</td>
+</tr>
+<tr>
+  <td style="padding:4px 8px;font-weight:600;">Vehicle Height / Mods:</td>
+  <td style="padding:4px 8px;">${formatVehicleHeightMod(vehicleHeightMod)}</td>
 </tr>
 
           <tr>
@@ -152,6 +172,8 @@ export async function sendQuoteConfirmationEmail(payload) {
     dropoff,
     vehicle: vehicleRaw,
     runningCondition,
+    vehicleHeightMod,
+
     transportType,
     preferredPickupWindow,
 
@@ -216,7 +238,7 @@ export async function sendQuoteConfirmationEmail(payload) {
     ${formatPickupWindow(preferredPickupWindow)}
   </td>
 </tr>
- : ""}
+
 
                 <tr>
                   <td style="padding:4px 0;width:34%;color:#aaaaaa;">Year:</td>
@@ -233,6 +255,10 @@ export async function sendQuoteConfirmationEmail(payload) {
                 <tr>
   <td style="padding:4px 0;width:34%;color:#aaaaaa;">Condition:</td>
   <td style="padding:4px 0;">${runningCondition || "-"}</td>
+</tr>
+<tr>
+  <td style="padding:4px 0;width:34%;color:#aaaaaa;">Vehicle Height / Mods:</td>
+  <td style="padding:4px 0;">${formatVehicleHeightMod(vehicleHeightMod)}</td>
 </tr>
 
                 <tr>

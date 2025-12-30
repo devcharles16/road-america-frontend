@@ -18,6 +18,8 @@ type QuoteFormState = {
   vehicleModel: string;
   vin: string;
   runningCondition: RunningCondition;
+  vehicleHeightMod: "stock" | "lifted" | "lowered" | "not_sure";
+
   transportType: TransportType;
   preferredPickupWindow: "exact_date" | "asap_1_3" | "this_week" | "next_1_2_weeks" | "flexible"
 
@@ -37,6 +39,8 @@ const defaultForm: QuoteFormState = {
   vehicleModel: "",
   vin: "",
   runningCondition: "running",
+  vehicleHeightMod: "stock",
+
   transportType: "open",
   preferredPickupWindow: "asap_1_3",
   firstName: "",
@@ -111,6 +115,8 @@ const QuotePage = () => {
 
   transportType: form.transportType,
   runningCondition: form.runningCondition,
+  vehicleHeightMod: form.vehicleHeightMod,
+
   preferredPickupWindow: form.preferredPickupWindow,
 
   referenceId: created.referenceId,
@@ -282,7 +288,7 @@ const QuotePage = () => {
                 />
               </div>
 
-              <div className="grid gap-3 md:grid-cols-2">
+              <div className="grid gap-3 md:grid-cols-3">
                 <div>
                   <label className="block text-xs text-white/70">
                     Running Condition
@@ -297,6 +303,24 @@ const QuotePage = () => {
                     <option value="non-running">Non-Running</option>
                   </select>
                 </div>
+                <div>
+  <label className="block text-xs text-white/70">
+    Vehicle Height/Modifications
+  </label>
+  <select
+    name="vehicleHeightMod"
+    value={form.vehicleHeightMod}
+    onChange={handleChange}
+    className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+    required
+  >
+    <option value="stock">Stock (no lift or lowering)</option>
+    <option value="lifted">Lifted</option>
+    <option value="lowered">Lowered</option>
+    <option value="not_sure">Not sure</option>
+  </select>
+</div>
+
                 <div>
                   <label className="block text-xs text-white/70">
                     Transport Type
