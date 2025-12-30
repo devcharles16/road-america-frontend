@@ -15,6 +15,21 @@ function splitVehicle(vehicle = "") {
 
   return { year, make, model };
 }
+function formatPickupWindow(value) {
+  switch (value) {
+    case "asap_1_3":
+      return "ASAP (1–3 days)";
+    case "this_week":
+      return "This week";
+    case "next_1_2_weeks":
+      return "Next 1–2 weeks";
+    case "flexible":
+      return "Flexible / No rush";
+    default:
+      return "-";
+  }
+}
+
 
 export async function sendNewQuoteAlert(payload) {
   const {
@@ -28,7 +43,6 @@ export async function sendNewQuoteAlert(payload) {
   runningCondition,
   transportType,
   preferredPickupWindow,
-preferredPickupDate,
 
   referenceId,
 } = payload;
@@ -76,14 +90,14 @@ preferredPickupDate,
             <td style="padding:4px 8px;">${dropoff || "-"}</td>
           </tr>
           <tr>
-  <td style="padding:4px 8px;font-weight:600;">Preferred Pickup Window:</td>
-  <td style="padding:4px 8px;">${preferredPickupWindow || "-"}</td>
+  <td style="padding:4px 8px;font-weight:600;">
+    Preferred Pickup Window:
+  </td>
+  <td style="padding:4px 8px;">
+    ${formatPickupWindow(preferredPickupWindow)}
+  </td>
 </tr>
-${preferredPickupWindow === "exact_date" ? `
-<tr>
-  <td style="padding:4px 8px;font-weight:600;">Preferred Pickup Date:</td>
-  <td style="padding:4px 8px;">${preferredPickupDate || "-"}</td>
-</tr>` : ""}
+ : ""}
 
           <tr>
             <td style="padding:4px 8px;font-weight:600;">Vehicle Year:</td>
@@ -140,7 +154,6 @@ export async function sendQuoteConfirmationEmail(payload) {
     runningCondition,
     transportType,
     preferredPickupWindow,
-preferredPickupDate,
 
     referenceId,
   } = payload;
@@ -195,14 +208,15 @@ preferredPickupDate,
                   <td style="padding:4px 0;">${dropoff || "-"}</td>
                 </tr>
                 <tr>
-  <td style="padding:4px 0;width:34%;color:#aaaaaa;">Pickup Window:</td>
-  <td style="padding:4px 0;">${preferredPickupWindow || "-"}</td>
-</tr>
-${preferredPickupWindow === "exact_date" ? `
 <tr>
-  <td style="padding:4px 0;width:34%;color:#aaaaaa;">Pickup Date:</td>
-  <td style="padding:4px 0;">${preferredPickupDate || "-"}</td>
-</tr>` : ""}
+  <td style="padding:4px 0;width:34%;color:#aaaaaa;">
+    Pickup Window:
+  </td>
+  <td style="padding:4px 0;">
+    ${formatPickupWindow(preferredPickupWindow)}
+  </td>
+</tr>
+ : ""}
 
                 <tr>
                   <td style="padding:4px 0;width:34%;color:#aaaaaa;">Year:</td>
