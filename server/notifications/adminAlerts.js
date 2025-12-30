@@ -30,8 +30,6 @@ export async function sendNewQuoteAlert(payload) {
   referenceId,
 } = payload;
 
-const fullName = [firstName, lastName].filter(Boolean).join(" ") || "-";
-
 
   const { year, make, model } = splitVehicle(vehicleRaw);
 
@@ -50,9 +48,17 @@ const fullName = [firstName, lastName].filter(Boolean).join(" ") || "-";
             <td style="padding:4px 8px;">${referenceId}</td>
           </tr>` : ""}
           <tr>
-            <td style="padding:4px 8px;font-weight:600;">Name:</td>
-            <td style="padding:4px 8px;">${fullName}</td>
+          <tr>
+            <td style="padding:4px 8px;font-weight:600;">First Name:</td>
+            <td style="padding:4px 8px;">${firstName || "-"}</td>
           </tr>
+          <tr>
+            <td style="padding:4px 8px;font-weight:600;">Last Name:</td>
+            <td style="padding:4px 8px;">${lastName || "-"}</td>
+          </tr>
+
+
+</tr>
           <tr>
             <td style="padding:4px 8px;font-weight:600;">Email:</td>
             <td style="padding:4px 8px;">${email || "-"}</td>
@@ -116,6 +122,7 @@ const fullName = [firstName, lastName].filter(Boolean).join(" ") || "-";
 export async function sendQuoteConfirmationEmail(payload) {
   const {
     firstName,
+    lastName,
     email,
     pickup,
     dropoff,
