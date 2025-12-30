@@ -21,13 +21,15 @@ type QuoteFormState = {
   vehicleHeightMod: "stock" | "lifted" | "lowered" | "not_sure";
 
   transportType: TransportType;
-  preferredPickupWindow: "exact_date" | "asap_1_3" | "this_week" | "next_1_2_weeks" | "flexible"
+ preferredPickupWindow: "asap_1_3" | "this_week" | "next_1_2_weeks" | "flexible";
+
 
   firstName: string;
   lastName: string;
   email: string;
   phone: string;
 };
+const SHOW_VIN = false;
 
 const defaultForm: QuoteFormState = {
   pickupCity: "",
@@ -274,70 +276,78 @@ const QuotePage = () => {
               </div>
             </div>
 
-            <div className="mt-4 grid gap-4 md:grid-cols-2">
-              <div>
-                <label className="block text-xs text-white/70">
-                  VIN (optional, helps us auto-verify details later)
-                </label>
-                <input
-                  type="text"
-                  name="vin"
-                  value={form.vin}
-                  onChange={handleChange}
-                  className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
-                />
-              </div>
+<div
+  className={`mt-4 grid gap-4 ${
+    SHOW_VIN ? "md:grid-cols-2" : "md:grid-cols-1"
+  }`}
+>
+  {SHOW_VIN && (
+    <div>
+      <label className="block text-xs text-white/70">
+        VIN (optional, helps us auto-verify details later)
+      </label>
+      <input
+        type="text"
+        name="vin"
+        value={form.vin}
+        onChange={handleChange}
+        className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+      />
+    </div>
+  )}
 
-              <div className="grid gap-3 md:grid-cols-3">
-                <div>
-                  <label className="block text-xs text-white/70">
-                    Running Condition
-                  </label>
-                  <select
-                    name="runningCondition"
-                    value={form.runningCondition}
-                    onChange={handleChange}
-                    className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
-                  >
-                    <option value="running">Running</option>
-                    <option value="non-running">Non-Running</option>
-                  </select>
-                </div>
-                <div>
-  <label className="block text-xs text-white/70">
-    Vehicle Height/Modifications
-  </label>
-  <select
-    name="vehicleHeightMod"
-    value={form.vehicleHeightMod}
-    onChange={handleChange}
-    className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
-    required
-  >
-    <option value="stock">Stock (no lift or lowering)</option>
-    <option value="lifted">Lifted</option>
-    <option value="lowered">Lowered</option>
-    <option value="not_sure">Not sure</option>
-  </select>
+  <div className="grid gap-3 md:grid-cols-3">
+    <div>
+      <label className="block text-xs text-white/70">
+        Running Condition
+      </label>
+      <select
+        name="runningCondition"
+        value={form.runningCondition}
+        onChange={handleChange}
+        className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+      >
+        <option value="running">Running</option>
+        <option value="non-running">Non-Running</option>
+      </select>
+    </div>
+
+    <div>
+      <label className="block text-xs text-white/70">
+        Vehicle Height/Modifications
+      </label>
+      <select
+        name="vehicleHeightMod"
+        value={form.vehicleHeightMod}
+        onChange={handleChange}
+        className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+        required
+      >
+        <option value="stock">Stock (no lift or lowering)</option>
+        <option value="lifted">Lifted</option>
+        <option value="lowered">Lowered</option>
+        <option value="not_sure">Not sure</option>
+      </select>
+    </div>
+
+    <div>
+      <label className="block text-xs text-white/70">
+        Transport Type
+      </label>
+      <select
+        name="transportType"
+        value={form.transportType}
+        onChange={handleChange}
+        className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+      >
+        <option value="open">Open Carrier</option>
+        <option value="enclosed">Enclosed Carrier</option>
+      </select>
+    </div>
+  </div>
+</div>
 </div>
 
-                <div>
-                  <label className="block text-xs text-white/70">
-                    Transport Type
-                  </label>
-                  <select
-                    name="transportType"
-                    value={form.transportType}
-                    onChange={handleChange}
-                    className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
-                  >
-                    <option value="open">Open Carrier</option>
-                    <option value="enclosed">Enclosed Carrier</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-          </div>
 {/* Preferred Pickup Window */}
 <div className="border-t border-white/10 pt-6">
   <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-white/60">
