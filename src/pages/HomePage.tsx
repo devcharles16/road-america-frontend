@@ -114,7 +114,7 @@ function HeroSection() {
           </h1>
           <p className="mt-4 max-w-xl text-sm md:text-base text-white/80">
             Door-to-door auto transport with white-glove service, insured
-            carriers, and real-time status updates—for everyday cars and
+            carriers, and status updates—for everyday cars and
             high-value vehicles.
           </p>
 
