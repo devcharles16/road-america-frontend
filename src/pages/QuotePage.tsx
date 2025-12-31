@@ -1,5 +1,7 @@
 // src/pages/QuotePage.tsx
 import { useState } from "react";
+import { US_STATES } from "../services/states";
+
 import { API_BASE_URL } from "../config/api";
 import {
   createQuote,
@@ -215,16 +217,22 @@ const isFormValid = requiredValues.every(
                 </div>
                 <div>
                   <label className="block text-xs text-white/70">State</label>
-                  <input
-                    type="text"
-                    name="pickupState"
-                    value={form.pickupState}
-                    onChange={handleChange}
-                    onBlur={handleCapitalizeBlur("pickupState")}
-                    placeholder="e.g. FL"
-                    className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
-                    required
-                  />
+                 <select
+  name="pickupState"
+  value={form.pickupState}
+  onChange={handleChange}
+  className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+  required
+>
+  <option value="">Select state</option>
+  {US_STATES.map((state) => (
+    <option key={state.code} value={state.code}>
+      {state.name}
+    </option>
+  ))}
+</select>
+
+
                 </div>
               </div>
             </div>
@@ -248,16 +256,21 @@ const isFormValid = requiredValues.every(
                 </div>
                 <div>
                   <label className="block text-xs text-white/70">State</label>
-                  <input
-                    type="text"
-                    name="deliveryState"
-                    value={form.deliveryState}
-                    onChange={handleChange}
-                    onBlur={handleCapitalizeBlur("deliveryState")}
-                    placeholder="e.g. TX"
-                    className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
-                    required
-                  />
+                  <select
+  name="deliveryState"
+  value={form.deliveryState}
+  onChange={handleChange}
+  className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+  required
+>
+  <option value="">Select state</option>
+  {US_STATES.map((state) => (
+    <option key={state.code} value={state.code}>
+      {state.name}
+    </option>
+  ))}
+</select>
+
                 </div>
               </div>
             </div>
