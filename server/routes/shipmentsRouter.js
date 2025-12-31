@@ -144,9 +144,35 @@ router.get("/track", async (req, res) => {
     if (!data) return res.status(404).json({ message: "Shipment not found" });
 
     return res.json({
-      ...data,
-      referenceId: data.reference_id,
-    });
+  id: data.id,
+  referenceId: data.reference_id,
+
+  customerName: data.customer_name,
+  customerEmail: data.customer_email,
+  customerPhone: data.customer_phone,
+
+  pickupCity: data.pickup_city,
+  pickupState: data.pickup_state,
+  deliveryCity: data.delivery_city,
+  deliveryState: data.delivery_state,
+
+  vehicleYear: data.vehicle_year,
+  vehicleMake: data.vehicle_make,
+  vehicleModel: data.vehicle_model,
+  vin: data.vin,
+
+  runningCondition: data.running_condition,
+  transportType: data.transport_type,
+
+  status: data.status,
+  eta: data.eta,
+
+  userId: data.user_id,
+
+  createdAt: data.created_at,
+  updatedAt: data.updated_at,
+});
+
   } catch (err) {
     console.error("Track shipment error:", err);
     return res.status(500).json({ message: "Server error tracking shipment" });

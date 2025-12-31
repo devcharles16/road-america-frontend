@@ -428,7 +428,7 @@ const isFormValid = requiredValues.every(
               </div>
 
               <div className="md:col-span-1">
-                <label className="block text-xs text-white/70">Phone</label>
+                <label className="block text-xs text-white/70">Mobile Phone</label>
                 <input
                   type="tel"
                   name="phone"

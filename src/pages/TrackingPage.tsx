@@ -76,6 +76,7 @@ const TrackingPage = () => {
         );
       } else {
         setShipment(result);
+        console.log("TRACK RESULT:", result);
       }
     } catch (err) {
       console.error(err);
@@ -148,8 +149,7 @@ const TrackingPage = () => {
             </button>
 
             <p className="text-[11px] text-white/50 mt-2">
-              Don’t see your status? It may take a few minutes after an update
-              to appear here.
+              Don’t see your status? Tracking will appear after payment is completed and your vehicle has been dispatched.
             </p>
 
             {error && (
