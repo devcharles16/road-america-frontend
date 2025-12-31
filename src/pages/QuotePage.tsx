@@ -50,6 +50,10 @@ const defaultForm: QuoteFormState = {
   phone: "",
 };
 
+function capitalizeFirst(value: string) {
+  if (!value) return value;
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
 
 const QuotePage = () => {
   const [form, setForm] = useState<QuoteFormState>(defaultForm);
@@ -62,6 +66,16 @@ const QuotePage = () => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   }
+function handleCapitalizeBlur(
+  field: keyof QuoteFormState
+) {
+  return (e: React.FocusEvent<HTMLInputElement>) => {
+    setForm((prev) => ({
+      ...prev,
+      [field]: capitalizeFirst(e.target.value.trim()),
+    }));
+  };
+}
 
 ;
   async function handleSubmit(e: React.FormEvent) {
@@ -194,6 +208,7 @@ const isFormValid = requiredValues.every(
                     name="pickupCity"
                     value={form.pickupCity}
                     onChange={handleChange}
+                    onBlur={handleCapitalizeBlur("pickupCity")}
                     className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
                     required
                   />
@@ -205,6 +220,7 @@ const isFormValid = requiredValues.every(
                     name="pickupState"
                     value={form.pickupState}
                     onChange={handleChange}
+                    onBlur={handleCapitalizeBlur("pickupState")}
                     placeholder="e.g. FL"
                     className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
                     required
@@ -225,6 +241,7 @@ const isFormValid = requiredValues.every(
                     name="deliveryCity"
                     value={form.deliveryCity}
                     onChange={handleChange}
+                    onBlur={handleCapitalizeBlur("deliveryCity")}
                     className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
                     required
                   />
@@ -236,6 +253,7 @@ const isFormValid = requiredValues.every(
                     name="deliveryState"
                     value={form.deliveryState}
                     onChange={handleChange}
+                    onBlur={handleCapitalizeBlur("deliveryState")}
                     placeholder="e.g. TX"
                     className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
                     required
@@ -271,6 +289,7 @@ const isFormValid = requiredValues.every(
                   name="vehicleMake"
                   value={form.vehicleMake}
                   onChange={handleChange}
+                  onBlur={handleCapitalizeBlur("vehicleMake")}
                   className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
                 required/>
               </div>
@@ -282,6 +301,7 @@ const isFormValid = requiredValues.every(
                   name="vehicleModel"
                   value={form.vehicleModel}
                   onChange={handleChange}
+                  onBlur={handleCapitalizeBlur("vehicleModel")}
                   className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
                 required
                 />
@@ -398,6 +418,7 @@ const isFormValid = requiredValues.every(
                   name="firstName"
                   value={form.firstName}
                   onChange={handleChange}
+                  onBlur={handleCapitalizeBlur("firstName")}
                   className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
                   required
                 />
@@ -410,6 +431,7 @@ const isFormValid = requiredValues.every(
                   name="lastName"
                   value={form.lastName}
                   onChange={handleChange}
+                  onBlur={handleCapitalizeBlur("lastName")}
                   className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
                   required
                 />
