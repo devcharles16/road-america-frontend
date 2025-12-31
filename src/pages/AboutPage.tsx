@@ -36,7 +36,7 @@ const AboutPage = () => {
       </section>
 
       {/* Our Story + Mission */}
-      <section className="border-b border-white/5 bg-black/40">
+      <section className="border-b border-white/5 bg-[#121212]/40">
         <div className="mx-auto max-w-6xl px-4 py-12 md:py-16 grid gap-10 md:grid-cols-2">
           <div>
             <h2 className="font-display text-xl md:text-2xl font-semibold">
@@ -86,7 +86,7 @@ const AboutPage = () => {
       </section>
 
       {/* How It Works */}
-      <section className="border-b border-white/5 bg-black/60">
+      <section className="border-b border-white/5 bg-[#121212]/60">
         <div className="mx-auto max-w-6xl px-4 py-12 md:py-16">
           <h2 className="font-display text-xl md:text-2xl font-semibold">
             How Your Transport Works
@@ -122,7 +122,7 @@ const AboutPage = () => {
             ].map((step, idx) => (
               <div
                 key={step.label}
-                className="relative rounded-2xl border border-white/10 bg-black/60 p-4 shadow-soft-card"
+                className="relative rounded-2xl border border-white/10 bg-[#121212]/60 p-4 shadow-soft-card"
               >
                 <div className="mb-2 flex items-center justify-between">
                   <span className="text-[11px] uppercase tracking-wide text-brand-redSoft">
@@ -194,7 +194,7 @@ const AboutPage = () => {
       <section className="border-b border-white/5 bg-black/70">
         <div className="mx-auto max-w-6xl px-4 py-10 md:py-12">
           <div className="grid gap-6 md:grid-cols-3">
-            <div className="rounded-2xl border border-white/10 bg-black/60 p-5 text-center">
+            <div className="rounded-2xl border border-white/10 bg-[#121212]/60 p-5 text-center">
               <p className="text-2xl font-semibold text-brand-red">4</p>
               <p className="mt-1 text-xs uppercase tracking-[0.2em] text-white/60">
                 Core Statuses
@@ -204,7 +204,7 @@ const AboutPage = () => {
                 understand and track.
               </p>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-black/60 p-5 text-center">
+            <div className="rounded-2xl border border-white/10 bg-[#121212]/60 p-5 text-center">
               <p className="text-2xl font-semibold text-brand-red">24/7</p>
               <p className="mt-1 text-xs uppercase tracking-[0.2em] text-white/60">
                 Tracking Access
@@ -214,7 +214,7 @@ const AboutPage = () => {
                 ID and email.
               </p>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-black/60 p-5 text-center">
+            <div className="rounded-2xl border border-white/10 bg-[#121212]/60 p-5 text-center">
               <p className="text-2xl font-semibold text-brand-red">1</p>
               <p className="mt-1 text-xs uppercase tracking-[0.2em] text-white/60">
                 Dedicated Team

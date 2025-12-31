@@ -1,9 +1,19 @@
+import { Check } from "lucide-react";
+
 import { useState } from "react";
 import {
   trackShipmentByRefAndEmail,
   type TransportRequest,
   type TransportStatus,
 } from "../services/shipmentsService";
+
+import {
+  FileText,
+  UserCheck,
+  Truck,
+  CheckCircle2,
+  HelpCircle,
+} from "lucide-react";
 
 type TrackingFormState = {
   referenceId: string;
@@ -43,6 +53,21 @@ function getStepIndexForStatus(status: TransportStatus): number {
   const idx = STATUS_STEPS.findIndex((s) => s.id === status);
   if (idx === -1) return 0;
   return idx;
+}
+
+function getStepIcon(stepId: TransportStatus) {
+  switch (stepId) {
+    case "Submitted":
+      return FileText;
+    case "Driver Assigned":
+      return UserCheck;
+    case "In Transit":
+      return Truck;
+    case "Delivered":
+      return CheckCircle2;
+    default:
+      return HelpCircle;
+  }
 }
 
 const TrackingPage = () => {
@@ -126,9 +151,7 @@ const TrackingPage = () => {
               />
             </div>
             <div>
-              <label className="block text-xs text-white/70 mb-1">
-                Email
-              </label>
+              <label className="block text-xs text-white/70 mb-1">Email</label>
               <input
                 type="email"
                 name="email"
@@ -149,14 +172,11 @@ const TrackingPage = () => {
             </button>
 
             <p className="text-[11px] text-white/50 mt-2">
-              Don’t see your status? Tracking will appear after payment is completed and your vehicle has been dispatched.
+              Don’t see your status? Tracking will appear after payment is
+              completed and your vehicle has been dispatched.
             </p>
 
-            {error && (
-              <p className="mt-2 text-[11px] text-red-400">
-                {error}
-              </p>
-            )}
+            {error && <p className="mt-2 text-[11px] text-red-400">{error}</p>}
           </form>
 
           {/* Right: timeline */}
@@ -171,9 +191,7 @@ const TrackingPage = () => {
             )}
 
             {loading && (
-              <p className="text-xs text-white/60">
-                Looking up your shipment...
-              </p>
+              <p className="text-xs text-white/60">Looking up your shipment...</p>
             )}
 
             {shipment && (
@@ -196,9 +214,7 @@ const TrackingPage = () => {
                     <p className="text-[11px] uppercase text-white/50">
                       Reference
                     </p>
-                    <p className="text-xs font-mono">
-                      {shipment.referenceId}
-                    </p>
+                    <p className="text-xs font-mono">{shipment.referenceId}</p>
                     <p className="mt-1 text-[11px] text-white/60">
                       {shipment.pickupCity}, {shipment.pickupState} →{" "}
                       {shipment.deliveryCity}, {shipment.deliveryState}
@@ -206,47 +222,72 @@ const TrackingPage = () => {
                   </div>
                 </div>
 
-                <ol className="relative border-l border-white/15 pl-4 mt-4 space-y-5">
-                  {STATUS_STEPS.map((step, index) => {
-                    const isActive = index === activeStepIndex;
-                    const isCompleted = index < activeStepIndex;
+                {/* FIX: reserve space for absolute icon bubble with pl-10 */}
+<ol
+  className="relative mt-4 space-y-5 pl-0
+    before:absolute before:left-[14px] before:top-0 before:bottom-0
+    before:w-px before:bg-white/15"
+>
+  {/* Filled progress line */}
+  <span
+    className="absolute left-[14px] top-0 w-px bg-brand-red/40"
+    style={{
+      height: `${Math.max(activeStepIndex, 0) * 48 + 14}px`,
+    }}
+    aria-hidden="true"
+  />
 
-                    return (
-                      <li key={step.id} className="relative">
-                        <span
-                          className={[
-                            "absolute -left-[9px] flex h-4 w-4 items-center justify-center rounded-full border",
-                            isActive
-                              ? "border-brand-red bg-brand-red"
-                              : isCompleted
-                              ? "border-brand-red bg-brand-red/40"
-                              : "border-white/30 bg-brand-dark",
-                          ].join(" ")}
-                        >
-                          {isCompleted ? (
-                            <span className="h-1.5 w-1.5 rounded-full bg-white" />
-                          ) : null}
-                        </span>
-                        <div className="ml-1">
-                          <p
-                            className={
-                              "text-xs font-semibold " +
-                              (isActive
-                                ? "text-brand-redSoft"
-                                : "text-white/80")
-                            }
-                          >
-                            {step.label}
-                          </p>
-                          <p className="mt-1 text-[11px] text-white/60">
-                            {step.description}
-                          </p>
-                        </div>
-                      </li>
-                    );
-                  })}
-                </ol>
-              </>
+  {STATUS_STEPS.map((step, index) => {
+    const isActive = index === activeStepIndex;
+    const isCompleted = index < activeStepIndex;
+
+    const StepIcon = getStepIcon(step.id);
+
+    const bubbleClasses = [
+      "relative z-10 flex h-7 w-7 items-center justify-center rounded-full border",
+      isActive
+        ? "border-brand-red/60 bg-brand-red/20 text-brand-redSoft shadow-[0_0_18px_rgba(255,0,0,0.22)]"
+        : isCompleted
+        ? "border-brand-red/40 bg-brand-red/10 text-white/80"
+        : "border-white/25 bg-brand-dark text-white/55",
+    ].join(" ");
+
+    return (
+      <li key={step.id} className="flex items-start gap-4">
+        {/* Icon bubble */}
+        <span className={bubbleClasses} aria-hidden="true">
+          {isCompleted ? (
+            <Check className="h-4 w-4" />
+          ) : (
+            <StepIcon className="h-4 w-4" />
+          )}
+        </span>
+
+        {/* Text */}
+        <div className="min-w-0 pt-[1px]">
+          <p
+            className={[
+              "text-xs font-semibold",
+              isActive ? "text-brand-redSoft" : "text-white/80",
+            ].join(" ")}
+          >
+            {step.label}
+          </p>
+          <p className="mt-1 text-[11px] text-white/60">
+            {step.description}
+          </p>
+
+          {isActive && (
+            <span className="mt-2 inline-flex items-center rounded-full border border-brand-red/30 bg-brand-red/10 px-2 py-0.5 text-[10px] font-semibold text-brand-redSoft">
+              Current
+            </span>
+          )}
+        </div>
+      </li>
+    );
+  })}
+</ol>
+ </>
             )}
           </div>
         </div>

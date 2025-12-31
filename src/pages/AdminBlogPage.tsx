@@ -350,7 +350,7 @@ useEffect(() => {
                       status: e.target.value as BlogStatus,
                     }))
                   }
-                  className="rounded-full border border-white/20 bg-black/60 px-3 py-1 text-[11px] outline-none focus:border-brand-redSoft"
+                  className="rounded-full border border-white/20 bg-[#121212]/60 px-3 py-1 text-[11px] outline-none focus:border-brand-redSoft"
                 >
                   <option value="draft">Draft</option>
                   <option value="published">Published</option>

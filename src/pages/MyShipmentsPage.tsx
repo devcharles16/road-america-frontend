@@ -105,7 +105,7 @@ const MyShipmentsPage = () => {
                       </span>
                     </td>
                     <td className="px-3 py-2">
-                      <span className="rounded-full border border-white/20 bg-black/60 px-3 py-1 text-[10px] uppercase tracking-wide">
+                      <span className="rounded-full border border-white/20 bg-[#121212]/60 px-3 py-1 text-[10px] uppercase tracking-wide">
                         {s.status}
                       </span>
                     </td>

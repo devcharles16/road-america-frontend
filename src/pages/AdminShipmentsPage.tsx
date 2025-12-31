@@ -204,7 +204,7 @@ useEffect(() => {
                             e.target.value as TransportStatus
                           )
                         }
-                        className="rounded-full border border-white/20 bg-black/60 px-2 py-1 text-[11px] outline-none focus:border-brand-redSoft"
+                        className="rounded-full border border-white/20 bg-[#121212]/60 px-2 py-1 text-[11px] outline-none focus:border-brand-redSoft"
                       >
                         {STATUS_OPTIONS.map((status) => (
                           <option key={status} value={status}>

@@ -43,7 +43,7 @@ const Header = () => {
     isLoggedIn && (role === "admin" || role === "employee" || loading);
 
   return (
-    <header className="bg-black/40 backdrop-blur-md border-b border-white/10 sticky top-0 z-50">
+    <header className="bg-[#121212]/40 backdrop-blur-md border-b border-white/10 sticky top-0 z-50">
       <div className="mx-auto max-w-7xl px-4 py-4 flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-3">

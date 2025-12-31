@@ -1,7 +1,14 @@
 // src/components/admin/LiveShipmentsCard.tsx
 import { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabaseClient";
-
+import {
+  FileText,
+  UserCheck,
+  Truck,
+  CheckCircle2,
+  XCircle,
+  HelpCircle,
+} from "lucide-react";
 
 type ShipmentStatus =
   | "Submitted"
@@ -14,7 +21,6 @@ type ShipmentStatus =
 type Shipment = {
   id: string;
   reference_id?: string;
-  referenceId?: string;
   pickup_city?: string;
   pickup_state?: string;
   delivery_city?: string;
@@ -28,17 +34,29 @@ type Shipment = {
 };
 
 function getStatusBadgeClasses(status: ShipmentStatus) {
-  // You can tweak these later if you want more nuance
-  if (status === "In Transit") {
-    return "bg-brand-red/20 text-brand-redSoft";
-  }
-  if (status === "Driver Assigned") {
-    return "bg-emerald-500/15 text-emerald-300";
-  }
-  if (status === "Submitted") {
-    return "bg-amber-500/15 text-amber-300";
-  }
+  if (status === "In Transit") return "bg-brand-red/20 text-brand-redSoft";
+  if (status === "Driver Assigned") return "bg-emerald-500/15 text-emerald-300";
+  if (status === "Submitted") return "bg-amber-500/15 text-amber-300";
+  if (status === "Delivered") return "bg-sky-500/15 text-sky-300";
+  if (status === "Cancelled") return "bg-rose-500/15 text-rose-300";
   return "bg-white/10 text-white/80";
+}
+
+function getStatusIcon(status: ShipmentStatus) {
+  switch (status) {
+    case "Submitted":
+      return FileText;
+    case "Driver Assigned":
+      return UserCheck;
+    case "In Transit":
+      return Truck;
+    case "Delivered":
+      return CheckCircle2;
+    case "Cancelled":
+      return XCircle;
+    default:
+      return HelpCircle;
+  }
 }
 
 export default function LiveShipmentsCard() {
@@ -54,7 +72,6 @@ export default function LiveShipmentsCard() {
         setLoading(true);
         setError(null);
 
-        // Query Supabase directly for "active" shipments
         const { data, error } = await supabase
           .from("shipments")
           .select(
@@ -77,11 +94,9 @@ export default function LiveShipmentsCard() {
           .order("updated_at", { ascending: false, nullsFirst: false })
           .limit(5);
 
-        if (error) {
-          throw error;
-        }
-
+        if (error) throw error;
         if (!isMounted) return;
+
         setShipments(data || []);
       } catch (err: any) {
         if (!isMounted) return;
@@ -92,7 +107,6 @@ export default function LiveShipmentsCard() {
     }
 
     loadShipments();
-
     return () => {
       isMounted = false;
     };
@@ -100,58 +114,27 @@ export default function LiveShipmentsCard() {
 
   return (
     <div className="rounded-2xl border border-white/10 bg-black/50 p-4">
-      <div className="mb-3 flex items-center justify-between">
-        <div>
-          <h2 className="text-sm font-semibold">Live Shipments</h2>
-          <p className="mt-1 text-[11px] text-white/50">
-            Last 5 active shipments (Submitted, Driver Assigned, In Transit)
-          </p>
-        </div>
+      <div className="mb-3">
+        <h2 className="text-sm font-semibold">Live Shipments</h2>
+        <p className="mt-1 text-[11px] text-white/50">
+          Last 5 active shipments (Submitted, Driver Assigned, In Transit)
+        </p>
       </div>
 
-      {/* Loading state */}
-      {loading && (
-        <div className="space-y-3">
-          {[0, 1, 2].map((i) => (
-            <div
-              key={i}
-              className="animate-pulse rounded-xl bg-white/5 p-3 space-y-2"
-            >
-              <div className="flex justify-between">
-                <div className="h-3 w-32 rounded bg-white/10" />
-                <div className="h-3 w-16 rounded bg-white/10" />
-              </div>
-              <div className="h-2.5 w-full rounded-full bg-white/10" />
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Error state */}
-      {!loading && error && (
-        <p className="text-xs text-red-300">
-          Unable to load shipments: {error}
-        </p>
-      )}
-
-      {/* Empty state */}
       {!loading && !error && shipments.length === 0 && (
         <p className="text-xs text-white/60">
-          No active shipments found yet. As new transports move into Submitted,
-          Driver Assigned, or In Transit, they&apos;ll appear here.
+          No active shipments found yet.
         </p>
       )}
 
-      {/* Data state */}
       {!loading && !error && shipments.length > 0 && (
         <div className="space-y-3">
           {shipments.map((shipment) => {
-            const pickupCity =
-              shipment.pickup_city || "Pickup location pending";
+            const pickupCity = shipment.pickup_city || "Pickup pending";
             const pickupState = shipment.pickup_state || "";
-            const deliveryCity =
-              shipment.delivery_city || "Delivery location pending";
+            const deliveryCity = shipment.delivery_city || "Delivery pending";
             const deliveryState = shipment.delivery_state || "";
+
             const vehicle =
               shipment.vehicle_make || shipment.vehicle_model
                 ? `${shipment.vehicle_year || ""} ${shipment.vehicle_make || ""} ${
@@ -161,6 +144,7 @@ export default function LiveShipmentsCard() {
 
             const status = shipment.status || "Unknown";
             const badgeClasses = getStatusBadgeClasses(status);
+            const StatusIcon = getStatusIcon(status);
 
             const updated =
               shipment.updated_at || shipment.created_at || undefined;
@@ -184,14 +168,20 @@ export default function LiveShipmentsCard() {
                       {deliveryState ? `, ${deliveryState}` : ""}
                     </p>
                   </div>
+
                   <div className="text-right">
                     <p className="text-[11px] uppercase tracking-wide text-white/40">
                       Status
                     </p>
+
+                    {/* ICON BADGE – no absolute positioning, no overlap */}
                     <span
-                      className={`inline-flex items-center rounded-full px-3 py-1 text-[11px] font-semibold ${badgeClasses}`}
+                      className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-[11px] font-semibold ${badgeClasses}`}
                     >
-                      {status}
+                      <span className="flex h-4 w-4 items-center justify-center">
+                        <StatusIcon className="h-4 w-4" aria-hidden="true" />
+                      </span>
+                      <span className="leading-none">{status}</span>
                     </span>
                   </div>
                 </div>
@@ -203,9 +193,13 @@ export default function LiveShipmentsCard() {
                     </p>
                     <p className="truncate">{vehicle}</p>
                   </div>
+
                   {shipment.reference_id && (
                     <p className="text-[11px] text-white/50">
-                      Ref: <span className="font-mono">{shipment.reference_id}</span>
+                      Ref:{" "}
+                      <span className="font-mono">
+                        {shipment.reference_id}
+                      </span>
                     </p>
                   )}
                 </div>
