@@ -1,6 +1,10 @@
 // src/services/shipmentsService.ts
 import { supabase } from "../lib/supabaseClient";
 
+/** Base URL for your backend */
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:4000";
+
 export type TransportStatus =
   | "Submitted"
   | "Driver Assigned"
@@ -48,12 +52,39 @@ export type CreateTransportInput = {
   customerName: string;
   customerEmail: string;
   customerPhone?: string;
-  // optional: for logged-in clients later
   userId?: string;
 };
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:4000";
+/** QUOTES */
+export type CreateQuoteInput = {
+  firstName: string;
+  lastName: string;
+  customerEmail: string;
+  customerPhone?: string;
+
+  pickupCity: string;
+  pickupState: string;
+  deliveryCity: string;
+  deliveryState: string;
+
+  vehicleYear?: string;
+  vehicleMake?: string;
+  vehicleModel?: string;
+  vin?: string;
+
+  runningCondition?: RunningCondition;
+  transportType?: TransportType;
+
+  preferredPickupWindow?: string;
+  vehicleHeightMod?: string;
+  notes?: string;
+};
+
+/** Keep this minimal to avoid snake_case vs camelCase mismatch */
+export type QuoteCreated = {
+  id: string;
+  referenceId: string; // RA-100000 etc
+};
 
 async function getAccessToken(): Promise<string | null> {
   const { data } = await supabase.auth.getSession();
@@ -71,8 +102,32 @@ async function handleResponse<T>(res: Response): Promise<T> {
 }
 
 /**
- * PUBLIC: Create a new transport request (quote submission)
+ * PUBLIC: Create a new QUOTE
+ * POST /api/quotes
+ */
+export async function createQuote(
+  input: CreateQuoteInput
+): Promise<QuoteCreated> {
+  const res = await fetch(`${API_BASE_URL}/api/quotes`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+  });
+
+  // Backend returns { id, referenceId, ...data }
+  const data = await handleResponse<any>(res);
+
+  return {
+    id: data.id,
+    referenceId: data.referenceId,
+  };
+}
+
+/**
+ * PUBLIC: Create a new shipment directly (NOT the quote page anymore)
  * POST /api/shipments
+ *
+ * You can keep this for “direct booking” flows.
  */
 export async function createTransportRequest(
   input: CreateTransportInput
@@ -83,7 +138,7 @@ export async function createTransportRequest(
     body: JSON.stringify(input),
   });
 
-  // 🔍 TEMP DEBUG — remove after we confirm the issue
+  // TEMP DEBUG — remove later
   if (!res.ok) {
     const text = await res.text();
     console.error("Create shipment failed:", res.status, text);
@@ -96,21 +151,16 @@ export async function createTransportRequest(
   return created;
 }
 
-
 /**
  * ADMIN/EMPLOYEE: List all shipments
  * GET /api/shipments
  */
 export async function listShipments(): Promise<TransportRequest[]> {
   const token = await getAccessToken();
-  if (!token) {
-    throw new Error("Not authenticated");
-  }
+  if (!token) throw new Error("Not authenticated");
 
   const res = await fetch(`${API_BASE_URL}/api/shipments`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    headers: { Authorization: `Bearer ${token}` },
   });
 
   return handleResponse<TransportRequest[]>(res);
@@ -125,9 +175,7 @@ export async function updateShipmentStatus(
   status: TransportStatus
 ): Promise<TransportRequest> {
   const token = await getAccessToken();
-  if (!token) {
-    throw new Error("Not authenticated");
-  }
+  if (!token) throw new Error("Not authenticated");
 
   const res = await fetch(`${API_BASE_URL}/api/shipments/${id}/status`, {
     method: "PATCH",
@@ -147,14 +195,10 @@ export async function updateShipmentStatus(
  */
 export async function listMyShipments(): Promise<TransportRequest[]> {
   const token = await getAccessToken();
-  if (!token) {
-    throw new Error("Not authenticated");
-  }
+  if (!token) throw new Error("Not authenticated");
 
   const res = await fetch(`${API_BASE_URL}/api/my-shipments`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    headers: { Authorization: `Bearer ${token}` },
   });
 
   return handleResponse<TransportRequest[]>(res);
@@ -175,9 +219,7 @@ export async function trackShipmentByRefAndEmail(
 
   const res = await fetch(`${API_BASE_URL}/api/track?${params.toString()}`);
 
-  if (res.status === 404) {
-    return null;
-  }
+  if (res.status === 404) return null;
 
   return handleResponse<TransportRequest>(res);
 }

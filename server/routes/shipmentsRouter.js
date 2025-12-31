@@ -1,92 +1,157 @@
 import express from "express";
-import { requireAuth, requireRole, requireOneOf } from "../middleware/auth.js";
+import { requireAuth,requireRole, requireOneOf } from "../middleware/auth.js";
+import supabase from "../supabaseClient.js";
 
 
 const router = express.Router();
 
-/**
- * TEMP in-memory storage.
- * This resets whenever the server restarts.
- */
-let shipments = [];
+const ALLOWED_STATUSES = [
+  "Submitted",
+  "Driver Assigned",
+  "In Transit",
+  "Delivered",
+  "Cancelled",
+];
 
-function generateId() {
-  return Math.random().toString(36).slice(2);
-}
 
 /* =========================================================
-   PUBLIC ROUTES
+   QUOTES (PUBLIC + ADMIN)
    ========================================================= */
 
 /**
- * PUBLIC: Create a new transport request (quote submission)
- * POST /api/shipments
+ * PUBLIC: Create a quote (intake)
+ * POST /api/quotes
  */
-router.post("/shipments", async (req, res) => {
+router.post("/quotes", async (req, res) => {
   try {
     const input = req.body;
-    const now = new Date().toISOString();
 
-    const newShipment = {
-      id: generateId(),
-      referenceId: input.referenceId || `RA-${Date.now()}`,
-      customerName: input.customerName,
-      customerEmail: input.customerEmail,
-      customerPhone: input.customerPhone ?? null,
-      pickupCity: input.pickupCity,
-      pickupState: input.pickupState,
-      deliveryCity: input.deliveryCity,
-      deliveryState: input.deliveryState,
-      vehicleYear: input.vehicleYear ?? null,
-      vehicleMake: input.vehicleMake ?? null,
-      vehicleModel: input.vehicleModel ?? null,
+    const payload = {
+      first_name: input.firstName ?? null,
+      last_name: input.lastName ?? null,
+      customer_name: input.customerName ?? null, // optional if you still want it
+      customer_email: input.customerEmail ?? null,
+      customer_phone: input.customerPhone ?? null,
+
+      pickup_city: input.pickupCity ?? null,
+      pickup_state: input.pickupState ?? null,
+      delivery_city: input.deliveryCity ?? null,
+      delivery_state: input.deliveryState ?? null,
+
+      vehicle_year: input.vehicleYear ?? null,
+      vehicle_make: input.vehicleMake ?? null,
+      vehicle_model: input.vehicleModel ?? null,
       vin: input.vin ?? null,
-      runningCondition: input.runningCondition ?? null,
-      transportType: input.transportType ?? null,
-      status: "Submitted",
-      eta: null,
-      userId: input.userId ?? null,
-      createdAt: now,
-      updatedAt: now,
+
+      running_condition: input.runningCondition ?? null,
+      transport_type: input.transportType ?? null,
+
+      pickup_window: input.preferredPickupWindow ?? null,
+      vehicle_height_mod: input.vehicleHeightMod ?? null,
+
+      notes: input.notes ?? null,
+      quote_status: "New",
     };
 
-    shipments.push(newShipment);
-    return res.status(201).json(newShipment);
+    const { data, error } = await supabase
+      .from("quotes")
+      .insert(payload)
+      .select("*")
+      .single();
+
+    if (error) throw error;
+
+    // Return camelCase-ish for frontend convenience
+    return res.status(201).json({
+      id: data.id,
+      referenceId: data.reference_id,
+      ...data,
+    });
   } catch (err) {
-    console.error("Shipment creation error:", err);
-    return res.status(500).json({ message: "Server error creating shipment" });
+    console.error("Quote creation error:", err);
+    return res.status(500).json({ message: "Server error creating quote" });
   }
 });
+
+/**
+ * ADMIN/EMPLOYEE: Convert a quote into a shipment
+ * POST /api/shipments/from-quote
+ * Body: { quoteId, userId? }
+ */
+router.post(
+  "/shipments/from-quote",
+  requireAuth,
+  requireOneOf(["admin", "employee"]),
+  async (req, res) => {
+    try {
+      const { quoteId } = req.body || {};
+      if (!quoteId) {
+        return res.status(400).json({ message: "quoteId is required" });
+      }
+
+      // 1) Convert via DB function (atomic)
+      const { data: shipmentId, error: rpcErr } = await supabase.rpc(
+        "convert_quote_to_shipment",
+        { p_quote_id: quoteId }
+      );
+
+      if (rpcErr) throw rpcErr;
+      if (!shipmentId) {
+        return res.status(500).json({ message: "Conversion did not return a shipment id" });
+      }
+
+      // 2) Fetch shipment
+      const { data: shipment, error: fetchErr } = await supabase
+        .from("shipments")
+        .select("*")
+        .eq("id", shipmentId)
+        .single();
+
+      if (fetchErr) throw fetchErr;
+
+      // 3) Respond in the same style your frontend expects
+      return res.status(201).json({
+        id: shipment.id,
+        referenceId: shipment.reference_id,
+        ...shipment,
+      });
+    } catch (err) {
+      console.error("Convert quote → shipment error:", err);
+      return res.status(500).json({ message: "Server error converting quote to shipment" });
+    }
+  }
+);
 
 /**
  * PUBLIC: Track shipment by reference + email
- * GET /api/track
+ * GET /api/track?referenceId=RA-100000&email=test@example.com
  */
 router.get("/track", async (req, res) => {
-  const { referenceId, email } = req.query;
+  try {
+    const { referenceId, email } = req.query;
+    if (!referenceId || !email) {
+      return res.status(400).json({ message: "referenceId and email are required" });
+    }
 
-  if (!referenceId || !email) {
-    return res
-      .status(400)
-      .json({ message: "referenceId and email are required" });
+    const { data, error } = await supabase
+      .from("shipments")
+      .select("*")
+      .eq("reference_id", referenceId)
+      .ilike("customer_email", String(email))
+      .maybeSingle();
+
+    if (error) throw error;
+    if (!data) return res.status(404).json({ message: "Shipment not found" });
+
+    return res.json({
+      ...data,
+      referenceId: data.reference_id,
+    });
+  } catch (err) {
+    console.error("Track shipment error:", err);
+    return res.status(500).json({ message: "Server error tracking shipment" });
   }
-
-  const shipment = shipments.find(
-    (s) =>
-      s.referenceId === referenceId &&
-      s.customerEmail?.toLowerCase() === String(email).toLowerCase()
-  );
-
-  if (!shipment) {
-    return res.status(404).json({ message: "Shipment not found" });
-  }
-
-  return res.json(shipment);
 });
-
-/* =========================================================
-   CLIENT ROUTES (AUTH REQUIRED)
-   ========================================================= */
 
 /**
  * CLIENT: Get shipments for logged-in client
@@ -97,24 +162,29 @@ router.get(
   requireAuth,
   requireRole("client"),
   async (req, res) => {
-    const email = req.user.email;
+    try {
+      const email = req.user.email;
 
-    const myShipments = shipments.filter(
-      (s) =>
-        s.customerEmail &&
-        s.customerEmail.toLowerCase() === email.toLowerCase()
-    );
+      const { data, error } = await supabase
+        .from("shipments")
+        .select("*")
+        .ilike("customer_email", email)
+        .order("created_at", { ascending: false });
 
-    return res.json(myShipments);
+      if (error) throw error;
+
+      return res.json(
+        (data ?? []).map((s) => ({ ...s, referenceId: s.reference_id }))
+      );
+    } catch (err) {
+      console.error("My shipments error:", err);
+      return res.status(500).json({ message: "Server error loading shipments" });
+    }
   }
 );
 
-/* =========================================================
-   ADMIN / EMPLOYEE ROUTES
-   ========================================================= */
-
 /**
- * ADMIN / EMPLOYEE: List all shipments
+ * ADMIN/EMPLOYEE: List all shipments
  * GET /api/shipments
  */
 router.get(
@@ -122,12 +192,26 @@ router.get(
   requireAuth,
   requireOneOf(["admin", "employee"]),
   async (req, res) => {
-    return res.json(shipments);
+    try {
+      const { data, error } = await supabase
+        .from("shipments")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+
+      return res.json(
+        (data ?? []).map((s) => ({ ...s, referenceId: s.reference_id }))
+      );
+    } catch (err) {
+      console.error("List shipments error:", err);
+      return res.status(500).json({ message: "Server error listing shipments" });
+    }
   }
 );
 
 /**
- * ADMIN / EMPLOYEE: Update shipment status
+ * ADMIN/EMPLOYEE: Update shipment status
  * PATCH /api/shipments/:id/status
  */
 router.patch(
@@ -135,21 +219,30 @@ router.patch(
   requireAuth,
   requireOneOf(["admin", "employee"]),
   async (req, res) => {
-    const { id } = req.params;
-    const { status } = req.body;
+    try {
+      const { id } = req.params;
+      const { status } = req.body;
 
-    const idx = shipments.findIndex((s) => s.id === id);
-    if (idx === -1) {
-      return res.status(404).json({ message: "Shipment not found" });
+      if (!ALLOWED_STATUSES.includes(status)) {
+        return res.status(400).json({
+          message: `Invalid status. Allowed: ${ALLOWED_STATUSES.join(", ")}`,
+        });
+      }
+
+      const { data, error } = await supabase
+        .from("shipments")
+        .update({ status, updated_at: new Date().toISOString() })
+        .eq("id", id)
+        .select("*")
+        .single();
+
+      if (error) throw error;
+
+      return res.json({ ...data, referenceId: data.reference_id });
+    } catch (err) {
+      console.error("Update status error:", err);
+      return res.status(500).json({ message: "Server error updating status" });
     }
-
-    shipments[idx] = {
-      ...shipments[idx],
-      status,
-      updatedAt: new Date().toISOString(),
-    };
-
-    return res.json(shipments[idx]);
   }
 );
 

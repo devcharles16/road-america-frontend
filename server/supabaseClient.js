@@ -12,6 +12,8 @@ if (!supabaseUrl || !serviceRoleKey) {
   throw new Error("Supabase environment variables are not set");
 }
 
-const supabase = createClient(supabaseUrl, serviceRoleKey);
+const supabase = createClient(supabaseUrl, serviceRoleKey, {
+  auth: { persistSession: false },
+});
 
 export default supabase;

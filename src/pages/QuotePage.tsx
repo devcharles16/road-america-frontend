@@ -2,10 +2,10 @@
 import { useState } from "react";
 import { API_BASE_URL } from "../config/api";
 import {
-  createTransportRequest,
+  createQuote,
+  type QuoteCreated,
   type RunningCondition,
   type TransportType,
-  type TransportRequest,
 } from "../services/shipmentsService";
 
 type QuoteFormState = {
@@ -17,18 +17,18 @@ type QuoteFormState = {
   vehicleMake: string;
   vehicleModel: string;
   vin: string;
+
   runningCondition: RunningCondition;
   vehicleHeightMod: "stock" | "lifted" | "lowered" | "not_sure";
-
   transportType: TransportType;
- preferredPickupWindow: "asap_1_3" | "this_week" | "next_1_2_weeks" | "flexible";
-
+  preferredPickupWindow: "asap_1_3" | "this_week" | "next_1_2_weeks" | "flexible";
 
   firstName: string;
   lastName: string;
   email: string;
   phone: string;
 };
+
 const SHOW_VIN = false;
 
 const defaultForm: QuoteFormState = {
@@ -42,7 +42,6 @@ const defaultForm: QuoteFormState = {
   vin: "",
   runningCondition: "running",
   vehicleHeightMod: "stock",
-
   transportType: "open",
   preferredPickupWindow: "asap_1_3",
   firstName: "",
@@ -54,90 +53,89 @@ const defaultForm: QuoteFormState = {
 const QuotePage = () => {
   const [form, setForm] = useState<QuoteFormState>(defaultForm);
   const [loading, setLoading] = useState(false);
-  const [createdShipment, setCreatedShipment] = useState<TransportRequest | null>(null);
+  const [createdQuote, setCreatedQuote] = useState<QuoteCreated | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  function handleChange(
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) {
+  function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   }
 
   async function handleSubmit(e: React.FormEvent) {
-  e.preventDefault();
-  setLoading(true);
-  setError(null);
-  setCreatedShipment(null);
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    setCreatedQuote(null);
 
-  try {
-    // 1️⃣ Create the transport request (what you already had)
-    const normalizedYear = /^\d{4}$/.test(form.vehicleYear) ? form.vehicleYear : undefined;
+    try {
+      const normalizedYear =
+        /^\d{4}$/.test(form.vehicleYear) ? form.vehicleYear : undefined;
 
-    const created = await createTransportRequest({
-      pickupCity: form.pickupCity,
-      pickupState: form.pickupState,
-      deliveryCity: form.deliveryCity,
-      deliveryState: form.deliveryState,
-      vehicleYear: normalizedYear,
-      vehicleMake: form.vehicleMake || undefined,
-      vehicleModel: form.vehicleModel || undefined,
-      vin: form.vin || undefined,
-      runningCondition: form.runningCondition,
-      transportType: form.transportType,
-      customerName: `${form.firstName} ${form.lastName}`.trim(),
+      // ✅ 1) Create a QUOTE (not a shipment)
+      const created = await createQuote({
+        firstName: form.firstName,
+        lastName: form.lastName,
+        customerEmail: form.email,
+        customerPhone: form.phone || undefined,
 
-      customerEmail: form.email,
-      customerPhone: form.phone || undefined,
-    });
+        pickupCity: form.pickupCity,
+        pickupState: form.pickupState,
+        deliveryCity: form.deliveryCity,
+        deliveryState: form.deliveryState,
 
-    setCreatedShipment(created);
+        vehicleYear: normalizedYear,
+        vehicleMake: form.vehicleMake || undefined,
+        vehicleModel: form.vehicleModel || undefined,
+        vin: form.vin || undefined,
 
-    // 2️⃣ Fire the email notification to your backend (Resend runs there)
-    //    This should NOT block the user experience if it fails
-  
-    const pickup = `${form.pickupCity}, ${form.pickupState}`;
-    const dropoff = `${form.deliveryCity}, ${form.deliveryState}`;
+        runningCondition: form.runningCondition,
+        transportType: form.transportType,
+        preferredPickupWindow: form.preferredPickupWindow,
+        vehicleHeightMod: form.vehicleHeightMod,
+      });
 
-    // Do this in a "best-effort" way — log errors but don't show user an error
-    fetch(`${API_BASE_URL}/api/notifications/new-quote`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-  firstName: form.firstName,
-  lastName: form.lastName,
-  email: form.email,
-  phone: form.phone,
-  pickup,
-  dropoff,
+      setCreatedQuote(created);
 
-  vehicleYear: normalizedYear,
-  vehicleMake: form.vehicleMake || undefined,
-  vehicleModel: form.vehicleModel || undefined,
+      // ✅ 2) Best-effort email notification (keep this)
+      const pickup = `${form.pickupCity}, ${form.pickupState}`;
+      const dropoff = `${form.deliveryCity}, ${form.deliveryState}`;
 
-  transportType: form.transportType,
-  runningCondition: form.runningCondition,
-  vehicleHeightMod: form.vehicleHeightMod,
+      fetch(`${API_BASE_URL}/api/notifications/new-quote`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          firstName: form.firstName,
+          lastName: form.lastName,
+          email: form.email,
+          phone: form.phone,
+          pickup,
+          dropoff,
 
-  preferredPickupWindow: form.preferredPickupWindow,
+          vehicleYear: normalizedYear,
+          vehicleMake: form.vehicleMake || undefined,
+          vehicleModel: form.vehicleModel || undefined,
 
-  referenceId: created.referenceId,
-}),
+          transportType: form.transportType,
+          runningCondition: form.runningCondition,
+          vehicleHeightMod: form.vehicleHeightMod,
+          preferredPickupWindow: form.preferredPickupWindow,
 
-    }).catch((notifyErr) => {
-      console.error("Failed to send new quote notification:", notifyErr);
-    });
+          // ✅ IMPORTANT: reference id is now from the quote record
+          referenceId: created.referenceId,
+        }),
+      }).catch((notifyErr) => {
+        console.error("Failed to send new quote notification:", notifyErr);
+      });
 
-    // If you want to clear the form after submit, uncomment:
-    // setForm(defaultForm);
-  } catch (err) {
-    console.error(err);
-    setError("Something went wrong submitting your quote request.");
-  } finally {
-    setLoading(false);
+      // Optional: clear the form
+      // setForm(defaultForm);
+    } catch (err) {
+      console.error(err);
+      setError("Something went wrong submitting your quote request.");
+    } finally {
+      setLoading(false);
+    }
   }
-}
-
 
   return (
     <section className="bg-brand-dark py-12 text-white">
@@ -150,8 +148,8 @@ const QuotePage = () => {
             Vehicle Transport Quote
           </h1>
           <p className="mt-2 text-sm text-white/70">
-            Share a few details about your vehicle and route. We’ll create a
-            transport request and follow up with pricing by email or phone.
+            Share a few details about your vehicle and route. We’ll follow up with
+            pricing by email or phone.
           </p>
         </div>
 
@@ -167,9 +165,7 @@ const QuotePage = () => {
               </h2>
               <div className="space-y-3">
                 <div>
-                  <label className="block text-xs text-white/70">
-                    City
-                  </label>
+                  <label className="block text-xs text-white/70">City</label>
                   <input
                     type="text"
                     name="pickupCity"
@@ -180,9 +176,7 @@ const QuotePage = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-white/70">
-                    State
-                  </label>
+                  <label className="block text-xs text-white/70">State</label>
                   <input
                     type="text"
                     name="pickupState"
@@ -202,9 +196,7 @@ const QuotePage = () => {
               </h2>
               <div className="space-y-3">
                 <div>
-                  <label className="block text-xs text-white/70">
-                    City
-                  </label>
+                  <label className="block text-xs text-white/70">City</label>
                   <input
                     type="text"
                     name="deliveryCity"
@@ -215,9 +207,7 @@ const QuotePage = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-white/70">
-                    State
-                  </label>
+                  <label className="block text-xs text-white/70">State</label>
                   <input
                     type="text"
                     name="deliveryState"
@@ -237,11 +227,10 @@ const QuotePage = () => {
             <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-white/60">
               Vehicle Details
             </h2>
+
             <div className="grid gap-4 md:grid-cols-4">
               <div className="md:col-span-1">
-                <label className="block text-xs text-white/70">
-                  Year
-                </label>
+                <label className="block text-xs text-white/70">Year</label>
                 <input
                   type="text"
                   name="vehicleYear"
@@ -250,10 +239,9 @@ const QuotePage = () => {
                   className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
                 />
               </div>
+
               <div className="md:col-span-1">
-                <label className="block text-xs text-white/70">
-                  Make
-                </label>
+                <label className="block text-xs text-white/70">Make</label>
                 <input
                   type="text"
                   name="vehicleMake"
@@ -262,10 +250,9 @@ const QuotePage = () => {
                   className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
                 />
               </div>
+
               <div className="md:col-span-2">
-                <label className="block text-xs text-white/70">
-                  Model
-                </label>
+                <label className="block text-xs text-white/70">Model</label>
                 <input
                   type="text"
                   name="vehicleModel"
@@ -276,144 +263,130 @@ const QuotePage = () => {
               </div>
             </div>
 
-<div
-  className={`mt-4 grid gap-4 ${
-    SHOW_VIN ? "md:grid-cols-2" : "md:grid-cols-1"
-  }`}
->
-  {SHOW_VIN && (
-    <div>
-      <label className="block text-xs text-white/70">
-        VIN (optional, helps us auto-verify details later)
-      </label>
-      <input
-        type="text"
-        name="vin"
-        value={form.vin}
-        onChange={handleChange}
-        className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
-      />
-    </div>
-  )}
+            <div className={`mt-4 grid gap-4 ${SHOW_VIN ? "md:grid-cols-2" : "md:grid-cols-1"}`}>
+              {SHOW_VIN && (
+                <div>
+                  <label className="block text-xs text-white/70">
+                    VIN (optional, helps us auto-verify details later)
+                  </label>
+                  <input
+                    type="text"
+                    name="vin"
+                    value={form.vin}
+                    onChange={handleChange}
+                    className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+                  />
+                </div>
+              )}
 
-  <div className="grid gap-3 md:grid-cols-3">
-    <div>
-      <label className="block text-xs text-white/70">
-        Running Condition
-      </label>
-      <select
-        name="runningCondition"
-        value={form.runningCondition}
-        onChange={handleChange}
-        className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
-      >
-        <option value="running">Running</option>
-        <option value="non-running">Non-Running</option>
-      </select>
-    </div>
+              <div className="grid gap-3 md:grid-cols-3">
+                <div>
+                  <label className="block text-xs text-white/70">Running Condition</label>
+                  <select
+                    name="runningCondition"
+                    value={form.runningCondition}
+                    onChange={handleChange}
+                    className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+                  >
+                    <option value="running">Running</option>
+                    <option value="non-running">Non-Running</option>
+                  </select>
+                </div>
 
-    <div>
-      <label className="block text-xs text-white/70">
-        Vehicle Height/Modifications
-      </label>
-      <select
-        name="vehicleHeightMod"
-        value={form.vehicleHeightMod}
-        onChange={handleChange}
-        className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
-        required
-      >
-        <option value="stock">Stock (no lift or lowering)</option>
-        <option value="lifted">Lifted</option>
-        <option value="lowered">Lowered</option>
-        <option value="not_sure">Not sure</option>
-      </select>
-    </div>
+                <div>
+                  <label className="block text-xs text-white/70">
+                    Vehicle Height/Modifications
+                  </label>
+                  <select
+                    name="vehicleHeightMod"
+                    value={form.vehicleHeightMod}
+                    onChange={handleChange}
+                    className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+                    required
+                  >
+                    <option value="stock">Stock (no lift or lowering)</option>
+                    <option value="lifted">Lifted</option>
+                    <option value="lowered">Lowered</option>
+                    <option value="not_sure">Not sure</option>
+                  </select>
+                </div>
 
-    <div>
-      <label className="block text-xs text-white/70">
-        Transport Type
-      </label>
-      <select
-        name="transportType"
-        value={form.transportType}
-        onChange={handleChange}
-        className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
-      >
-        <option value="open">Open Carrier</option>
-        <option value="enclosed">Enclosed Carrier</option>
-      </select>
-    </div>
-  </div>
-</div>
-</div>
+                <div>
+                  <label className="block text-xs text-white/70">Transport Type</label>
+                  <select
+                    name="transportType"
+                    value={form.transportType}
+                    onChange={handleChange}
+                    className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+                  >
+                    <option value="open">Open Carrier</option>
+                    <option value="enclosed">Enclosed Carrier</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
 
-{/* Preferred Pickup Window */}
-<div className="border-t border-white/10 pt-6">
-  <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-white/60">
-    Pickup Timing
-  </h2>
+          {/* Preferred Pickup Window */}
+          <div className="border-t border-white/10 pt-6">
+            <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-white/60">
+              Pickup Timing
+            </h2>
 
-  <div className="grid gap-4 md:grid-cols-2">
-    <div>
-      <label className="block text-xs text-white/70">
-        Preferred Pickup Window
-      </label>
-      <select
-        name="preferredPickupWindow"
-        value={form.preferredPickupWindow}
-        onChange={handleChange}
-        className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
-        required
-      >
-        <option value="asap_1_3">ASAP (1-3 days)</option>
-        <option value="this_week">This week</option>
-        <option value="next_1_2_weeks">Next 1-2 weeks</option>
-        <option value="flexible">Flexible / No rush</option>
-      </select>
-    </div>
-
-  </div>
-</div>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div>
+                <label className="block text-xs text-white/70">
+                  Preferred Pickup Window
+                </label>
+                <select
+                  name="preferredPickupWindow"
+                  value={form.preferredPickupWindow}
+                  onChange={handleChange}
+                  className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+                  required
+                >
+                  <option value="asap_1_3">ASAP (1-3 days)</option>
+                  <option value="this_week">This week</option>
+                  <option value="next_1_2_weeks">Next 1-2 weeks</option>
+                  <option value="flexible">Flexible / No rush</option>
+                </select>
+              </div>
+            </div>
+          </div>
 
           {/* Contact info */}
           <div className="border-t border-white/10 pt-6">
             <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-white/60">
               Your Contact Info
             </h2>
+
             <div className="grid gap-4 md:grid-cols-3">
               <div className="md:col-span-1">
-  <label className="block text-xs text-white/70">
-    First Name
-  </label>
-  <input
-    type="text"
-    name="firstName"
-    value={form.firstName}
-    onChange={handleChange}
-    className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
-    required
-  />
-</div>
-
-<div className="md:col-span-1">
-  <label className="block text-xs text-white/70">
-    Last Name
-  </label>
-  <input
-    type="text"
-    name="lastName"
-    value={form.lastName}
-    onChange={handleChange}
-    className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
-    required
-  />
-</div>
+                <label className="block text-xs text-white/70">First Name</label>
+                <input
+                  type="text"
+                  name="firstName"
+                  value={form.firstName}
+                  onChange={handleChange}
+                  className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+                  required
+                />
+              </div>
 
               <div className="md:col-span-1">
-                <label className="block text-xs text-white/70">
-                  Email
-                </label>
+                <label className="block text-xs text-white/70">Last Name</label>
+                <input
+                  type="text"
+                  name="lastName"
+                  value={form.lastName}
+                  onChange={handleChange}
+                  className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+                  required
+                />
+              </div>
+
+              <div className="md:col-span-1">
+                <label className="block text-xs text-white/70">Email</label>
                 <input
                   type="email"
                   name="email"
@@ -423,10 +396,9 @@ const QuotePage = () => {
                   required
                 />
               </div>
+
               <div className="md:col-span-1">
-                <label className="block text-xs text-white/70">
-                  Phone
-                </label>
+                <label className="block text-xs text-white/70">Phone</label>
                 <input
                   type="tel"
                   name="phone"
@@ -448,28 +420,25 @@ const QuotePage = () => {
             >
               {loading ? "Submitting..." : "Get My Transport Quote"}
             </button>
+
             <p className="text-xs text-white/60">
               By submitting, you agree to be contacted about your quote request.
             </p>
 
-            {error && (
-              <p className="text-xs text-red-400">{error}</p>
-            )}
+            {error && <p className="text-xs text-red-400">{error}</p>}
 
-            {createdShipment && (
+            {createdQuote && (
               <div className="mt-2 rounded-xl bg-brand-dark/70 px-4 py-3 text-xs text-white/80 border border-brand-red/40">
                 <p className="font-semibold text-brand-redSoft">
-                  Thank you! Your transport request has been created.
+                  Thank you! Your quote request has been received.
                 </p>
                 <p className="mt-1">
                   Reference ID:{" "}
-                  <span className="font-mono">
-                    {createdShipment.referenceId}
-                  </span>
+                  <span className="font-mono">{createdQuote.referenceId}</span>
                 </p>
                 <p className="mt-1 text-white/70">
-                  You can use this Reference ID and your email to track your
-                  shipment on the <span className="font-semibold">Track Shipment</span> page.
+                  Save this Reference ID. If you decide to proceed, we’ll use the
+                  same Reference ID when your quote becomes an active shipment.
                 </p>
               </div>
             )}
