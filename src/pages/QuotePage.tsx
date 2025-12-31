@@ -53,6 +53,7 @@ const defaultForm: QuoteFormState = {
 const QuotePage = () => {
   const [form, setForm] = useState<QuoteFormState>(defaultForm);
   const [loading, setLoading] = useState(false);
+  
   const [createdQuote, setCreatedQuote] = useState<QuoteCreated | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -60,7 +61,9 @@ const QuotePage = () => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   }
-
+const isFormValid = Object.values(form).every(
+  (value) => value !== "" && value !== null
+);
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
@@ -237,6 +240,7 @@ const QuotePage = () => {
                   value={form.vehicleYear}
                   onChange={handleChange}
                   className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+                required
                 />
               </div>
 
@@ -248,7 +252,7 @@ const QuotePage = () => {
                   value={form.vehicleMake}
                   onChange={handleChange}
                   className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
-                />
+                required/>
               </div>
 
               <div className="md:col-span-2">
@@ -259,6 +263,7 @@ const QuotePage = () => {
                   value={form.vehicleModel}
                   onChange={handleChange}
                   className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+                required
                 />
               </div>
             </div>
@@ -275,7 +280,8 @@ const QuotePage = () => {
                     value={form.vin}
                     onChange={handleChange}
                     className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
-                  />
+                 required
+                 />
                 </div>
               )}
 
@@ -412,19 +418,27 @@ const QuotePage = () => {
           </div>
 
           {/* Submit */}
-          <div className="flex flex-col gap-3 border-t border-white/10 pt-6 text-sm">
-            <button
-              type="submit"
-              disabled={loading}
-              className="inline-flex items-center justify-center rounded-full bg-brand-red px-8 py-3 text-sm font-semibold text-white shadow-soft-card hover:bg-brand-redSoft disabled:opacity-60"
-            >
-              {loading ? "Submitting..." : "Get My Transport Quote"}
-            </button>
+         <div className="flex flex-col gap-3 border-t border-white/10 pt-6 text-sm">
+           <p className="text-xs text-white/70 italic text-center">
+    *All fields are required
+  </p>
+  <button
+    type="submit"
+    disabled={loading || !isFormValid}
+    className={`inline-flex items-center justify-center rounded-full px-8 py-3 text-sm font-semibold text-white shadow-soft-card transition
+      ${
+        loading || !isFormValid
+          ? "bg-brand-red/60 cursor-not-allowed"
+          : "bg-brand-red hover:bg-brand-redSoft"
+      }
+    `}
+  >
+    {loading ? "Submitting..." : "Get My Transport Quote"}
+  </button>
 
-            <p className="text-xs text-white/60">
-              By submitting, you agree to be contacted about your quote request.
-            </p>
-
+  <p className="text-xs text-white/60 text-center">
+    By submitting, you agree to be contacted about your quote request.
+  </p>
             {error && <p className="text-xs text-red-400">{error}</p>}
 
             {createdQuote && (
