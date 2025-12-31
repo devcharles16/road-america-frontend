@@ -50,6 +50,7 @@ const defaultForm: QuoteFormState = {
   phone: "",
 };
 
+
 const QuotePage = () => {
   const [form, setForm] = useState<QuoteFormState>(defaultForm);
   const [loading, setLoading] = useState(false);
@@ -61,9 +62,8 @@ const QuotePage = () => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   }
-const isFormValid = Object.values(form).every(
-  (value) => value !== "" && value !== null
-);
+
+;
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
@@ -139,7 +139,27 @@ const isFormValid = Object.values(form).every(
       setLoading(false);
     }
   }
+const requiredValues = [
+  form.firstName,
+  form.lastName,
+  form.email,
+  form.phone,
+  form.pickupCity,
+  form.pickupState,
+  form.deliveryCity,
+  form.deliveryState,
+  form.vehicleYear,
+  form.vehicleMake,
+  form.vehicleModel,
+  form.runningCondition,
+  form.transportType,
+  form.preferredPickupWindow,
+  form.vehicleHeightMod,
+];
 
+const isFormValid = requiredValues.every(
+  (v) => String(v ?? "").trim() !== ""
+);
   return (
     <section className="bg-brand-dark py-12 text-white">
       <div className="mx-auto max-w-4xl px-4">
@@ -280,7 +300,7 @@ const isFormValid = Object.values(form).every(
                     value={form.vin}
                     onChange={handleChange}
                     className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
-                 required
+
                  />
                 </div>
               )}
@@ -294,6 +314,7 @@ const isFormValid = Object.values(form).every(
                     onChange={handleChange}
                     className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
                   >
+                     <option value="">Select Running Condition</option>
                     <option value="running">Running</option>
                     <option value="non-running">Non-Running</option>
                   </select>
@@ -310,6 +331,7 @@ const isFormValid = Object.values(form).every(
                     className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
                     required
                   >
+                     <option value="">Select Vehicle Height</option>
                     <option value="stock">Stock (no lift or lowering)</option>
                     <option value="lifted">Lifted</option>
                     <option value="lowered">Lowered</option>
@@ -325,6 +347,7 @@ const isFormValid = Object.values(form).every(
                     onChange={handleChange}
                     className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
                   >
+                     <option value="">Select Transport Type</option>
                     <option value="open">Open Carrier</option>
                     <option value="enclosed">Enclosed Carrier</option>
                   </select>
@@ -351,6 +374,7 @@ const isFormValid = Object.values(form).every(
                   className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
                   required
                 >
+                   <option value="">Select Pickup Window</option>
                   <option value="asap_1_3">ASAP (1-3 days)</option>
                   <option value="this_week">This week</option>
                   <option value="next_1_2_weeks">Next 1-2 weeks</option>
