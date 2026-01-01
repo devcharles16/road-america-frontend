@@ -1,10 +1,7 @@
 // src/components/Header.tsx
-import { useState } from "react";
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-
-const AUTH_PUBLIC_ENABLED =
-  import.meta.env.VITE_AUTH_PUBLIC_ENABLED === "true";
 
 const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -40,6 +37,34 @@ const Header = () => {
   ];
 
 const isAdminUser = isLoggedIn && (role === "admin" || role === "employee");
+const location = useLocation();
+
+useEffect(() => {
+  // Only auto-redirect when we're on auth-ish pages
+  const authPaths = ["/login", "/register", "/admin/login", "/post-login"];
+
+  if (!authPaths.includes(location.pathname)) return;
+
+  // Wait until auth has finished hydrating
+  if (loading) return;
+
+  // If not logged in, do nothing (stay on login/register)
+  if (!user) return;
+
+  // Now route based on role
+  if (role === "admin" || role === "employee") {
+    navigate("/admin", { replace: true });
+    return;
+  }
+
+  if (role === "client") {
+    navigate("/my-shipments", { replace: true });
+    return;
+  }
+
+  // Logged in but role missing => leave them on page (or send home)
+  // navigate("/", { replace: true });
+}, [user, role, loading, location.pathname, navigate]);
 
 
   return (
