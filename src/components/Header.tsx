@@ -39,8 +39,8 @@ const Header = () => {
     { label: "Blog", to: "/blog" },
   ];
 
-  const isAdminUser =
-    isLoggedIn && (role === "admin" || role === "employee" || loading);
+const isAdminUser = isLoggedIn && (role === "admin" || role === "employee");
+
 
   return (
     <header className="bg-[#121212]/40 backdrop-blur-md border-b border-white/10 sticky top-0 z-50">
@@ -163,23 +163,33 @@ const Header = () => {
 )}
 
 
-
-            {/* Auth UI (mobile) */}
-            {AUTH_PUBLIC_ENABLED && (
-              <div className="pt-3 border-t border-white/10">
+{/* Auth UI (mobile) */}
+<div className="pt-3 border-t border-white/10 space-y-2">
   {!isLoggedIn ? (
     <>
-      <Link to="/login" onClick={() => setMobileOpen(false)}>Login</Link>
-      <Link to="/register" onClick={() => setMobileOpen(false)}>Register</Link>
+      <Link to="/login" onClick={() => setMobileOpen(false)} className="block text-white/80">
+        Login
+      </Link>
+      <Link to="/register" onClick={() => setMobileOpen(false)} className="block text-white/80">
+        Register
+      </Link>
+      <Link to="/admin/login" onClick={() => setMobileOpen(false)} className="block text-white/80">
+        Admin / Employee Login
+      </Link>
     </>
   ) : (
-    <button type="button" onClick={handleLogout}>
-      Logout
-    </button>
+    <>
+      <span className="block text-xs text-white/50">
+        {displayName}
+        {!loading && role ? ` · ${role}` : ""}
+      </span>
+      <button type="button" onClick={handleLogout} className="block text-white/80">
+        Logout
+      </button>
+    </>
   )}
 </div>
 
-            )}
           </div>
         </div>
       )}
