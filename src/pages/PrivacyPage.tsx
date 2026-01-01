@@ -10,127 +10,110 @@ const PrivacyPage = () => {
 
         <section className="mt-8 space-y-6 text-sm leading-relaxed text-white/80">
 
-          <p>
-            Road America Auto Transport (“we”, “us”, “our”) is committed to
-            protecting your personal information and your right to privacy. This
-            Privacy Policy explains what information we collect, how we use it,
-            how we protect it, and your rights regarding your data.
-          </p>
+          <h2 className="font-bold">1. Introduction</h2>
+<p >Welcome to Road America Transport ("we," "our," "us"). We are committed to protecting your privacy and ensuring that your personal information is handled in a safe and responsible manner. This Privacy Policy outlines how we collect, use, and protect your information when you visit our website [<a href="https://roadamericatransport.com/" target="_blank">https://roadamericatransport.com</a>] ("Website") and use our services.</p>
+<h2 className="font-bold">2. Information We Collect</h2>
+<p >We may collect the following types of information:</p>
+<ul>
+<li >
+<p>Personal Information:&nbsp;Information that identifies you as an individual, such as your name, email address, phone number, and mailing address.<br /><br /></p>
+</li>
+<li >
+<p >Non-Personal Information:&nbsp;Information that does not identify you personally, including but not limited to browser type, operating system, and website usage data collected through cookies and similar technologies.<br /><br /></p>
+</li>
+</ul>
+<h2 className="font-bold">3. How We Collect Information</h2>
+<p >We collect information through various means, including:</p>
+<ul>
+<li >
+<p >Direct Collection:&nbsp;When you provide information to us directly, such as when you contact us via email or through forms on our Website.</p>
+</li>
+<li >
+<p >Automated Collection:&nbsp;Through cookies and similar technologies that track your usage of our Website.<br /><br /></p>
+</li>
+</ul>
+<h2 className="font-bold">4. Use of Information</h2>
+<p >We use the collected information for the following purposes:</p>
+<ul>
+<li >
+<p >To provide, operate, and improve our services.<br /><br /></p>
+</li>
+<li >
+<p >To communicate with you, including sending service-related announcements and responding to inquiries.<br /><br /></p>
+</li>
+<li >
+<p >To understand your needs and personalize your experience with our services.<br /><br /></p>
+</li>
+<li >
+<p >To comply with legal obligations and enforce our terms and conditions.<br /><br /></p>
+</li>
+</ul>
+<h2 className="font-bold">5. Sharing of Information</h2>
+<p >We do not sell, rent, or share your personal information with third parties, except in the following circumstances:</p>
+<ul>
+<li >
+<p >Service Providers:&nbsp;We may share information with third-party service providers who perform services on our behalf, such as payment processing and data analysis. These service providers are obligated to protect your information.<br /><br /></p>
+</li>
+<li >
+<p >Legal Requirements:&nbsp;We may disclose information if required to do so by law or in response to valid requests by public authorities.<br /><br /></p>
+</li>
+</ul>
+<h2 className="font-bold">6. Data Security</h2>
+<p >We implement appropriate technical and organizational measures to protect your personal information from unauthorized access, use, or disclosure. However, no method of transmission over the Internet or method of electronic storage is 100% secure. Therefore, while we strive to use commercially acceptable means to protect your personal information, we cannot guarantee its absolute security.</p>
+<h2 className="font-bold">7. Your Choices</h2>
+<ul>
+<li >
+<p >Cookies:&nbsp;You can set your browser to refuse all or some browser cookies or to alert you when cookies are being sent. If you disable or refuse cookies, some parts of our Website may become inaccessible or not function properly.<br /><br /></p>
+</li>
+<li >
+<p >Marketing Communications:&nbsp;You can opt-out of receiving marketing emails from us by following the unsubscribe link in the emails or by contacting us directly.<br /><br /></p>
+</li>
+</ul>
+<h2 className="font-bold">8. Third-Party Links</h2>
+<p >Our Website may contain links to third-party websites. We are not responsible for the privacy practices or content of these external sites. We encourage you to read the privacy policies of any linked websites you visit.</p>
+<h2 className="font-bold">9. Children's Privacy</h2>
+<p >Our services are not directed to individuals under the age of 13, and we do not knowingly collect personal information from children under 13. If we become aware that we have inadvertently received personal information from a child under 13, we will delete such information from our records.<a href="https://www.trucking.org/privacy-policy?utm_source=chatgpt.com" target="_blank">American Trucking Association</a></p>
+<h2 className="font-bold">10. Changes to This Privacy Policy</h2>
+<p >We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on our Website. You are advised to review this Privacy Policy periodically for any changes.</p>
+<h2 className="font-bold">11. Contact Us</h2>
+<p >If you have any questions or concerns about this Privacy Policy or our data practices, please contact us at:</p>
+<ul>
+<li >
+<p >Email: <a href="mailto:info@roadamericatransport.com" target="_blank">info@roadamericatransport.com</a></p>
+</li>
+</ul>
+<h2 className="font-bold">12.&nbsp;SMS Consent &amp; Disclosure</h2>
+<p >By providing your mobile number and opting in via our website, dispatch communications, or partner platforms, you consent to receive SMS (text) messages from&nbsp;A&amp;D CHARLES TRADING COMPANY LLC / Road America Auto Transport. These messages may include but are not limited to:&nbsp;</p>
 
-          <h2 className="text-xl font-semibold text-white mt-6">1. Information We Collect</h2>
-          <p>We collect information directly from you when you:</p>
-          <ul className="list-disc ml-6 mt-2 space-y-1">
-            <li>Request a transport quote</li>
-            <li>Create a client account or log into the client portal</li>
-            <li>Track a shipment using your reference ID and email</li>
-            <li>Contact us by phone, email, or through our website</li>
-          </ul>
+<ul className="space-y-2 text-sm text-white/80">
+  <li>• Load offers and job assignments</li>
+  <li>• Pickup and delivery confirmations</li>
+  <li>• Payment reminders and updates</li>
+  <li>• General carrier communication related to your services</li>
+</ul>
 
-          <h3 className="text-lg font-semibold text-white mt-4">Personal Information</h3>
-          <ul className="list-disc ml-6 mt-2 space-y-1">
-            <li>Name</li>
-            <li>Email address</li>
-            <li>Phone number</li>
-            <li>Pickup and delivery locations</li>
-            <li>Vehicle details (year, make, model, VIN)</li>
-            <li>Account login credentials (stored securely by our authentication provider)</li>
-          </ul>
-
-          <h3 className="text-lg font-semibold text-white mt-4">Automatically Collected Data</h3>
-          <p>When you visit our website, we may collect:</p>
-          <ul className="list-disc ml-6 mt-2 space-y-1">
-            <li>IP address</li>
-            <li>Browser type and settings</li>
-            <li>Device information</li>
-            <li>Pages viewed and interactions with the site</li>
-          </ul>
-
-          <h2 className="text-xl font-semibold text-white mt-6">2. How We Use Your Information</h2>
-          <p>We use your information to:</p>
-          <ul className="list-disc ml-6 mt-2 space-y-1">
-            <li>Provide accurate transport quotes</li>
-            <li>Assign drivers and schedule vehicle pickup and delivery</li>
-            <li>Maintain your client account and secure login</li>
-            <li>Send shipment updates and confirmations</li>
-            <li>Allow you to track your transport status</li>
-            <li>Respond to inquiries and provide customer support</li>
-            <li>Improve website performance and user experience</li>
-            <li>Comply with legal, regulatory, and safety requirements</li>
-          </ul>
-
-          <h2 className="text-xl font-semibold text-white mt-6">3. How We Store & Protect Your Information</h2>
-          <p>Your data is securely stored using Supabase, a hosted database and authentication platform. Supabase uses industry-standard encryption, access controls, and network security protocols.</p>
-          <p className="mt-2">We implement the following protections:</p>
-          <ul className="list-disc ml-6 mt-2 space-y-1">
-            <li>Encrypted database connections</li>
-            <li>Role-based access controls for admin and employee accounts</li>
-            <li>Secure password storage and authentication</li>
-            <li>Limited access to client data by authorized staff only</li>
-            <li>Regular monitoring and security reviews</li>
-          </ul>
-
-          <h2 className="text-xl font-semibold text-white mt-6">4. Sharing Your Information</h2>
-          <p>We only share your information when necessary to complete your transport or as required by law.</p>
-
-          <p className="mt-2">We may share limited information with:</p>
-          <ul className="list-disc ml-6 mt-2 space-y-1">
-            <li>Licensed and insured carriers to complete your shipment</li>
-            <li>Service providers (e.g., email delivery partners)</li>
-            <li>Government authorities, if required for legal compliance</li>
-          </ul>
-
-          <p className="mt-2 font-semibold text-white">
-            We do <span className="text-brand-red">not</span> sell or rent your
-            personal information to third parties.
-          </p>
-
-          <h2 className="text-xl font-semibold text-white mt-6">5. Cookies & Tracking Technologies</h2>
-          <p>
-            Our website may use cookies or similar technologies to enhance your
-            browsing experience, improve site performance, and help diagnose
-            issues. You may disable cookies in your browser settings, although
-            some features may not function correctly.
-          </p>
-
-          <h2 className="text-xl font-semibold text-white mt-6">6. Your Data Rights</h2>
-          <p>You have the right to:</p>
-          <ul className="list-disc ml-6 mt-2 space-y-1">
-            <li>Access the personal data we hold about you</li>
-            <li>Request corrections to inaccurate information</li>
-            <li>Request deletion of your account or data (where legally permitted)</li>
-            <li>Opt out of marketing emails</li>
-          </ul>
-
-          <h2 className="text-xl font-semibold text-white mt-6">7. Data Retention</h2>
-          <p>
-            We retain transport and account data as long as necessary to provide
-            service, comply with legal requirements, resolve disputes, and
-            maintain records of past shipments.
-          </p>
-
-          <h2 className="text-xl font-semibold text-white mt-6">8. Children’s Privacy</h2>
-          <p>
-            Our services are not intended for children under 16, and we do not
-            knowingly collect personal data from minors.
-          </p>
-
-          <h2 className="text-xl font-semibold text-white mt-6">9. Changes to This Policy</h2>
-          <p>
-            We may update this Privacy Policy from time to time. Changes will be
-            posted on this page with a new “Last Updated” date.
-          </p>
-
-          <h2 className="text-xl font-semibold text-white mt-6">10. Contact Us</h2>
-          <p>
-            If you have questions about this Privacy Policy or your data, please
-            contact us at:
-          </p>
-          <p className="mt-2 text-white">
-            <strong>Email:</strong> support@roadamericaautotransport.com
-          </p>
-          <p className="text-white">
-            <strong>Phone:</strong> (555) 555-5555
-          </p>
+<br />
+<h2 className="font-bold">Messaging Terms:</h2>
+<ul>
+<li >
+<p >Message frequency may vary depending on your activity and communication needs.<br /><br /></p>
+</li>
+<li >
+<p >Message and data rates may apply depending on your mobile carrier plan.<br /><br /></p>
+</li>
+<li >
+<p >You can opt out at any time by replying STOP to any text message.<br /><br /></p>
+</li>
+<li >
+<p >For help, reply HELP or email us at info@roadamericatransport.com.<br /><br /></p>
+</li>
+<li >
+<p >We do not sell, rent, or share your SMS opt-in information or mobile number with third parties for marketing purposes.</p>
+</li>
+</ul>
+<br />
+<p >For more information, please refer to our full Terms &amp; Conditions.<br /><br /></p>
+<p >By using our Website and services, you acknowledge that you have read and understood this Privacy Policy.</p>
 
         </section>
       </div>
