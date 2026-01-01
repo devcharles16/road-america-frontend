@@ -159,20 +159,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [hydrateFromSession, setLoggedOut]);
 
   const logout = useCallback(async () => {
-    const reqId = ++reqIdRef.current;
+  const reqId = ++reqIdRef.current;
 
-    // Update UI immediately
-    setLoggedOut(null);
-    setLoading(false);
-
-    const { error } = await supabase.auth.signOut({ scope: "local" });
-
-    if (reqIdRef.current !== reqId) return;
+  try {
+    // 1) Try normal sign out first (use global to invalidate server-side refresh too)
+    const { error } = await supabase.auth.signOut({ scope: "global" });
 
     if (error) {
       console.error("[Auth] signOut error:", error);
     }
-  }, [setLoggedOut]);
+
+    // 2) HARD CLEAR: remove Supabase persisted tokens from storage
+    // Supabase stores tokens under keys like: "sb-<project-ref>-auth-token"
+    for (const key of Object.keys(localStorage)) {
+      if (key.startsWith("sb-") && key.endsWith("-auth-token")) {
+        localStorage.removeItem(key);
+      }
+    }
+
+    // Some apps also keep it in sessionStorage depending on config
+    for (const key of Object.keys(sessionStorage)) {
+      if (key.startsWith("sb-") && key.endsWith("-auth-token")) {
+        sessionStorage.removeItem(key);
+      }
+    }
+  } finally {
+    if (reqIdRef.current !== reqId) return;
+
+    // 3) Update UI state after clearing storage
+    setLoggedOut(null);
+    setLoading(false);
+  }
+}, [setLoggedOut]);
+
 
   useEffect(() => {
     // Initial hydrate
