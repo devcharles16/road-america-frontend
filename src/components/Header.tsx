@@ -40,18 +40,16 @@ const isAdminUser = isLoggedIn && (role === "admin" || role === "employee");
 const location = useLocation();
 
 useEffect(() => {
-  // Only auto-redirect when we're on auth-ish pages
-  const authPaths = ["/login", "/register", "/admin/login", "/post-login"];
+  // Only redirect from auth-related pages
+  const AUTH_PATHS = ["/login", "/register", "/admin/login", "/post-login"];
 
-  if (!authPaths.includes(location.pathname)) return;
+  if (!AUTH_PATHS.includes(location.pathname)) return;
 
-  // Wait until auth has finished hydrating
+  // Wait until auth fully resolves
   if (loading) return;
 
-  // If not logged in, do nothing (stay on login/register)
   if (!user) return;
 
-  // Now route based on role
   if (role === "admin" || role === "employee") {
     navigate("/admin", { replace: true });
     return;
@@ -61,10 +59,8 @@ useEffect(() => {
     navigate("/my-shipments", { replace: true });
     return;
   }
-
-  // Logged in but role missing => leave them on page (or send home)
-  // navigate("/", { replace: true });
 }, [user, role, loading, location.pathname, navigate]);
+
 
 
   return (
