@@ -45,12 +45,12 @@ const AboutPage = () => {
             <p className="mt-3 text-sm text-white/70">
               Road America Auto Transport was created for people who want
               premium service without the guessing game. We work with vetted
-              carriers, clear communication, and live status updates so you know
+              carriers, clear communication, and status updates so you know
               exactly where your vehicle is in the process.
             </p>
             <p className="mt-3 text-sm text-white/70">
               Whether you&apos;re moving across the country, buying out of
-              state, or shipping inventory, our team is focused on one thing:
+              state, or shipping dealership inventory, our team is focused on one thing:
               getting your vehicle where it needs to go—safely, on time, and
               with as little stress as possible.
             </p>
@@ -67,8 +67,7 @@ const AboutPage = () => {
               </li>
               <li>
                 <span className="font-semibold text-white">Clear communication</span>{" "}
-                — email confirmations, status updates, and a client portal to
-                view all of your transports.
+                — email confirmations, status updates, and online transport tracking.
               </li>
               <li>
                 <span className="font-semibold text-white">Trusted carriers</span>{" "}
@@ -154,7 +153,7 @@ const AboutPage = () => {
                 relocating, buying or selling vehicles across state lines.
               </li>
               <li>
-                <span className="font-semibold text-white">Dealers & brokers</span>{" "}
+                <span className="font-semibold text-white">Dealers</span>{" "}
                 needing reliable, repeated transports with clear communication.
               </li>
               <li>
@@ -209,10 +208,17 @@ const AboutPage = () => {
               <p className="mt-1 text-xs uppercase tracking-[0.2em] text-white/60">
                 Tracking Access
               </p>
-              <p className="mt-2 text-[11px] text-white/60">
-                Check the status of your shipment anytime using your reference
-                ID and email.
-              </p>
+             <p className="mt-2 text-[11px] text-white/60">
+  Check the{" "}
+  <Link
+    to="/track"
+    className="font-semibold text-brand-red hover:text-brand-redSoft underline underline-offset-2"
+  >
+    status
+  </Link>{" "}
+  of your shipment anytime using your reference ID and email.
+</p>
+
             </div>
             <div className="rounded-2xl border border-white/10 bg-[#121212]/60 p-5 text-center">
               <p className="text-2xl font-semibold text-brand-red">1</p>
@@ -236,8 +242,7 @@ const AboutPage = () => {
               Ready to schedule your next transport?
             </h2>
             <p className="mt-2 text-sm text-white/70 max-w-xl">
-              Start with a quick quote, then track your shipment online or via
-              the client portal. We&apos;ll handle the logistics—so you don&apos;t
+              Start with a quick quote, then track your shipment online. We&apos;ll handle the logistics—so you don&apos;t
               have to.
             </p>
           </div>

@@ -125,7 +125,7 @@ const TrackingPage = () => {
             Track Your Vehicle Transport
           </h1>
           <p className="mt-2 text-sm text-white/70">
-            Enter your Road America reference ID and the email used on your
+             Road America Auto Transport reference ID and the email used on your
             quote so we can display the latest status of your shipment.
           </p>
         </div>
@@ -145,7 +145,7 @@ const TrackingPage = () => {
                 name="referenceId"
                 value={form.referenceId}
                 onChange={handleChange}
-                placeholder="e.g. RAU-10234"
+                placeholder="e.g. RA-10234"
                 className="w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
                 required
               />
@@ -157,7 +157,7 @@ const TrackingPage = () => {
                 name="email"
                 value={form.email}
                 onChange={handleChange}
-                placeholder="Email used with your quote"
+                placeholder="Email used with your quote request"
                 className="w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
                 required
               />

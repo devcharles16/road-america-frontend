@@ -188,7 +188,7 @@ const isFormValid = requiredValues.every(
           </h1>
           <p className="mt-2 text-sm text-white/70">
             Share a few details about your vehicle and route. We’ll follow up with
-            pricing by email or phone.
+            pricing by email.
           </p>
         </div>
 

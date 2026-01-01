@@ -47,15 +47,19 @@ const PrivacyPage = () => {
 <li >
 <p >To comply with legal obligations and enforce our terms and conditions.<br /><br /></p>
 </li>
+<li >
+<p >We retain personal information only as long as necessary to provide our services and meet legal, accounting, and regulatory obligations.
+<br /><br /></p>
+</li>
 </ul>
 <h2 className="font-bold">5. Sharing of Information</h2>
-<p >We do not sell, rent, or share your personal information with third parties, except in the following circumstances:</p>
+<p >We do not sell or rent your personal information. We may share your information only in the following circumstances:</p>
 <ul>
 <li >
-<p >Service Providers:&nbsp;We may share information with third-party service providers who perform services on our behalf, such as payment processing and data analysis. These service providers are obligated to protect your information.<br /><br /></p>
+<p >Service Providers and Partners: We may share information with third-party service providers, carriers, dispatch partners, technology platforms, and payment processors who perform services on our behalf or are required to fulfill your transport request. These parties are authorized to use your information only as necessary to provide these services and are obligated to protect it.<br /><br /></p>
 </li>
 <li >
-<p >Legal Requirements:&nbsp;We may disclose information if required to do so by law or in response to valid requests by public authorities.<br /><br /></p>
+<p >Legal Requirements: We may disclose information if required to do so by law, subpoena, or in response to valid requests by public authorities.<br /><br /></p>
 </li>
 </ul>
 <h2 className="font-bold">6. Data Security</h2>
@@ -72,7 +76,7 @@ const PrivacyPage = () => {
 <h2 className="font-bold">8. Third-Party Links</h2>
 <p >Our Website may contain links to third-party websites. We are not responsible for the privacy practices or content of these external sites. We encourage you to read the privacy policies of any linked websites you visit.</p>
 <h2 className="font-bold">9. Children's Privacy</h2>
-<p >Our services are not directed to individuals under the age of 13, and we do not knowingly collect personal information from children under 13. If we become aware that we have inadvertently received personal information from a child under 13, we will delete such information from our records.<a href="https://www.trucking.org/privacy-policy?utm_source=chatgpt.com" target="_blank">American Trucking Association</a></p>
+<p >Our services are not directed to individuals under the age of 13, and we do not knowingly collect personal information from children under 13. If we become aware that we have inadvertently received personal information from a child under 13, we will delete such information from our records.</p>
 <h2 className="font-bold">10. Changes to This Privacy Policy</h2>
 <p >We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on our Website. You are advised to review this Privacy Policy periodically for any changes.</p>
 <h2 className="font-bold">11. Contact Us</h2>
@@ -83,7 +87,12 @@ const PrivacyPage = () => {
 </li>
 </ul>
 <h2 className="font-bold">12.&nbsp;SMS Consent &amp; Disclosure</h2>
-<p >By providing your mobile number and opting in via our website, dispatch communications, or partner platforms, you consent to receive SMS (text) messages from&nbsp;A&amp;D CHARLES TRADING COMPANY LLC / Road America Auto Transport. These messages may include but are not limited to:&nbsp;</p>
+<p >Consent to receive SMS messages is not a condition of purchasing any goods or services.
+
+We do not sell, rent, or share your SMS opt-in information or mobile number with third parties for marketing or promotional purposes.
+
+For more information about how we use and protect your data, please review this Privacy Policy and our Terms & Conditions.
+</p>
 
 <ul className="space-y-2 text-sm text-white/80">
   <li>• Load offers and job assignments</li>
