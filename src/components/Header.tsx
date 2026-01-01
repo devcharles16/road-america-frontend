@@ -88,7 +88,7 @@ const Header = () => {
           )}
 
           {/* Admin / Employee (HIDDEN during troubleshooting) */}
-{AUTH_PUBLIC_ENABLED && isAdminUser && (
+{isAdminUser && (
   <NavLink
     to="/admin"
     className={({ isActive }) =>
@@ -102,25 +102,24 @@ const Header = () => {
 )}
 
 
-          {/* Auth UI (HIDDEN during troubleshooting) */}
-          {AUTH_PUBLIC_ENABLED && (
-            !isLoggedIn ? (
-              <>
-                <NavLink to="/login">Login</NavLink>
-                <NavLink to="/register">Register</NavLink>
-              </>
-            ) : (
-              <>
-                <span className="text-xs text-white/50">
-                  {displayName}
-                  {!loading && role ? ` · ${role}` : ""}
-                </span>
-                <button type="button" onClick={handleLogout}>
-                  Logout
-                </button>
-              </>
-            )
-          )}
+          {/* Auth UI */}
+{!isLoggedIn ? (
+  <>
+    <NavLink to="/login">Login</NavLink>
+    <NavLink to="/register">Register</NavLink>
+  </>
+) : (
+  <>
+    <span className="text-xs text-white/50">
+      {displayName}
+      {!loading && role ? ` · ${role}` : ""}
+    </span>
+    <button type="button" onClick={handleLogout}>
+      Logout
+    </button>
+  </>
+)}
+
         </nav>
 
         {/* Mobile toggle */}
@@ -157,31 +156,29 @@ const Header = () => {
               </Link>
             )}
 
-           {AUTH_PUBLIC_ENABLED && isAdminUser && (
-  <Link
-    to="/admin"
-    onClick={() => setMobileOpen(false)}
-    className="block text-white/80"
-  >
+           {isAdminUser && (
+  <Link to="/admin" onClick={() => setMobileOpen(false)} className="block text-white/80">
     Admin Dashboard
   </Link>
 )}
 
 
+
             {/* Auth UI (mobile) */}
             {AUTH_PUBLIC_ENABLED && (
               <div className="pt-3 border-t border-white/10">
-                {!isLoggedIn ? (
-                  <>
-                    <Link to="/login">Login</Link>
-                    <Link to="/register">Register</Link>
-                  </>
-                ) : (
-                  <button type="button" onClick={handleLogout}>
-                    Logout
-                  </button>
-                )}
-              </div>
+  {!isLoggedIn ? (
+    <>
+      <Link to="/login" onClick={() => setMobileOpen(false)}>Login</Link>
+      <Link to="/register" onClick={() => setMobileOpen(false)}>Register</Link>
+    </>
+  ) : (
+    <button type="button" onClick={handleLogout}>
+      Logout
+    </button>
+  )}
+</div>
+
             )}
           </div>
         </div>

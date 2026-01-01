@@ -253,14 +253,14 @@ const AboutPage = () => {
             >
               Get a Quote
             </Link>
-           {/*
+          
 <Link
   to="/login"
   className="rounded-full border border-white/30 px-6 py-3 text-xs md:text-sm font-semibold text-white hover:border-brand-redSoft"
 >
   Login
 </Link>
-*/}
+
 
           </div>
         </div>

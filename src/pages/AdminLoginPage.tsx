@@ -1,9 +1,9 @@
- console.log("LOGIN PAGE RENDER");
 // src/pages/AdminLoginPage.tsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
 
+console.log("LOGIN PAGE RENDER");
 const AdminLoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

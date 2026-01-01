@@ -7,25 +7,38 @@ export default function PostLoginRedirectPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Wait until AuthContext finishes session + role hydration
     if (loading) return;
 
+    // If no session, go to client login (or choose one)
     if (!user) {
       navigate("/login", { replace: true });
       return;
     }
+console.log("POST LOGIN REDIRECT", {
+  user,
+  role,
+  loading,
+});
 
+    // Route based on role
     if (role === "admin" || role === "employee") {
       navigate("/admin", { replace: true });
       return;
     }
 
-    // default for clients (or role not set yet)
-    navigate("/my-shipments", { replace: true });
-  }, [loading, user, role, navigate]);
+    if (role === "client") {
+      navigate("/my-shipments", { replace: true });
+      return;
+    }
+
+    // Logged in but no role found in profiles
+    navigate("/", { replace: true });
+  }, [user, role, loading, navigate]);
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-10 text-sm text-white/70">
-      Signing you in…
+    <div className="min-h-[60vh] flex items-center justify-center text-white/70">
+      Redirecting…
     </div>
   );
 }

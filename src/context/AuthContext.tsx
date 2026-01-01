@@ -60,7 +60,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setLoading(true);
 
     try {
-      // ✅ Strongest source of truth for "are we logged in right now?"
+      // Strongest source of truth for "are we logged in right now?"
       const { data: sessionData, error: sessionErr } =
         await supabase.auth.getSession();
 
@@ -94,6 +94,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setLoading(false);
       }
     }
+    
   }, [fetchRole]);
 
   const logout = useCallback(async () => {

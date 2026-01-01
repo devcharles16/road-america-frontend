@@ -1,15 +1,21 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import React from "react";
 
 const AUTH_PUBLIC_ENABLED =
-  import.meta.env.VITE_AUTH_PUBLIC_ENABLED === "true";
+  import.meta.env.VITE_AUTH_PUBLIC_ENABLED === "false";
 
 type Props = {
   children: React.ReactNode;
 };
 
 export default function AuthPublicGate({ children }: Props) {
-  if (!AUTH_PUBLIC_ENABLED) {
+  const location = useLocation();
+
+  // ✅ Always allow login routes so staff can sign in
+  const allowList = ["/login", "/admin/login"];
+  const isAllowed = allowList.includes(location.pathname);
+
+  if (!AUTH_PUBLIC_ENABLED && !isAllowed) {
     return <Navigate to="/" replace />;
   }
 
