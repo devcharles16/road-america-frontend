@@ -161,36 +161,46 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = useCallback(async () => {
   const reqId = ++reqIdRef.current;
 
-  try {
-    // 1) Try normal sign out first (use global to invalidate server-side refresh too)
-    const { error } = await supabase.auth.signOut({ scope: "global" });
-
-    if (error) {
-      console.error("[Auth] signOut error:", error);
-    }
-
-    // 2) HARD CLEAR: remove Supabase persisted tokens from storage
+  const clearSupabaseAuthStorage = () => {
     // Supabase stores tokens under keys like: "sb-<project-ref>-auth-token"
     for (const key of Object.keys(localStorage)) {
       if (key.startsWith("sb-") && key.endsWith("-auth-token")) {
         localStorage.removeItem(key);
       }
     }
-
-    // Some apps also keep it in sessionStorage depending on config
     for (const key of Object.keys(sessionStorage)) {
       if (key.startsWith("sb-") && key.endsWith("-auth-token")) {
         sessionStorage.removeItem(key);
       }
     }
+  };
+
+  try {
+    // Immediately reflect logged-out UI (prevents “stuck logged-in” feel)
+    setLoggedOut(null);
+    setLoading(true);
+
+    // 1) Invalidate refresh token server-side (best effort)
+    const { error } = await supabase.auth.signOut({ scope: "global" });
+    if (error) console.error("[Auth] signOut(global) error:", error);
+
+    // 2) Hard clear any persisted auth tokens (prevents rehydration)
+    clearSupabaseAuthStorage();
+
+    // 3) Clear any in-memory session the client might still hold
+    // (Supabase should do this on signOut, but we force a clean read)
+    const { data } = await supabase.auth.getSession();
+    if (data.session) {
+      // If we still see a session, clear storage again (covers “stuck” cases)
+      console.warn("[Auth] Session still present after logout. Forcing storage clear again.");
+      clearSupabaseAuthStorage();
+    }
   } finally {
     if (reqIdRef.current !== reqId) return;
-
-    // 3) Update UI state after clearing storage
-    setLoggedOut(null);
     setLoading(false);
   }
 }, [setLoggedOut]);
+
 
 
   useEffect(() => {
