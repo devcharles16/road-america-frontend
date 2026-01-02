@@ -6,11 +6,9 @@ import { useAuth } from "../context/AuthContext";
 const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const navigate = useNavigate();
-  const location = useLocation();
 
   const { user, role, loading, logout } = useAuth();
   const isLoggedIn = !!user;
-  const isAdminUser = isLoggedIn && (role === "admin" || role === "employee");
 
   const displayName =
     (user?.user_metadata?.full_name as string | undefined) ||
@@ -30,19 +28,6 @@ const Header = () => {
     }
   };
 
-  /* 🔐 Auth redirect safety net */
-  useEffect(() => {
-    const AUTH_PATHS = ["/login", "/register", "/admin/login", "/post-login"];
-    if (!AUTH_PATHS.includes(location.pathname)) return;
-    if (loading || !user) return;
-
-    if (role === "admin" || role === "employee") {
-      navigate("/admin", { replace: true });
-    } else if (role === "client") {
-      navigate("/my-shipments", { replace: true });
-    }
-  }, [user, role, loading, location.pathname, navigate]);
-
   const navItems = [
     { label: "Home", to: "/" },
     { label: "About", to: "/about" },
@@ -50,6 +35,33 @@ const Header = () => {
     { label: "Track Shipment", to: "/track" },
     { label: "Blog", to: "/blog" },
   ];
+
+const isAdminUser = isLoggedIn && (role === "admin" || role === "employee");
+const location = useLocation();
+
+useEffect(() => {
+  // Only redirect from auth-related pages
+  const AUTH_PATHS = ["/login", "/register", "/admin/login", "/post-login"];
+
+  if (!AUTH_PATHS.includes(location.pathname)) return;
+
+  // Wait until auth fully resolves
+  if (loading) return;
+
+  if (!user) return;
+
+  if (role === "admin" || role === "employee") {
+    navigate("/admin", { replace: true });
+    return;
+  }
+
+  if (role === "client") {
+    navigate("/my-shipments", { replace: true });
+    return;
+  }
+}, [user, role, loading, location.pathname, navigate]);
+
+
 
   return (
     <header className="bg-[#121212]/40 backdrop-blur-md border-b border-white/10 sticky top-0 z-50">
@@ -96,50 +108,39 @@ const Header = () => {
             </NavLink>
           )}
 
-          {/* Admin / Employee */}
-          {isAdminUser && (
-            <>
-              <NavLink
-                to="/admin"
-                className={({ isActive }) =>
-                  `hover:text-brand-redSoft transition ${
-                    isActive ? "text-brand-redSoft" : "text-white/80"
-                  }`
-                }
-              >
-                Admin Dashboard
-              </NavLink>
+          {/* Admin / Employee (HIDDEN during troubleshooting) */}
+{isAdminUser && (
+  <NavLink
+    to="/admin"
+    className={({ isActive }) =>
+      `hover:text-brand-redSoft transition ${
+        isActive ? "text-brand-redSoft" : "text-white/80"
+      }`
+    }
+  >
+    Admin Dashboard
+  </NavLink>
+)}
 
-              <NavLink
-                to="/admin/quotes"
-                className={({ isActive }) =>
-                  `hover:text-brand-redSoft transition ${
-                    isActive ? "text-brand-redSoft" : "text-white/80"
-                  }`
-                }
-              >
-                Quotes
-              </NavLink>
-            </>
-          )}
 
           {/* Auth UI */}
-          {!isLoggedIn ? (
-            <>
-              <NavLink to="/login">Login</NavLink>
-              <NavLink to="/register">Register</NavLink>
-            </>
-          ) : (
-            <>
-              <span className="text-xs text-white/50">
-                {displayName}
-                {!loading && role ? ` · ${role}` : ""}
-              </span>
-              <button type="button" onClick={handleLogout}>
-                Logout
-              </button>
-            </>
-          )}
+{!isLoggedIn ? (
+  <>
+    <NavLink to="/login">Login</NavLink>
+    <NavLink to="/register">Register</NavLink>
+  </>
+) : (
+  <>
+    <span className="text-xs text-white/50">
+      {displayName}
+      {!loading && role ? ` · ${role}` : ""}
+    </span>
+    <button type="button" onClick={handleLogout}>
+      Logout
+    </button>
+  </>
+)}
+
         </nav>
 
         {/* Mobile toggle */}
@@ -176,51 +177,40 @@ const Header = () => {
               </Link>
             )}
 
-            {isAdminUser && (
-              <>
-                <Link
-                  to="/admin"
-                  onClick={() => setMobileOpen(false)}
-                  className="block text-white/80"
-                >
-                  Admin Dashboard
-                </Link>
-                <Link
-                  to="/admin/quotes"
-                  onClick={() => setMobileOpen(false)}
-                  className="block text-white/80"
-                >
-                  Quotes
-                </Link>
-              </>
-            )}
+           {isAdminUser && (
+  <Link to="/admin" onClick={() => setMobileOpen(false)} className="block text-white/80">
+    Admin Dashboard
+  </Link>
+)}
 
-            {/* Auth UI (mobile) */}
-            <div className="pt-3 border-t border-white/10 space-y-2">
-              {!isLoggedIn ? (
-                <>
-                  <Link to="/login" onClick={() => setMobileOpen(false)}>
-                    Login
-                  </Link>
-                  <Link to="/register" onClick={() => setMobileOpen(false)}>
-                    Register
-                  </Link>
-                  <Link to="/admin/login" onClick={() => setMobileOpen(false)}>
-                    Admin / Employee Login
-                  </Link>
-                </>
-              ) : (
-                <>
-                  <span className="block text-xs text-white/50">
-                    {displayName}
-                    {!loading && role ? ` · ${role}` : ""}
-                  </span>
-                  <button type="button" onClick={handleLogout}>
-                    Logout
-                  </button>
-                </>
-              )}
-            </div>
+
+{/* Auth UI (mobile) */}
+<div className="pt-3 border-t border-white/10 space-y-2">
+  {!isLoggedIn ? (
+    <>
+      <Link to="/login" onClick={() => setMobileOpen(false)} className="block text-white/80">
+        Login
+      </Link>
+      <Link to="/register" onClick={() => setMobileOpen(false)} className="block text-white/80">
+        Register
+      </Link>
+      <Link to="/admin/login" onClick={() => setMobileOpen(false)} className="block text-white/80">
+        Admin / Employee Login
+      </Link>
+    </>
+  ) : (
+    <>
+      <span className="block text-xs text-white/50">
+        {displayName}
+        {!loading && role ? ` · ${role}` : ""}
+      </span>
+      <button type="button" onClick={handleLogout} className="block text-white/80">
+        Logout
+      </button>
+    </>
+  )}
+</div>
+
           </div>
         </div>
       )}

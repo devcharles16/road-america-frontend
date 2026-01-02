@@ -23,10 +23,7 @@ type AuthContextValue = {
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 function normalizeRole(input: any): Role {
-  const r = String(input ?? "")
-    .trim()
-    .toLowerCase();
-
+  const r = String(input ?? "").trim().toLowerCase();
   if (r === "admin" || r === "employee" || r === "client") return r as Role;
   return null;
 }
@@ -34,16 +31,29 @@ function normalizeRole(input: any): Role {
 async function upsertProfileDefaultClient(u: any) {
   if (!u?.id) return;
 
-  // Default for self-serve users. Staff should have role set manually in profiles.
-  const payload = {
+  const payload: any = {
     id: u.id,
     email: u.email ?? null,
     role: "client",
+    // your schema may not have updated_at; safe to remove if needed
     updated_at: new Date().toISOString(),
   };
 
-  // If you don't have email/updated_at columns, remove them.
   await supabase.from("profiles").upsert(payload, { onConflict: "id" });
+}
+
+function clearSupabaseAuthStorage() {
+  // Supabase stores tokens under keys like: "sb-<project-ref>-auth-token"
+  for (const key of Object.keys(localStorage)) {
+    if (key.startsWith("sb-") && key.endsWith("-auth-token")) {
+      localStorage.removeItem(key);
+    }
+  }
+  for (const key of Object.keys(sessionStorage)) {
+    if (key.startsWith("sb-") && key.endsWith("-auth-token")) {
+      sessionStorage.removeItem(key);
+    }
+  }
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -54,6 +64,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Prevent stale async overwrites
   const reqIdRef = useRef(0);
+
+  // Prevent “logout rehydrates session” races
+  const isLoggingOutRef = useRef(false);
 
   const setLoggedOut = useCallback((err: string | null = null) => {
     setUser(null);
@@ -70,7 +83,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    // 1) Try fetch
     const { data, error } = await supabase
       .from("profiles")
       .select("role")
@@ -78,6 +90,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       .single();
 
     if (reqIdRef.current !== reqId) return;
+    if (isLoggingOutRef.current) return;
 
     if (!error) {
       setRoleError(null);
@@ -85,15 +98,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    // 2) If profile missing (or any error), try to create default profile once, then retry
-    // (This is especially helpful if client users sign up but profiles row wasn't created.)
     try {
       await upsertProfileDefaultClient(u);
     } catch (e: any) {
-      // If RLS blocks upsert, you'll see it here
       if (reqIdRef.current === reqId) {
         setRole(null);
-        setRoleError(error.message || "Failed to load profile role.");
+        setRoleError(error?.message || "Failed to load profile role.");
       }
       return;
     }
@@ -105,6 +115,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       .single();
 
     if (reqIdRef.current !== reqId) return;
+    if (isLoggingOutRef.current) return;
 
     if (retryErr) {
       setRole(null);
@@ -118,19 +129,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const hydrateFromSession = useCallback(
     async (session: any, reqId: number) => {
-      const u = session?.user ?? null;
+      if (isLoggingOutRef.current) return;
 
+      const u = session?.user ?? null;
       if (!u) {
         setLoggedOut(null);
         return;
       }
 
       setUser(u);
-
-      // Always derive role from profiles
       await fetchRoleForUser(u, reqId);
-
-      // Note: we do NOT force-redirect here; your /post-login handles that.
     },
     [fetchRoleForUser, setLoggedOut]
   );
@@ -140,9 +148,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setLoading(true);
 
     try {
+      if (isLoggingOutRef.current) {
+        setLoggedOut(null);
+        return;
+      }
+
       const { data, error } = await supabase.auth.getSession();
 
       if (reqIdRef.current !== reqId) return;
+      if (isLoggingOutRef.current) return;
 
       if (error || !data.session) {
         setLoggedOut(error?.message ?? null);
@@ -159,61 +173,52 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [hydrateFromSession, setLoggedOut]);
 
   const logout = useCallback(async () => {
-  const reqId = ++reqIdRef.current;
+    const reqId = ++reqIdRef.current;
+    isLoggingOutRef.current = true;
 
-  const clearSupabaseAuthStorage = () => {
-    // Supabase stores tokens under keys like: "sb-<project-ref>-auth-token"
-    for (const key of Object.keys(localStorage)) {
-      if (key.startsWith("sb-") && key.endsWith("-auth-token")) {
-        localStorage.removeItem(key);
-      }
-    }
-    for (const key of Object.keys(sessionStorage)) {
-      if (key.startsWith("sb-") && key.endsWith("-auth-token")) {
-        sessionStorage.removeItem(key);
-      }
-    }
-  };
-
-  try {
-    // Immediately reflect logged-out UI (prevents “stuck logged-in” feel)
+    // Immediately show logged out UI (prevents “stuck logged in” feel)
     setLoggedOut(null);
     setLoading(true);
 
-    // 1) Invalidate refresh token server-side (best effort)
-    const { error } = await supabase.auth.signOut({ scope: "global" });
-    if (error) console.error("[Auth] signOut(global) error:", error);
+    try {
+      // Best effort server-side invalidation
+      const { error } = await supabase.auth.signOut({ scope: "global" });
+      if (error) console.error("[Auth] signOut(global) error:", error);
 
-    // 2) Hard clear any persisted auth tokens (prevents rehydration)
-    clearSupabaseAuthStorage();
-
-    // 3) Clear any in-memory session the client might still hold
-    // (Supabase should do this on signOut, but we force a clean read)
-    const { data } = await supabase.auth.getSession();
-    if (data.session) {
-      // If we still see a session, clear storage again (covers “stuck” cases)
-      console.warn("[Auth] Session still present after logout. Forcing storage clear again.");
+      // Always hard clear local persisted tokens
       clearSupabaseAuthStorage();
+
+      // Verify: if session still exists, force local signout + clear again
+      const { data } = await supabase.auth.getSession();
+      if (data.session) {
+        console.warn("[Auth] Session still present after logout; forcing local signOut + storage clear.");
+        await supabase.auth.signOut({ scope: "local" });
+        clearSupabaseAuthStorage();
+      }
+    } finally {
+      if (reqIdRef.current === reqId) {
+        setLoading(false);
+      }
+      // Allow auth listener to run again after we’ve finished
+      isLoggingOutRef.current = false;
     }
-  } finally {
-    if (reqIdRef.current !== reqId) return;
-    setLoading(false);
-  }
-}, [setLoggedOut]);
-
-
+  }, [setLoggedOut]);
 
   useEffect(() => {
-    // Initial hydrate
     refreshAuth();
 
-    // Subscribe to auth changes
     const { data: sub } = supabase.auth.onAuthStateChange(
       async (_event, session) => {
         const reqId = ++reqIdRef.current;
         setLoading(true);
 
         try {
+          // During logout, ignore any “phantom” sessions
+          if (isLoggingOutRef.current) {
+            if (!session) setLoggedOut(null);
+            return;
+          }
+
           if (!session) {
             setLoggedOut(null);
             return;
