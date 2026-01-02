@@ -24,6 +24,7 @@ import AdminShipmentsPage from "./pages/AdminShipmentsPage";
 import AdminBlogPage from "./pages/AdminBlogPage";
 import AdminUsersPage from "./pages/AdminUsersPage";
 import PostLoginRedirectPage from "./pages/PostLoginRedirectPage";
+import AdminQuotesPage from "./pages/AdminQuotesPage";
 
 import AuthPublicGate from "./routes/AuthPublicGate";
 import { RequireRoles } from "./routes/RequireRoles";
@@ -82,19 +83,25 @@ function App() {
           <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/terms" element={<TermsPage />} />
 
-          {/* Admin + Employee */}
-          <Route element={<RequireRoles allowed={["admin", "employee"]} />}>
-            <Route path="/admin" element={<AdminLayout />}>
-              <Route index element={<AdminDashboardPage />} />
-              <Route path="shipments" element={<AdminShipmentsPage />} />
-              <Route path="blog" element={<AdminBlogPage />} />
+         {/* Admin + Employee */}
+<Route
+  element={
+    <RequireRoles allowed={["admin", "employee"]} redirectTo="/admin/login" />
+  }
+>
+  <Route path="/admin" element={<AdminLayout />}>
+    <Route index element={<AdminDashboardPage />} />
+    <Route path="shipments" element={<AdminShipmentsPage />} />
+    <Route path="quotes" element={<AdminQuotesPage />} />
+    <Route path="blog" element={<AdminBlogPage />} />
 
-              {/* Admin-only */}
-              <Route element={<RequireRoles allowed={["admin"]} />}>
-                <Route path="users" element={<AdminUsersPage />} />
-              </Route>
-            </Route>
-          </Route>
+    {/* Admin-only */}
+    <Route element={<RequireRoles allowed={["admin"]} />}>
+      <Route path="users" element={<AdminUsersPage />} />
+    </Route>
+  </Route>
+</Route>
+
         </Routes>
       </main>
       <Footer />

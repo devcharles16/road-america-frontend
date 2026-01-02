@@ -271,5 +271,35 @@ router.patch(
     }
   }
 );
+/**
+ * ADMIN/EMPLOYEE: List all quotes
+ * GET /api/quotes
+ */
+router.get(
+  "/quotes",
+  requireAuth,
+  requireOneOf(["admin", "employee"]),
+  async (req, res) => {
+    try {
+      const { data, error } = await supabase
+        .from("quotes")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+
+      return res.json(
+        (data ?? []).map((q) => ({
+          ...q,
+          referenceId: q.reference_id,
+        }))
+      );
+    } catch (err) {
+      console.error("List quotes error:", err);
+      return res.status(500).json({ message: "Server error listing quotes" });
+    }
+  }
+);
+
 
 export default router;
