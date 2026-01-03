@@ -9,16 +9,18 @@ import React, {
 } from "react";
 import { supabase } from "../lib/supabaseClient";
 
+// update Role export stays the same
 export type Role = "admin" | "employee" | "client" | null;
 
 type AuthContextValue = {
   user: any | null;
-  role: Role;
+  role: Role | undefined; //
   roleError: string | null;
   loading: boolean;
   refreshAuth: () => Promise<void>;
   logout: () => Promise<void>;
 };
+
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
@@ -58,7 +60,7 @@ function clearSupabaseAuthStorage() {
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<any | null>(null);
-  const [role, setRole] = useState<Role>(null);
+  const [role, setRole] = useState<Role | undefined>(undefined);
   const [roleError, setRoleError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -68,11 +70,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Prevent “logout rehydrates session” races
   const isLoggingOutRef = useRef(false);
 
-  const setLoggedOut = useCallback((err: string | null = null) => {
-    setUser(null);
-    setRole(null);
-    setRoleError(err);
-  }, []);
+const setLoggedOut = useCallback((err: string | null = null) => {
+  setUser(null);
+  setRole(undefined);
+  setRoleError(err);
+}, []);
+
 
   const fetchRoleForUser = useCallback(async (u: any, reqId: number) => {
     if (!u?.id) {
