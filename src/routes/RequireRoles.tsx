@@ -14,10 +14,10 @@ export function RequireRoles({
   const { role, loading, user } = useAuth();
   const location = useLocation();
 
- if (loading || role === undefined) {
-  return <div className="p-6 text-white/60">Loading…</div>;
-}
-
+  // Wait for auth + role hydration
+  if (loading || role === undefined) {
+    return <div className="p-6 text-white/60">Loading your account…</div>;
+  }
 
   // Not logged in
   if (!user) {
@@ -30,25 +30,14 @@ export function RequireRoles({
     );
   }
 
-  // Logged in but role missing (RLS / profile issue)
- // Role still resolving
-if (role === undefined) {
-  return (
-    <div className="p-6 text-white/60">
-      Loading your account…
-    </div>
-  );
-}
-
-// Logged in but role missing (RLS / profile issue)
-if (role === null) {
-  return (
-    <div className="p-6 text-white/70">
-      Signed in, but no role found for this account. Please contact an administrator.
-    </div>
-  );
-}
-
+  // Logged in but role missing (profile / RLS issue)
+  if (role === null) {
+    return (
+      <div className="p-6 text-white/70">
+        Signed in, but no role found for this account. Please contact an administrator.
+      </div>
+    );
+  }
 
   // Logged in but wrong role
   if (!allowed.includes(role)) {

@@ -179,6 +179,7 @@ router.get("/track", async (req, res) => {
   }
 });
 
+
 /**
  * CLIENT: Get shipments for logged-in client
  * GET /api/my-shipments
@@ -189,25 +190,68 @@ router.get(
   requireRole("client"),
   async (req, res) => {
     try {
-      const email = req.user.email;
+      const userId = req.user?.id;
+const email = String(req.user?.email ?? "").trim().toLowerCase();
 
-      const { data, error } = await supabase
-        .from("shipments")
-        .select("*")
-        .ilike("customer_email", email)
-        .order("created_at", { ascending: false });
+// Build the OR filter safely so we never generate a broken query
+// NOTE: We build the `.or()` filter dynamically to avoid malformed filters.
+// We also use `%${email}%` for ilike pattern matching.
 
-      if (error) throw error;
+const orParts = [];
+if (userId) orParts.push(`user_id.eq.${userId}`);
+if (email) orParts.push(`customer_email.ilike.%${email}%`);
 
-      return res.json(
-        (data ?? []).map((s) => ({ ...s, referenceId: s.reference_id }))
-      );
+if (orParts.length === 0) {
+  return res.status(401).json({ message: "Missing user identity" });
+}
+
+const { data, error } = await supabase
+  .from("shipments")
+  .select("*")
+  // match by either authenticated user_id OR shipment email
+  .or(orParts.join(","))
+  .order("created_at", { ascending: false });
+
+if (error) throw error;
+
+
+      const mapped = (data ?? []).map((s) => ({
+        id: s.id,
+        referenceId: s.reference_id,
+
+        customerName: s.customer_name,
+        customerEmail: s.customer_email,
+        customerPhone: s.customer_phone,
+
+        pickupCity: s.pickup_city,
+        pickupState: s.pickup_state,
+        deliveryCity: s.delivery_city,
+        deliveryState: s.delivery_state,
+
+        vehicleYear: s.vehicle_year,
+        vehicleMake: s.vehicle_make,
+        vehicleModel: s.vehicle_model,
+        vin: s.vin,
+
+        runningCondition: s.running_condition,
+        transportType: s.transport_type,
+
+        status: s.status,
+        eta: s.eta,
+
+        userId: s.user_id,
+        createdAt: s.created_at,
+        updatedAt: s.updated_at,
+      }));
+
+      return res.json(mapped);
     } catch (err) {
       console.error("My shipments error:", err);
       return res.status(500).json({ message: "Server error loading shipments" });
     }
   }
 );
+
 
 /**
  * ADMIN/EMPLOYEE: List all shipments

@@ -1,5 +1,6 @@
 import { API_BASE_URL } from "../config/api";
 import { supabase } from "../lib/supabaseClient";
+import { fetchWithAuth, handleResponse } from "./apiClient";
 
 export type QuoteCreateInput = {
   firstName: string;
@@ -139,33 +140,20 @@ export async function adminListQuotes(): Promise<AdminQuoteRow[]> {
 }
 
 /**
- * ADMIN/EMPLOYEE: convert a quote into a shipment
+ * ADMIN: Convert a quote to a shipment
  * POST /api/shipments/from-quote
+ *
+ * IMPORTANT:
+ * - Uses fetchWithAuth() so we always send the freshest token
+ * - Uses handleResponse() so 401/500 errors don’t look like “empty data”
  */
 export async function adminConvertQuoteToShipment(quoteId: string) {
-  const token = await getAccessTokenOrThrow();
-
-  const res = await fetch(`${API_BASE_URL}/api/shipments/from-quote`, {
+  const res = await fetchWithAuth("/api/shipments/from-quote", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ quoteId }),
   });
 
-  const contentType = res.headers.get("content-type") || "";
-  if (!contentType.includes("application/json")) {
-    const text = await res.text();
-    throw new Error(
-      `Expected JSON but got ${contentType}. First 120 chars: ${text.slice(0, 120)}`
-    );
-  }
-
-  if (!res.ok) {
-    const msg = await res.text();
-    throw new Error(msg || "Failed to convert quote to shipment");
-  }
-
-  return res.json();
+  return handleResponse(res);
 }
+

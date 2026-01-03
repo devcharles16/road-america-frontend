@@ -1,6 +1,7 @@
 // src/services/shipmentsService.ts
 import { supabase } from "../lib/supabaseClient";
 
+
 /** Base URL for your backend */
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "http://localhost:4000";
@@ -189,20 +190,36 @@ export async function updateShipmentStatus(
   return handleResponse<TransportRequest>(res);
 }
 
-/**
- * CLIENT: List shipments for the currently logged-in client
- * GET /api/my-shipments
- */
+ // ================================
+  // API: List shipments for logged-in client
+  // ================================
+  // Calls backend endpoint: GET /api/my-shipments
+  // Backend MUST:
+  // - Validate Supabase JWT from Authorization header
+  // - Determine user identity (user id + email)
+  // - Return shipments for that user (commonly user_id OR customer_email)
+  //
+  // If this returns [], check:
+  // - shipments.user_id is null (very common if shipments were created from quotes)
+  // - backend is filtering only by user_id
+  // - token parsing / auth middleware
+  // ================================
 export async function listMyShipments(): Promise<TransportRequest[]> {
   const token = await getAccessToken();
   if (!token) throw new Error("Not authenticated");
 
   const res = await fetch(`${API_BASE_URL}/api/my-shipments`, {
-    headers: { Authorization: `Bearer ${token}` },
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Cache-Control": "no-store", // helps avoid “it feels cached” issues
+    },
+    cache: "no-store",
   });
 
   return handleResponse<TransportRequest[]>(res);
 }
+
 
 /**
  * PUBLIC: Track a specific shipment by reference ID + email
