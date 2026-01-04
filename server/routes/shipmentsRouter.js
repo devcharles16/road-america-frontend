@@ -25,7 +25,42 @@ const ALLOWED_STATUSES = [
 router.post("/quotes", async (req, res) => {
   try {
     const input = req.body;
+// ✅ 0) Verify reCAPTCHA token (v3)
+const captchaToken = input.captchaToken;
+if (!captchaToken) {
+  return res.status(400).json({ message: "Captcha required" });
+}
 
+const secret = process.env.RECAPTCHA_SECRET_KEY;
+if (!secret) {
+  console.error("Missing RECAPTCHA_SECRET_KEY");
+  return res.status(500).json({ message: "Captcha not configured" });
+}
+
+const verifyRes = await fetch("https://www.google.com/recaptcha/api/siteverify", {
+  method: "POST",
+  headers: { "Content-Type": "application/x-www-form-urlencoded" },
+  body: new URLSearchParams({
+    secret,
+    response: captchaToken,
+    // remoteip: req.ip, // optional; can cause issues behind proxies if not configured
+  }),
+});
+
+const captcha = await verifyRes.json();
+
+// Typical v3 response has: success, score, action, challenge_ts, hostname, error-codes
+const score = typeof captcha.score === "number" ? captcha.score : 0;
+const action = typeof captcha.action === "string" ? captcha.action : "";
+
+// ✅ Match the action you used in the frontend: "submit_quote"
+if (!captcha.success || action !== "submit_quote" || score < 0.5) {
+  return res.status(403).json({
+    message: "Captcha failed",
+    // Optional for debugging; you can remove in production:
+    details: { success: captcha.success, score, action, errors: captcha["error-codes"] },
+  });
+}
     const payload = {
       first_name: input.firstName ?? null,
       last_name: input.lastName ?? null,

@@ -80,40 +80,69 @@ function handleCapitalizeBlur(
 }
 
 ;
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-    setCreatedQuote(null);
+async function handleSubmit(e: React.FormEvent) {
+  e.preventDefault();
+  setLoading(true);
+  setError(null);
+  setCreatedQuote(null);
 
-    try {
-      const normalizedYear =
-        /^\d{4}$/.test(form.vehicleYear) ? form.vehicleYear : undefined;
+  try {
+    // ✅ 0) Get captcha token
+    const siteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY as string | undefined;
+    if (!siteKey) {
+      throw new Error("Missing VITE_RECAPTCHA_SITE_KEY");
+    }
 
-      // ✅ 1) Create a QUOTE (not a shipment)
-      const created = await createQuote({
-        firstName: form.firstName,
-        lastName: form.lastName,
-        customerEmail: form.email,
-        customerPhone: form.phone || undefined,
+    if (!window.grecaptcha) {
+      throw new Error("Captcha not ready. Please refresh and try again.");
+    }
 
-        pickupCity: form.pickupCity,
-        pickupState: form.pickupState,
-        deliveryCity: form.deliveryCity,
-        deliveryState: form.deliveryState,
-
-        vehicleYear: normalizedYear,
-        vehicleMake: form.vehicleMake || undefined,
-        vehicleModel: form.vehicleModel || undefined,
-        vin: form.vin || undefined,
-
-        runningCondition: form.runningCondition,
-        transportType: form.transportType,
-        preferredPickupWindow: form.preferredPickupWindow,
-        vehicleHeightMod: form.vehicleHeightMod,
+    const captchaToken: string = await new Promise((resolve, reject) => {
+      window.grecaptcha!.ready(async () => {
+        try {
+          const token = await window.grecaptcha!.execute(siteKey, {
+            action: "submit_quote",
+          });
+          resolve(token);
+        } catch (err) {
+          reject(err);
+        }
       });
+    });
 
-      setCreatedQuote(created);
+    const normalizedYear =
+      /^\d{4}$/.test(form.vehicleYear) ? form.vehicleYear : undefined;
+
+    // ✅ 1) Create a QUOTE (not a shipment)
+    const created = await createQuote({
+      firstName: form.firstName,
+      lastName: form.lastName,
+      customerEmail: form.email,
+      customerPhone: form.phone || undefined,
+
+      pickupCity: form.pickupCity,
+      pickupState: form.pickupState,
+      deliveryCity: form.deliveryCity,
+      deliveryState: form.deliveryState,
+
+      vehicleYear: normalizedYear,
+      vehicleMake: form.vehicleMake || undefined,
+      vehicleModel: form.vehicleModel || undefined,
+      vin: form.vin || undefined,
+
+      runningCondition: form.runningCondition,
+      transportType: form.transportType,
+      preferredPickupWindow: form.preferredPickupWindow,
+      vehicleHeightMod: form.vehicleHeightMod,
+
+      // ✅ 2) send captcha token to backend
+      captchaToken,
+    });
+
+    setCreatedQuote(created);
+
+    // ... keep your existing notification fetch exactly as-is ...
+
 
       // ✅ 2) Best-effort email notification (keep this)
       const pickup = `${form.pickupCity}, ${form.pickupState}`;

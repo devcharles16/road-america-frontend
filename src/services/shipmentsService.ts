@@ -76,6 +76,7 @@ export type CreateQuoteInput = {
   preferredPickupWindow?: string;
   vehicleHeightMod?: string;
   notes?: string;
+  captchaToken?: string;
 };
 
 /** Keep this minimal to avoid snake_case vs camelCase mismatch */
