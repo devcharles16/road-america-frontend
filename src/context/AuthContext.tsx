@@ -55,6 +55,22 @@ function clearSupabaseAuthStorage() {
   }
 }
 
+function withTimeout<T>(p: Promise<T>, ms: number, label: string): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const id = setTimeout(() => {
+      reject(new Error(`[Auth] Timeout in ${label} after ${ms}ms`));
+    }, ms);
+
+    p.then((v) => {
+      clearTimeout(id);
+      resolve(v);
+    }).catch((e) => {
+      clearTimeout(id);
+      reject(e);
+    });
+  });
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<any | null>(null);
   const [role, setRole] = useState<Role | undefined>(null);
@@ -64,13 +80,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const pendingRef = useRef(0);
 
-  const begin = useCallback(() => {
+  // ✅ Prevent StrictMode dev double-mount from calling refreshAuth twice
+  const didInitRef = useRef(false);
+
+  const begin = useCallback((label: string) => {
     pendingRef.current += 1;
+    console.log("[Auth begin]", label, "pending =", pendingRef.current);
     setLoading(true);
   }, []);
 
-  const end = useCallback(() => {
+  const end = useCallback((label: string) => {
     pendingRef.current = Math.max(0, pendingRef.current - 1);
+    console.log("[Auth end]", label, "pending =", pendingRef.current);
     setLoading(pendingRef.current > 0);
   }, []);
 
@@ -80,17 +101,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Prevent “logout rehydrates session” races
   const isLoggingOutRef = useRef(false);
 
-  // ✅ NEW: track which user is currently "active" so role results can't be discarded by reqId churn
+  // Track which user is currently active so role results can't be discarded by reqId churn
   const activeUserIdRef = useRef<string | null>(null);
 
   const setLoggedOut = useCallback((err: string | null = null) => {
+    // ✅ If we're logged out, we should never be "loading" forever
+    pendingRef.current = 0;
+    setLoading(false);
+
     setUser(null);
-    setRole(null); // logged-out should NOT be undefined
+    setRole(null);
     setRoleError(err);
     activeUserIdRef.current = null;
   }, []);
 
-  // ✅ UPDATED: no reqId parameter; guard by active user id instead
   const fetchRoleForUser = useCallback(async (u: any) => {
     if (!u?.id) {
       setRole(null);
@@ -100,62 +124,69 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const userId = String(u.id);
 
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", userId)
-      .maybeSingle();
+    try {
+      const { data, error } = await withTimeout(
+        supabase.from("profiles").select("role").eq("id", userId).maybeSingle(),
+        8000,
+        "profiles(role)"
+      );
 
-    // Only apply if this is still the active logged-in user
-    if (isLoggingOutRef.current) return;
-    if (activeUserIdRef.current !== userId) return;
-
-    // Hard error (RLS, network, etc.) → do NOT upsert client
-    if (error) {
-      setRole(null);
-      setRoleError(error.message);
-      return;
-    }
-
-    // No profile row → safe to create default client profile
-    if (!data) {
-      try {
-        await upsertProfileDefaultClient(u);
-      } catch (e: any) {
-        if (activeUserIdRef.current === userId) {
-          setRole(null);
-          setRoleError(e?.message || "Failed to create default profile.");
-        }
-        return;
-      }
-
-      // Re-read after creating
-      const { data: retryData, error: retryErr } = await supabase
-        .from("profiles")
-        .select("role")
-        .eq("id", userId)
-        .single();
-
+      // Only apply if this is still the active logged-in user
       if (isLoggingOutRef.current) return;
       if (activeUserIdRef.current !== userId) return;
 
-      if (retryErr) {
+      // Hard error (RLS, network, etc.) → do NOT upsert client
+      if (error) {
         setRole(null);
-        setRoleError(retryErr.message);
+        setRoleError(error.message);
         return;
       }
 
-      setRoleError(null);
-      setRole(normalizeRole(retryData?.role));
-      return;
-    }
+      // No profile row → safe to create default client profile
+      if (!data) {
+        try {
+          await upsertProfileDefaultClient(u);
+        } catch (e: any) {
+          if (activeUserIdRef.current === userId) {
+            setRole(null);
+            setRoleError(e?.message || "Failed to create default profile.");
+          }
+          return;
+        }
 
-    // Profile exists
-    setRoleError(null);
-    setRole(normalizeRole(data.role));
+        // Re-read after creating
+        const { data: retryData, error: retryErr } = await supabase
+          .from("profiles")
+          .select("role")
+          .eq("id", userId)
+          .single();
+
+        if (isLoggingOutRef.current) return;
+        if (activeUserIdRef.current !== userId) return;
+
+        if (retryErr) {
+          setRole(null);
+          setRoleError(retryErr.message);
+          return;
+        }
+
+        setRoleError(null);
+        setRole(normalizeRole(retryData?.role));
+        return;
+      }
+
+      // Profile exists
+      setRoleError(null);
+      setRole(normalizeRole(data.role));
+    } catch (e: any) {
+      if (isLoggingOutRef.current) return;
+      if (activeUserIdRef.current !== userId) return;
+
+      setRole(null);
+      setRoleError(e?.message || "Failed to load role.");
+    }
   }, []);
 
-  // ✅ UPDATED: no reqId parameter; sets activeUserIdRef to prevent role=undefined forever
   const hydrateFromSession = useCallback(
     async (session: any) => {
       if (isLoggingOutRef.current) return;
@@ -168,6 +199,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       setUser(u);
       activeUserIdRef.current = String(u.id);
+      setRoleError(null);
       setRole(undefined); // role is now "loading" for a real user
       await fetchRoleForUser(u);
     },
@@ -176,7 +208,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const refreshAuth = useCallback(async () => {
     const reqId = ++reqIdRef.current;
-    begin();
+    begin("refreshAuth");
 
     try {
       if (isLoggingOutRef.current) {
@@ -184,7 +216,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      const { data, error } = await supabase.auth.getSession();
+      const { data, error } = await withTimeout(
+        supabase.auth.getSession(),
+        8000,
+        "getSession"
+      );
 
       // Keep these guards for session refresh churn (fine)
       if (reqIdRef.current !== reqId) return;
@@ -198,9 +234,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await hydrateFromSession(data.session);
     } catch (e: any) {
       if (reqIdRef.current !== reqId) return;
-      setLoggedOut("Failed to refresh auth session.");
+      setLoggedOut(e?.message || "Failed to refresh auth session.");
     } finally {
-      end();
+      end("refreshAuth");
     }
   }, [begin, end, hydrateFromSession, setLoggedOut]);
 
@@ -209,7 +245,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // Immediately show logged out UI
     setLoggedOut(null);
-    begin();
+    begin("logout");
 
     try {
       const { error } = await supabase.auth.signOut({ scope: "global" });
@@ -229,17 +265,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     } finally {
       isLoggingOutRef.current = false;
-      end();
+      end("logout");
     }
   }, [begin, end, setLoggedOut]);
 
   useEffect(() => {
+    if (didInitRef.current) return;
+    didInitRef.current = true;
+
     refreshAuth();
 
     const { data: sub } = supabase.auth.onAuthStateChange(
       async (_event, session) => {
         const reqId = ++reqIdRef.current;
-        begin();
+        begin("onAuthStateChange");
 
         try {
           // During logout, ignore any “phantom” sessions
@@ -256,9 +295,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           await hydrateFromSession(session);
         } catch (e: any) {
           if (reqIdRef.current !== reqId) return;
-          setLoggedOut("Auth state change failed.");
+          setLoggedOut(e?.message || "Auth state change failed.");
         } finally {
-          end();
+          end("onAuthStateChange");
         }
       }
     );
