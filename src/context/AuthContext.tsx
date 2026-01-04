@@ -39,6 +39,7 @@ async function upsertProfileDefaultClient(u: any) {
     updated_at: new Date().toISOString(),
   };
 
+  // IMPORTANT: upsert only truly dedupes if profiles.id has a UNIQUE/PK constraint
   await supabase.from("profiles").upsert(payload, { onConflict: "id" });
 }
 
@@ -55,21 +56,28 @@ function clearSupabaseAuthStorage() {
   }
 }
 
-function withTimeout<T>(p: Promise<T>, ms: number, label: string): Promise<T> {
+function withTimeout<T>(
+  p: PromiseLike<T>,
+  ms: number,
+  label: string
+): Promise<T> {
   return new Promise<T>((resolve, reject) => {
     const id = setTimeout(() => {
       reject(new Error(`[Auth] Timeout in ${label} after ${ms}ms`));
     }, ms);
 
-    p.then((v) => {
-      clearTimeout(id);
-      resolve(v);
-    }).catch((e) => {
-      clearTimeout(id);
-      reject(e);
-    });
+    Promise.resolve(p)
+      .then((v) => {
+        clearTimeout(id);
+        resolve(v);
+      })
+      .catch((e) => {
+        clearTimeout(id);
+        reject(e);
+      });
   });
 }
+
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<any | null>(null);
@@ -80,7 +88,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const pendingRef = useRef(0);
 
-  // ✅ Prevent StrictMode dev double-mount from calling refreshAuth twice
+  // Dev-only: StrictMode double mount protection
   const didInitRef = useRef(false);
 
   const begin = useCallback((label: string) => {
@@ -95,17 +103,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setLoading(pendingRef.current > 0);
   }, []);
 
-  // Prevent stale async overwrites (still useful for session refresh flows)
+  // Prevent stale async overwrites for session refresh flows
   const reqIdRef = useRef(0);
 
   // Prevent “logout rehydrates session” races
   const isLoggingOutRef = useRef(false);
 
-  // Track which user is currently active so role results can't be discarded by reqId churn
+  // Track active user so role results can't apply to the wrong user
   const activeUserIdRef = useRef<string | null>(null);
 
   const setLoggedOut = useCallback((err: string | null = null) => {
-    // ✅ If we're logged out, we should never be "loading" forever
+    // If we're logged out, we should never be "loading" forever
     pendingRef.current = 0;
     setLoading(false);
 
@@ -135,14 +143,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (isLoggingOutRef.current) return;
       if (activeUserIdRef.current !== userId) return;
 
-      // Hard error (RLS, network, etc.) → do NOT upsert client
+      // Hard error (RLS, network, etc.)
       if (error) {
         setRole(null);
         setRoleError(error.message);
         return;
       }
 
-      // No profile row → safe to create default client profile
+      // No profile row → attempt to create default "client" profile
       if (!data) {
         try {
           await upsertProfileDefaultClient(u);
@@ -154,12 +162,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           return;
         }
 
-        // Re-read after creating
-        const { data: retryData, error: retryErr } = await supabase
-          .from("profiles")
-          .select("role")
-          .eq("id", userId)
-          .single();
+        // ✅ FIX: retry read MUST NOT use .single() (can throw on 0 rows)
+        const { data: retryData, error: retryErr } = await withTimeout(
+          supabase
+            .from("profiles")
+            .select("role")
+            .eq("id", userId)
+            .maybeSingle(),
+          8000,
+          "profiles(role) retry"
+        );
 
         if (isLoggingOutRef.current) return;
         if (activeUserIdRef.current !== userId) return;
@@ -170,8 +182,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           return;
         }
 
+        if (!retryData) {
+          // Still missing (or RLS blocked) even after upsert attempt
+          setRole(null);
+          setRoleError("Profile row missing or access denied (RLS).");
+          return;
+        }
+
         setRoleError(null);
-        setRole(normalizeRole(retryData?.role));
+        setRole(normalizeRole(retryData.role));
         return;
       }
 
@@ -222,7 +241,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         "getSession"
       );
 
-      // Keep these guards for session refresh churn (fine)
       if (reqIdRef.current !== reqId) return;
       if (isLoggingOutRef.current) return;
 
@@ -281,7 +299,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         begin("onAuthStateChange");
 
         try {
-          // During logout, ignore any “phantom” sessions
           if (isLoggingOutRef.current) {
             if (!session) setLoggedOut(null);
             return;
