@@ -8,19 +8,18 @@ import React, {
   useState,
 } from "react";
 import { supabase } from "../lib/supabaseClient";
+import { clearAdminKey } from "../utils/adminAuth";
 
-// update Role export stays the same
 export type Role = "admin" | "employee" | "client" | null;
 
 type AuthContextValue = {
   user: any | null;
-  role: Role | undefined; //
+  role: Role | undefined; // undefined = loading role for logged-in user
   roleError: string | null;
   loading: boolean;
   refreshAuth: () => Promise<void>;
   logout: () => Promise<void>;
 };
-
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
@@ -37,7 +36,6 @@ async function upsertProfileDefaultClient(u: any) {
     id: u.id,
     email: u.email ?? null,
     role: "client",
-    // your schema may not have updated_at; safe to remove if needed
     updated_at: new Date().toISOString(),
   };
 
@@ -45,7 +43,6 @@ async function upsertProfileDefaultClient(u: any) {
 }
 
 function clearSupabaseAuthStorage() {
-  // Supabase stores tokens under keys like: "sb-<project-ref>-auth-token"
   for (const key of Object.keys(localStorage)) {
     if (key.startsWith("sb-") && key.endsWith("-auth-token")) {
       localStorage.removeItem(key);
@@ -60,78 +57,107 @@ function clearSupabaseAuthStorage() {
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<any | null>(null);
-  const [role, setRole] = useState<Role | undefined>(undefined);
+  const [role, setRole] = useState<Role | undefined>(null);
   const [roleError, setRoleError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
 
-  // Prevent stale async overwrites
+  // NOTE: We keep `loading` in sync using a counter so it can’t get stuck true
+  const [loading, setLoading] = useState(true);
+  const pendingRef = useRef(0);
+
+  const begin = useCallback(() => {
+    pendingRef.current += 1;
+    setLoading(true);
+  }, []);
+
+  const end = useCallback(() => {
+    pendingRef.current = Math.max(0, pendingRef.current - 1);
+    setLoading(pendingRef.current > 0);
+  }, []);
+
+  // Prevent stale async overwrites (still useful for session refresh flows)
   const reqIdRef = useRef(0);
 
   // Prevent “logout rehydrates session” races
   const isLoggingOutRef = useRef(false);
 
-const setLoggedOut = useCallback((err: string | null = null) => {
-  setUser(null);
-  setRole(undefined);
-  setRoleError(err);
-}, []);
+  // ✅ NEW: track which user is currently "active" so role results can't be discarded by reqId churn
+  const activeUserIdRef = useRef<string | null>(null);
 
+  const setLoggedOut = useCallback((err: string | null = null) => {
+    setUser(null);
+    setRole(null); // logged-out should NOT be undefined
+    setRoleError(err);
+    activeUserIdRef.current = null;
+  }, []);
 
-  const fetchRoleForUser = useCallback(async (u: any, reqId: number) => {
+  // ✅ UPDATED: no reqId parameter; guard by active user id instead
+  const fetchRoleForUser = useCallback(async (u: any) => {
     if (!u?.id) {
-      if (reqIdRef.current === reqId) {
-        setRole(null);
-        setRoleError("Missing user id.");
-      }
+      setRole(null);
+      setRoleError("Missing user id.");
       return;
     }
+
+    const userId = String(u.id);
 
     const { data, error } = await supabase
       .from("profiles")
       .select("role")
-      .eq("id", u.id)
-      .single();
+      .eq("id", userId)
+      .maybeSingle();
 
-    if (reqIdRef.current !== reqId) return;
+    // Only apply if this is still the active logged-in user
     if (isLoggingOutRef.current) return;
+    if (activeUserIdRef.current !== userId) return;
 
-    if (!error) {
-      setRoleError(null);
-      setRole(normalizeRole(data?.role));
-      return;
-    }
-
-    try {
-      await upsertProfileDefaultClient(u);
-    } catch (e: any) {
-      if (reqIdRef.current === reqId) {
-        setRole(null);
-        setRoleError(error?.message || "Failed to load profile role.");
-      }
-      return;
-    }
-
-    const { data: retryData, error: retryErr } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", u.id)
-      .single();
-
-    if (reqIdRef.current !== reqId) return;
-    if (isLoggingOutRef.current) return;
-
-    if (retryErr) {
+    // Hard error (RLS, network, etc.) → do NOT upsert client
+    if (error) {
       setRole(null);
-      setRoleError(retryErr.message);
+      setRoleError(error.message);
       return;
     }
 
+    // No profile row → safe to create default client profile
+    if (!data) {
+      try {
+        await upsertProfileDefaultClient(u);
+      } catch (e: any) {
+        if (activeUserIdRef.current === userId) {
+          setRole(null);
+          setRoleError(e?.message || "Failed to create default profile.");
+        }
+        return;
+      }
+
+      // Re-read after creating
+      const { data: retryData, error: retryErr } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", userId)
+        .single();
+
+      if (isLoggingOutRef.current) return;
+      if (activeUserIdRef.current !== userId) return;
+
+      if (retryErr) {
+        setRole(null);
+        setRoleError(retryErr.message);
+        return;
+      }
+
+      setRoleError(null);
+      setRole(normalizeRole(retryData?.role));
+      return;
+    }
+
+    // Profile exists
     setRoleError(null);
-    setRole(normalizeRole(retryData?.role));
+    setRole(normalizeRole(data.role));
   }, []);
 
+  // ✅ UPDATED: no reqId parameter; sets activeUserIdRef to prevent role=undefined forever
   const hydrateFromSession = useCallback(
-    async (session: any, reqId: number) => {
+    async (session: any) => {
       if (isLoggingOutRef.current) return;
 
       const u = session?.user ?? null;
@@ -141,14 +167,16 @@ const setLoggedOut = useCallback((err: string | null = null) => {
       }
 
       setUser(u);
-      await fetchRoleForUser(u, reqId);
+      activeUserIdRef.current = String(u.id);
+      setRole(undefined); // role is now "loading" for a real user
+      await fetchRoleForUser(u);
     },
     [fetchRoleForUser, setLoggedOut]
   );
 
   const refreshAuth = useCallback(async () => {
     const reqId = ++reqIdRef.current;
-    setLoading(true);
+    begin();
 
     try {
       if (isLoggingOutRef.current) {
@@ -158,6 +186,7 @@ const setLoggedOut = useCallback((err: string | null = null) => {
 
       const { data, error } = await supabase.auth.getSession();
 
+      // Keep these guards for session refresh churn (fine)
       if (reqIdRef.current !== reqId) return;
       if (isLoggingOutRef.current) return;
 
@@ -166,46 +195,43 @@ const setLoggedOut = useCallback((err: string | null = null) => {
         return;
       }
 
-      await hydrateFromSession(data.session, reqId);
+      await hydrateFromSession(data.session);
     } catch (e: any) {
       if (reqIdRef.current !== reqId) return;
       setLoggedOut("Failed to refresh auth session.");
     } finally {
-      if (reqIdRef.current === reqId) setLoading(false);
+      end();
     }
-  }, [hydrateFromSession, setLoggedOut]);
+  }, [begin, end, hydrateFromSession, setLoggedOut]);
 
   const logout = useCallback(async () => {
-    const reqId = ++reqIdRef.current;
     isLoggingOutRef.current = true;
 
-    // Immediately show logged out UI (prevents “stuck logged in” feel)
+    // Immediately show logged out UI
     setLoggedOut(null);
-    setLoading(true);
+    begin();
 
     try {
-      // Best effort server-side invalidation
       const { error } = await supabase.auth.signOut({ scope: "global" });
       if (error) console.error("[Auth] signOut(global) error:", error);
 
-      // Always hard clear local persisted tokens
       clearSupabaseAuthStorage();
+      clearAdminKey();
 
-      // Verify: if session still exists, force local signout + clear again
       const { data } = await supabase.auth.getSession();
       if (data.session) {
-        console.warn("[Auth] Session still present after logout; forcing local signOut + storage clear.");
+        console.warn(
+          "[Auth] Session still present after logout; forcing local signOut + storage clear."
+        );
         await supabase.auth.signOut({ scope: "local" });
         clearSupabaseAuthStorage();
+        clearAdminKey();
       }
     } finally {
-      if (reqIdRef.current === reqId) {
-        setLoading(false);
-      }
-      // Allow auth listener to run again after we’ve finished
       isLoggingOutRef.current = false;
+      end();
     }
-  }, [setLoggedOut]);
+  }, [begin, end, setLoggedOut]);
 
   useEffect(() => {
     refreshAuth();
@@ -213,7 +239,7 @@ const setLoggedOut = useCallback((err: string | null = null) => {
     const { data: sub } = supabase.auth.onAuthStateChange(
       async (_event, session) => {
         const reqId = ++reqIdRef.current;
-        setLoading(true);
+        begin();
 
         try {
           // During logout, ignore any “phantom” sessions
@@ -227,12 +253,12 @@ const setLoggedOut = useCallback((err: string | null = null) => {
             return;
           }
 
-          await hydrateFromSession(session, reqId);
+          await hydrateFromSession(session);
         } catch (e: any) {
           if (reqIdRef.current !== reqId) return;
           setLoggedOut("Auth state change failed.");
         } finally {
-          if (reqIdRef.current === reqId) setLoading(false);
+          end();
         }
       }
     );
@@ -240,7 +266,7 @@ const setLoggedOut = useCallback((err: string | null = null) => {
     return () => {
       sub.subscription.unsubscribe();
     };
-  }, [hydrateFromSession, refreshAuth, setLoggedOut]);
+  }, [begin, end, hydrateFromSession, refreshAuth, setLoggedOut]);
 
   const value = useMemo<AuthContextValue>(
     () => ({

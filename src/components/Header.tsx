@@ -1,6 +1,6 @@
 // src/components/Header.tsx
-import { useState, useEffect } from "react";
-import { Link, NavLink, useNavigate, useLocation } from "react-router-dom";
+import { useState } from "react";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 const Header = () => {
@@ -35,32 +35,7 @@ const Header = () => {
     { label: "Track Shipment", to: "/track" },
     { label: "Blog", to: "/blog" },
   ];
-
-const isAdminUser = isLoggedIn && (role === "admin" || role === "employee");
-const location = useLocation();
-
-useEffect(() => {
-  // Only redirect from auth-related pages
-  const AUTH_PATHS = ["/login", "/register", "/admin/login", "/post-login"];
-
-  if (!AUTH_PATHS.includes(location.pathname)) return;
-
-  // Wait until auth fully resolves
-  if (loading) return;
-
-  if (!user) return;
-
-  if (role === "admin" || role === "employee") {
-    navigate("/admin", { replace: true });
-    return;
-  }
-
-  if (role === "client") {
-    navigate("/my-shipments", { replace: true });
-    return;
-  }
-}, [user, role, loading, location.pathname, navigate]);
-
+  const isAdminUser = isLoggedIn && (role === "admin" || role === "employee");
 
 
   return (

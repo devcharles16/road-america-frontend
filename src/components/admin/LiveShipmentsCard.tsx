@@ -20,7 +20,8 @@ type ShipmentStatus =
 
 type Shipment = {
   id: string;
-  reference_id?: string;
+  referenceId?: string | null;
+
   pickup_city?: string;
   pickup_state?: string;
   delivery_city?: string;
@@ -73,11 +74,11 @@ export default function LiveShipmentsCard() {
         setError(null);
 
         const { data, error } = await supabase
-          .from("shipments")
-          .select(
-            `
+        .from("shipments")
+        .select(
+          `
             id,
-            reference_id,
+            referenceId:reference_id,
             pickup_city,
             pickup_state,
             delivery_city,
@@ -89,10 +90,11 @@ export default function LiveShipmentsCard() {
             updated_at,
             created_at
           `
-          )
-          .in("status", ["Submitted", "Driver Assigned", "In Transit"])
-          .order("updated_at", { ascending: false, nullsFirst: false })
-          .limit(5);
+        )
+        .in("status", ["Submitted", "Driver Assigned", "In Transit"])
+        .order("updated_at", { ascending: false, nullsFirst: false })
+        .limit(5);
+      
 
         if (error) throw error;
         if (!isMounted) return;
@@ -194,11 +196,11 @@ export default function LiveShipmentsCard() {
                     <p className="truncate">{vehicle}</p>
                   </div>
 
-                  {shipment.reference_id && (
+                  {shipment.referenceId && (
                     <p className="text-[11px] text-white/50">
                       Ref:{" "}
                       <span className="font-mono">
-                        {shipment.reference_id}
+                        {shipment.referenceId}
                       </span>
                     </p>
                   )}

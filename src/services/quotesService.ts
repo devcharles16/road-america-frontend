@@ -1,6 +1,5 @@
 import { API_BASE_URL } from "../config/api";
-import { supabase } from "../lib/supabaseClient";
-import { fetchWithAuth, handleResponse } from "./apiClient";
+import { fetchWithAuth, handleResponse, getAccessTokenOrThrow } from "./apiClient";
 
 export type QuoteCreateInput = {
   firstName: string;
@@ -32,7 +31,6 @@ export type QuoteRecord = {
 
 export type AdminQuoteRow = {
   id: string;
-  reference_id?: string | null;
   referenceId?: string | null;
 
   first_name?: string | null;
@@ -60,15 +58,6 @@ export type AdminQuoteRow = {
   created_at?: string | null;
 };
 
-async function getAccessTokenOrThrow(): Promise<string> {
-  const { data, error } = await supabase.auth.getSession();
-  if (error) throw error;
-
-  const token = data.session?.access_token;
-  if (!token) throw new Error("Missing access token. Please log in again.");
-
-  return token;
-}
 
 /** Public: create a quote */
 export async function createQuote(input: QuoteCreateInput): Promise<QuoteRecord> {
@@ -117,26 +106,12 @@ export async function adminListQuotes(): Promise<AdminQuoteRow[]> {
 
   const res = await fetch(`${API_BASE_URL}/api/quotes`, {
     method: "GET",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    headers: { Authorization: `Bearer ${token}` },
   });
 
-  const contentType = res.headers.get("content-type") || "";
-  if (!contentType.includes("application/json")) {
-    const text = await res.text();
-    throw new Error(
-      `Expected JSON but got ${contentType}. First 120 chars: ${text.slice(0, 120)}`
-    );
-  }
+  return handleResponse<AdminQuoteRow[]>(res);
 
-  if (!res.ok) {
-    const msg = await res.text();
-    throw new Error(msg || "Failed to load quotes");
-  }
 
-  const data = await res.json();
-  return Array.isArray(data) ? data : [];
 }
 
 /**
@@ -147,13 +122,17 @@ export async function adminListQuotes(): Promise<AdminQuoteRow[]> {
  * - Uses fetchWithAuth() so we always send the freshest token
  * - Uses handleResponse() so 401/500 errors don’t look like “empty data”
  */
-export async function adminConvertQuoteToShipment(quoteId: string) {
+export async function adminConvertQuoteToShipment(
+  quoteId: string,
+  userId?: string | null
+) {
   const res = await fetchWithAuth("/api/shipments/from-quote", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ quoteId }),
+    body: JSON.stringify({ quoteId, userId: userId ?? null }),
   });
 
   return handleResponse(res);
 }
+
 

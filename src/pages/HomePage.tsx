@@ -156,7 +156,7 @@ function HeroSection() {
               <span className="rounded-full bg-white/10 px-3 py-1">
                 Live Transport Snapshot
               </span>
-              <span>#{`RAU-10234`}</span>
+              <span>#{`RA-10234`}</span>
             </div>
 
 <div className="rounded-2xl bg-black/40 p-4 transition-all duration-500">

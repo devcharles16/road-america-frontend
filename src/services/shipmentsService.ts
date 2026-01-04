@@ -1,10 +1,7 @@
 // src/services/shipmentsService.ts
-import { supabase } from "../lib/supabaseClient";
+import { API_BASE_URL } from "../config/api";
+import { getAccessTokenOrThrow } from "./apiClient";
 
-
-/** Base URL for your backend */
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:4000";
 
 export type TransportStatus =
   | "Submitted"
@@ -87,10 +84,6 @@ export type QuoteCreated = {
   referenceId: string; // RA-100000 etc
 };
 
-async function getAccessToken(): Promise<string | null> {
-  const { data } = await supabase.auth.getSession();
-  return data.session?.access_token ?? null;
-}
 
 async function handleResponse<T>(res: Response): Promise<T> {
   if (!res.ok) {
@@ -147,7 +140,7 @@ export async function createTransportRequest(
   }
 
   const created = await res.json();
-  console.log("✅ Created shipment:", created);
+  console.log("Created shipment:", created);
 
   return created;
 }
@@ -157,9 +150,7 @@ export async function createTransportRequest(
  * GET /api/shipments
  */
 export async function listShipments(): Promise<TransportRequest[]> {
-  const token = await getAccessToken();
-  if (!token) throw new Error("Not authenticated");
-
+  const token = await getAccessTokenOrThrow();
   const res = await fetch(`${API_BASE_URL}/api/shipments`, {
     headers: { Authorization: `Bearer ${token}` },
   });
@@ -175,9 +166,7 @@ export async function updateShipmentStatus(
   id: string,
   status: TransportStatus
 ): Promise<TransportRequest> {
-  const token = await getAccessToken();
-  if (!token) throw new Error("Not authenticated");
-
+  const token = await getAccessTokenOrThrow();
   const res = await fetch(`${API_BASE_URL}/api/shipments/${id}/status`, {
     method: "PATCH",
     headers: {
@@ -205,9 +194,7 @@ export async function updateShipmentStatus(
   // - token parsing / auth middleware
   // ================================
 export async function listMyShipments(): Promise<TransportRequest[]> {
-  const token = await getAccessToken();
-  if (!token) throw new Error("Not authenticated");
-
+  const token = await getAccessTokenOrThrow();
   const res = await fetch(`${API_BASE_URL}/api/my-shipments`, {
     method: "GET",
     headers: {
@@ -219,7 +206,6 @@ export async function listMyShipments(): Promise<TransportRequest[]> {
 
   return handleResponse<TransportRequest[]>(res);
 }
-
 
 /**
  * PUBLIC: Track a specific shipment by reference ID + email

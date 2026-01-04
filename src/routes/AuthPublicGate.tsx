@@ -1,8 +1,9 @@
 import { Navigate, useLocation } from "react-router-dom";
 import React from "react";
 
-const AUTH_PUBLIC_ENABLED =
+const AUTH_PUBLIC_DISABLED =
   import.meta.env.VITE_AUTH_PUBLIC_ENABLED === "false";
+
 
 type Props = {
   children: React.ReactNode;
@@ -15,9 +16,10 @@ export default function AuthPublicGate({ children }: Props) {
   const allowList = ["/login", "/admin/login"];
   const isAllowed = allowList.includes(location.pathname);
 
-  if (!AUTH_PUBLIC_ENABLED && !isAllowed) {
+  if (AUTH_PUBLIC_DISABLED && !isAllowed) {
     return <Navigate to="/" replace />;
   }
+  
 
   return <>{children}</>;
 }

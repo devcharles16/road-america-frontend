@@ -84,7 +84,7 @@ router.post(
   requireOneOf(["admin", "employee"]),
   async (req, res) => {
     try {
-      const { quoteId } = req.body || {};
+      const { quoteId, userId } = req.body || {};
       if (!quoteId) {
         return res.status(400).json({ message: "quoteId is required" });
       }
@@ -108,13 +108,29 @@ router.post(
         .single();
 
       if (fetchErr) throw fetchErr;
+      let shipmentRow = shipment;
+
+// If userId is provided, attach it to the shipment (best effort)
+if (userId) {
+  const { data: updated, error: updErr } = await supabase
+    .from("shipments")
+    .update({ user_id: userId, updated_at: new Date().toISOString() })
+    .eq("id", shipmentId)
+    .select("*")
+    .single();
+
+  if (!updErr && updated) {
+    shipmentRow = updated;
+  }
+}
 
       // 3) Respond in the same style your frontend expects
       return res.status(201).json({
-        id: shipment.id,
-        referenceId: shipment.reference_id,
-        ...shipment,
+        id: shipmentRow.id,
+        referenceId: shipmentRow.reference_id,
+        ...shipmentRow,
       });
+      
     } catch (err) {
       console.error("Convert quote → shipment error:", err);
       return res.status(500).json({ message: "Server error converting quote to shipment" });
@@ -195,11 +211,10 @@ const email = String(req.user?.email ?? "").trim().toLowerCase();
 
 // Build the OR filter safely so we never generate a broken query
 // NOTE: We build the `.or()` filter dynamically to avoid malformed filters.
-// We also use `%${email}%` for ilike pattern matching.
 
 const orParts = [];
 if (userId) orParts.push(`user_id.eq.${userId}`);
-if (email) orParts.push(`customer_email.ilike.%${email}%`);
+if (email) orParts.push(`customer_email.ilike.${email}`);
 
 if (orParts.length === 0) {
   return res.status(401).json({ message: "Missing user identity" });

@@ -50,22 +50,18 @@ export default function AdminQuotesPage() {
 
   const rows = useMemo(() => quotes, [quotes]);
 
-async function handleConvert(quoteId: string) {
-  setConvertingId(quoteId);
-  try {
-    await adminConvertQuoteToShipment(quoteId);
-
-    // Option A: go to dashboard (what you were doing)
-    navigate("/admin", { replace: true });
-
-    // Option B (alternative): stay here and refresh list
-    // await load();
-  } catch (e: any) {
-    alert(e?.message ?? "Failed to convert quote");
-  } finally {
-    setConvertingId(null);
+  async function handleConvert(quoteId: string, userId?: string | null) {
+    setConvertingId(quoteId);
+    try {
+      await adminConvertQuoteToShipment(quoteId, userId ?? null);
+      navigate("/admin", { replace: true });
+    } catch (e: any) {
+      alert(e?.message ?? "Failed to convert quote");
+    } finally {
+      setConvertingId(null);
+    }
   }
-}
+  
 
 
 

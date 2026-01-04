@@ -1,8 +1,6 @@
-import { supabase } from "../lib/supabaseClient";
 
-
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:4000";
+import { API_BASE_URL } from "../config/api";
+import { getAccessTokenOrThrow } from "./apiClient";
 
 export type BlogStatus = "draft" | "published";
 
@@ -30,10 +28,7 @@ async function handleResponse<T>(res: Response): Promise<T> {
   return res.json() as Promise<T>;
 }
 
-async function getAccessToken(): Promise<string | null> {
-  const { data } = await supabase.auth.getSession();
-  return data.session?.access_token ?? null;
-}
+
 
 // PUBLIC
 export async function fetchPublishedPosts(): Promise<BlogPost[]> {
@@ -51,9 +46,7 @@ export async function fetchPostBySlug(
 
 // ADMIN
 export async function adminListPosts(): Promise<BlogPost[]> {
-  const token = await getAccessToken();
-  if (!token) throw new Error("Not authenticated");
-
+  const token = await getAccessTokenOrThrow();
   const res = await fetch(`${API_BASE_URL}/api/admin/blog`, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -73,9 +66,7 @@ type BlogInput = {
 };
 
 export async function adminCreatePost(input: BlogInput): Promise<BlogPost> {
-  const token = await getAccessToken();
-  if (!token) throw new Error("Not authenticated");
-
+  const token = await getAccessTokenOrThrow();
   const res = await fetch(`${API_BASE_URL}/api/admin/blog`, {
     method: "POST",
     headers: {
@@ -92,9 +83,7 @@ export async function adminUpdatePost(
   id: string,
   input: Partial<BlogInput>
 ): Promise<BlogPost> {
-  const token = await getAccessToken();
-  if (!token) throw new Error("Not authenticated");
-
+  const token = await getAccessTokenOrThrow();
   const res = await fetch(`${API_BASE_URL}/api/admin/blog/${id}`, {
     method: "PATCH",
     headers: {
@@ -108,9 +97,7 @@ export async function adminUpdatePost(
 }
 
 export async function adminDeletePost(id: string): Promise<void> {
-  const token = await getAccessToken();
-  if (!token) throw new Error("Not authenticated");
-
+  const token = await getAccessTokenOrThrow();
   const res = await fetch(`${API_BASE_URL}/api/admin/blog/${id}`, {
     method: "DELETE",
     headers: {
