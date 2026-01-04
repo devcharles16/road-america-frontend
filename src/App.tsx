@@ -24,7 +24,7 @@ import AdminShipmentsPage from "./pages/AdminShipmentsPage";
 import AdminBlogPage from "./pages/AdminBlogPage";
 import AdminUsersPage from "./pages/AdminUsersPage";
 import PostLoginRedirectPage from "./pages/PostLoginRedirectPage";
-import AdminQuotesPage from "./pages/AdminQuotesPage";
+
 
 import AuthPublicGate from "./routes/AuthPublicGate";
 import { RequireRoles } from "./routes/RequireRoles";
@@ -92,7 +92,6 @@ function App() {
   <Route path="/admin" element={<AdminLayout />}>
     <Route index element={<AdminDashboardPage />} />
     <Route path="shipments" element={<AdminShipmentsPage />} />
-    <Route path="quotes" element={<AdminQuotesPage />} />
     <Route path="blog" element={<AdminBlogPage />} />
 
     {/* Admin-only */}

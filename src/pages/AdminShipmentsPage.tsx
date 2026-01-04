@@ -1,5 +1,6 @@
 // src/pages/AdminShipmentsPage.tsx
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { API_BASE_URL } from "../config/api";
 
 import {
@@ -8,8 +9,33 @@ import {
   type TransportRequest,
   type TransportStatus,
 } from "../services/shipmentsService";
-import { supabase } from "../lib/supabaseClient";
-import { useNavigate, Link } from "react-router-dom";
+import { adminConvertQuoteToShipment, adminListQuotes } from "../services/quotesService";
+import { useAuth } from "../context/AuthContext";
+
+type AdminTab = "shipments" | "quotes";
+
+type QuoteRow = {
+  id: string;
+  referenceId?: string | null;
+
+  first_name?: string | null;
+  last_name?: string | null;
+
+  customer_email?: string | null;
+  customer_phone?: string | null;
+
+  pickup_city?: string | null;
+  pickup_state?: string | null;
+  delivery_city?: string | null;
+  delivery_state?: string | null;
+
+  vehicle_year?: string | number | null;
+  vehicle_make?: string | null;
+  vehicle_model?: string | null;
+
+  quote_status?: string | null;
+  created_at?: string | null;
+};
 
 const STATUS_OPTIONS: TransportStatus[] = [
   "Submitted",
@@ -20,50 +46,79 @@ const STATUS_OPTIONS: TransportStatus[] = [
 ];
 
 const AdminShipmentsPage = () => {
+  const { logout } = useAuth();
+
+  const [tab, setTab] = useState<AdminTab>("shipments");
+
+  // Shipments
   const [shipments, setShipments] = useState<TransportRequest[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loadingShipments, setLoadingShipments] = useState(true);
   const [savingId, setSavingId] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const navigate = useNavigate();
+  const [shipmentsError, setShipmentsError] = useState<string | null>(null);
 
+  // Quotes
+  const [quotes, setQuotes] = useState<QuoteRow[]>([]);
+  const [loadingQuotes, setLoadingQuotes] = useState(false);
+  const [convertingId, setConvertingId] = useState<string | null>(null);
+  const [quotesError, setQuotesError] = useState<string | null>(null);
 
-  async function load() {
+  async function loadShipments() {
     try {
-      setLoading(true);
-      setError(null);
+      setLoadingShipments(true);
+      setShipmentsError(null);
       const data = await listShipments();
       setShipments(data);
     } catch (err: any) {
       console.error(err);
-      setError(
+      setShipmentsError(
         err?.message ||
           "Failed to load shipments. You may not have access to this area."
       );
     } finally {
-      setLoading(false);
+      setLoadingShipments(false);
     }
   }
 
-useEffect(() => {
-  load();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-}, []);
+  async function loadQuotes() {
+    try {
+      setLoadingQuotes(true);
+      setQuotesError(null);
+      const rows = await adminListQuotes();
+      setQuotes(rows ?? []);
+    } catch (err: any) {
+      console.error(err);
+      setQuotesError(err?.message || "Failed to load quotes.");
+      setQuotes([]);
+    } finally {
+      setLoadingQuotes(false);
+    }
+  }
 
+  useEffect(() => {
+    loadShipments();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Lazy-load quotes when tab is opened
+  useEffect(() => {
+    if (tab === "quotes" && quotes.length === 0 && !loadingQuotes) {
+      loadQuotes();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab]);
 
   async function handleStatusChange(id: string, status: TransportStatus) {
     try {
       setSavingId(id);
-      setError(null);
+      setShipmentsError(null);
 
-      // 1️⃣ Update status in backend (Supabase via API)
+      // 1) Update status in backend
       const updated = await updateShipmentStatus(id, status);
 
-      // 2️⃣ Update UI
-      setShipments((prev) =>
-        prev.map((s) => (s.id === id ? updated : s))
-      );
+      // 2) Update UI
+      setShipments((prev) => prev.map((s) => (s.id === id ? updated : s)));
 
-      // 3️⃣ Fire Status Update Email Notification (non-blocking)
+      // 3) Fire Status Update Email Notification (non-blocking)
       const pickup = `${updated.pickupCity}, ${updated.pickupState}`;
       const dropoff = `${updated.deliveryCity}, ${updated.deliveryState}`;
       const vehicle = `${updated.vehicleYear ?? ""} ${updated.vehicleMake ?? ""} ${
@@ -87,21 +142,53 @@ useEffect(() => {
       );
     } catch (err) {
       console.error(err);
-      setError("Something went wrong while updating status.");
+      setShipmentsError("Something went wrong while updating status.");
     } finally {
       setSavingId(null);
     }
   }
 
-  async function handleLogout() {
-    await supabase.auth.signOut();
-    navigate("/admin/login");
+  async function handleConvertQuote(quoteId: string) {
+    try {
+      setConvertingId(quoteId);
+      setQuotesError(null);
+
+      await adminConvertQuoteToShipment(quoteId);
+
+      // Refresh both tabs so it "feels" instant
+      await Promise.all([loadQuotes(), loadShipments()]);
+      setTab("shipments");
+    } catch (err: any) {
+      console.error(err);
+      setQuotesError(err?.message || "Failed to convert quote to shipment.");
+    } finally {
+      setConvertingId(null);
+    }
   }
+
+  async function handleLogout() {
+    await logout();
+  }
+
+  const tabBtn = (key: AdminTab, label: string) => (
+    <button
+      type="button"
+      onClick={() => setTab(key)}
+      className={[
+        "rounded-full px-4 py-2 text-[11px] font-semibold",
+        tab === key
+          ? "bg-white/15 text-white"
+          : "border border-white/30 text-white hover:border-brand-redSoft",
+      ].join(" ")}
+    >
+      {label}
+    </button>
+  );
 
   return (
     <section className="bg-brand-dark py-10 text-white min-h-[70vh]">
       <div className="mx-auto max-w-6xl px-4">
-        <div className="mb-6 flex items-center justify-between gap-4">
+        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <p className="text-xs uppercase tracking-[0.2em] text-brand-redSoft">
               Admin
@@ -114,13 +201,18 @@ useEffect(() => {
               customers see on the public tracking page.
             </p>
           </div>
-          <div className="flex items-center gap-3">
+
+          <div className="flex flex-wrap items-center gap-2 justify-end">
+            {tabBtn("shipments", "Shipments")}
+            {tabBtn("quotes", "Quotes")}
+
             <Link
               to="/admin/users"
               className="rounded-full border border-white/30 px-4 py-2 text-[11px] font-semibold text-white hover:border-brand-redSoft"
             >
               Users
             </Link>
+
             <button
               onClick={handleLogout}
               className="rounded-full border border-white/30 px-4 py-2 text-[11px] font-semibold text-white hover:border-brand-redSoft"
@@ -130,97 +222,204 @@ useEffect(() => {
           </div>
         </div>
 
-        {error && (
-          <p className="mb-3 text-xs text-red-400">
-            {error}
-          </p>
-        )}
+        {/* TAB CONTENT */}
+        {tab === "shipments" ? (
+          <>
+            {shipmentsError && (
+              <p className="mb-3 text-xs text-red-400">{shipmentsError}</p>
+            )}
 
-        {loading ? (
-          <p className="text-xs text-white/60">Loading shipments…</p>
-        ) : shipments.length === 0 ? (
-          <p className="text-xs text-white/60">
-            No shipments found yet. Once quote requests are converted to
-            transports, they will appear here.
-          </p>
-        ) : (
-          <div className="overflow-x-auto rounded-2xl border border-white/10 bg-black/40 shadow-soft-card">
-            <table className="min-w-full text-xs">
-              <thead className="bg-white/5 text-white/70">
-                <tr>
-                  <th className="px-3 py-2 text-left font-semibold">Ref ID</th>
-                  <th className="px-3 py-2 text-left font-semibold">
-                    Customer
-                  </th>
-                  <th className="px-3 py-2 text-left font-semibold">
-                    Route
-                  </th>
-                  <th className="px-3 py-2 text-left font-semibold">
-                    Vehicle
-                  </th>
-                  <th className="px-3 py-2 text-left font-semibold">
-                    Status
-                  </th>
-                  <th className="px-3 py-2 text-left font-semibold">
-                    Updated
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {shipments.map((s) => (
-                  <tr
-                    key={s.id}
-                    className="border-t border-white/5 hover:bg-white/5"
-                  >
-                    <td className="px-3 py-2 font-mono text-[11px]">
-                      {s.referenceId}
-                    </td>
-                    <td className="px-3 py-2">
-                      <div className="flex flex-col">
-                        <span>{s.customerName}</span>
-                        <span className="text-[10px] text-white/50">
-                          {s.customerEmail}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-3 py-2">
-                      <span>
-                        {s.pickupCity}, {s.pickupState} → {s.deliveryCity},{" "}
-                        {s.deliveryState}
-                      </span>
-                    </td>
-                    <td className="px-3 py-2">
-                      <span>
-                        {s.vehicleYear} {s.vehicleMake} {s.vehicleModel}
-                      </span>
-                    </td>
-                    <td className="px-3 py-2">
-                      <select
-                        value={s.status}
-                        disabled={savingId === s.id}
-                        onChange={(e) =>
-                          handleStatusChange(
-                            s.id,
-                            e.target.value as TransportStatus
-                          )
-                        }
-                        className="rounded-full border border-white/20 bg-[#121212]/60 px-2 py-1 text-[11px] outline-none focus:border-brand-redSoft"
+            {loadingShipments ? (
+              <p className="text-xs text-white/60">Loading shipments…</p>
+            ) : shipments.length === 0 ? (
+              <p className="text-xs text-white/60">
+                No shipments found yet. Once quote requests are converted to
+                transports, they will appear here.
+              </p>
+            ) : (
+              <div className="overflow-x-auto rounded-2xl border border-white/10 bg-black/40 shadow-soft-card">
+                <table className="min-w-full text-xs">
+                  <thead className="bg-white/5 text-white/70">
+                    <tr>
+                      <th className="px-3 py-2 text-left font-semibold">
+                        Ref ID
+                      </th>
+                      <th className="px-3 py-2 text-left font-semibold">
+                        Customer
+                      </th>
+                      <th className="px-3 py-2 text-left font-semibold">
+                        Route
+                      </th>
+                      <th className="px-3 py-2 text-left font-semibold">
+                        Vehicle
+                      </th>
+                      <th className="px-3 py-2 text-left font-semibold">
+                        Status
+                      </th>
+                      <th className="px-3 py-2 text-left font-semibold">
+                        Updated
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {shipments.map((s) => (
+                      <tr
+                        key={s.id}
+                        className="border-t border-white/5 hover:bg-white/5"
                       >
-                        {STATUS_OPTIONS.map((status) => (
-                          <option key={status} value={status}>
-                            {status}
-                          </option>
-                        ))}
-                      </select>
-                    </td>
-                    <td className="px-3 py-2 text-[10px] text-white/60">
-                      {new Date(s.updatedAt).toLocaleString()}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                        <td className="px-3 py-2 font-mono text-[11px]">
+                          {s.referenceId}
+                        </td>
+                        <td className="px-3 py-2">
+                          <div className="flex flex-col">
+                            <span>{s.customerName}</span>
+                            <span className="text-[10px] text-white/50">
+                              {s.customerEmail}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="px-3 py-2">
+                          <span>
+                            {s.pickupCity}, {s.pickupState} → {s.deliveryCity},{" "}
+                            {s.deliveryState}
+                          </span>
+                        </td>
+                        <td className="px-3 py-2">
+                          <span>
+                            {s.vehicleYear} {s.vehicleMake} {s.vehicleModel}
+                          </span>
+                        </td>
+                        <td className="px-3 py-2">
+                          <select
+                            value={s.status}
+                            disabled={savingId === s.id}
+                            onChange={(e) =>
+                              handleStatusChange(
+                                s.id,
+                                e.target.value as TransportStatus
+                              )
+                            }
+                            className="rounded-full border border-white/20 bg-[#121212]/60 px-2 py-1 text-[11px] outline-none focus:border-brand-redSoft"
+                          >
+                            {STATUS_OPTIONS.map((status) => (
+                              <option key={status} value={status}>
+                                {status}
+                              </option>
+                            ))}
+                          </select>
+                        </td>
+                        <td className="px-3 py-2 text-[10px] text-white/60">
+                          {new Date(s.updatedAt).toLocaleString()}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </>
+        ) : (
+          <>
+            {quotesError && (
+              <p className="mb-3 text-xs text-red-400">{quotesError}</p>
+            )}
+
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <p className="text-xs text-white/70">
+                Convert quotes into shipments using the same reference ID.
+              </p>
+              <button
+                onClick={loadQuotes}
+                className="rounded-full border border-white/30 px-4 py-2 text-[11px] font-semibold text-white hover:border-brand-redSoft"
+              >
+                Refresh Quotes
+              </button>
+            </div>
+
+            {loadingQuotes ? (
+              <p className="text-xs text-white/60">Loading quotes…</p>
+            ) : quotes.length === 0 ? (
+              <p className="text-xs text-white/60">No quotes found.</p>
+            ) : (
+              <div className="overflow-x-auto rounded-2xl border border-white/10 bg-black/40 shadow-soft-card">
+                <table className="min-w-full text-xs">
+                  <thead className="bg-white/5 text-white/70">
+                    <tr>
+                      <th className="px-3 py-2 text-left font-semibold">
+                        Quote
+                      </th>
+                      <th className="px-3 py-2 text-left font-semibold">
+                        Customer
+                      </th>
+                      <th className="px-3 py-2 text-left font-semibold">
+                        Route
+                      </th>
+                      <th className="px-3 py-2 text-left font-semibold">
+                        Vehicle
+                      </th>
+                      <th className="px-3 py-2 text-right font-semibold">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {quotes.map((q) => {
+                      const name = [q.first_name, q.last_name]
+                        .filter(Boolean)
+                        .join(" ")
+                        .trim();
+
+                      const vehicle = [
+                        q.vehicle_year ?? "",
+                        q.vehicle_make ?? "",
+                        q.vehicle_model ?? "",
+                      ]
+                        .filter(Boolean)
+                        .join(" ")
+                        .trim();
+
+                      return (
+                        <tr
+                          key={q.id}
+                          className="border-t border-white/5 hover:bg-white/5"
+                        >
+                          <td className="px-3 py-2 font-mono text-[11px]">
+                            {q.referenceId ?? q.id}
+                          </td>
+                          <td className="px-3 py-2">
+                            <div className="flex flex-col">
+                              <span>{name || "—"}</span>
+                              <span className="text-[10px] text-white/50">
+                                {q.customer_email || "—"}
+                              </span>
+                            </div>
+                          </td>
+                          <td className="px-3 py-2">
+                            <span>
+                              {q.pickup_city || "—"}, {q.pickup_state || "—"} →{" "}
+                              {q.delivery_city || "—"}, {q.delivery_state || "—"}
+                            </span>
+                          </td>
+                          <td className="px-3 py-2">{vehicle || "—"}</td>
+                          <td className="px-3 py-2 text-right">
+                            <button
+                              onClick={() => handleConvertQuote(q.id)}
+                              disabled={convertingId === q.id}
+                              className="rounded-full bg-brand-red px-4 py-2 text-[11px] font-semibold text-white hover:bg-brand-redSoft disabled:opacity-60"
+                            >
+                              {convertingId === q.id
+                                ? "Converting…"
+                                : "Convert → Shipment"}
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </>
         )}
       </div>
     </section>
