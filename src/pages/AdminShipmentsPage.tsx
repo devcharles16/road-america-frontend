@@ -1,6 +1,5 @@
 // src/pages/AdminShipmentsPage.tsx
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import { API_BASE_URL } from "../config/api";
 
 import {
@@ -228,13 +227,6 @@ const AdminShipmentsPage = () => {
           <div className="flex flex-wrap items-center gap-2 justify-end">
             {tabBtn("shipments", "Shipments")}
             {tabBtn("quotes", "Quotes")}
-
-            <Link
-              to="/admin/users"
-              className="rounded-full border border-white/30 px-4 py-2 text-[11px] font-semibold text-white hover:border-brand-redSoft"
-            >
-              Users
-            </Link>
 
             <button
               onClick={handleLogout}
