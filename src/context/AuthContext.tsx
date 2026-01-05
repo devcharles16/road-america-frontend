@@ -78,7 +78,6 @@ function withTimeout<T>(
   });
 }
 
-
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<any | null>(null);
   const [role, setRole] = useState<Role | undefined>(null);
@@ -162,7 +161,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           return;
         }
 
-        // ✅ FIX: retry read MUST NOT use .single() (can throw on 0 rows)
         const { data: retryData, error: retryErr } = await withTimeout(
           supabase
             .from("profiles")
@@ -183,7 +181,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
 
         if (!retryData) {
-          // Still missing (or RLS blocked) even after upsert attempt
           setRole(null);
           setRoleError("Profile row missing or access denied (RLS).");
           return;
@@ -216,15 +213,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
+      const userId = String(u.id);
+
+      // ✅ Ignore duplicate INITIAL_SESSION / refresh events for the same user
+      // If we already have a role for this user, don't wipe it or refetch.
+      if (activeUserIdRef.current === userId && role) {
+        return;
+      }
+
       setUser(u);
-      activeUserIdRef.current = String(u.id);
+      activeUserIdRef.current = userId;
       setRoleError(null);
-      setRole(undefined); // role is now "loading" for a real user
+
+      // ✅ Only show "role loading" when we truly need to fetch
+      setRole(undefined);
+
       await fetchRoleForUser(u);
     },
-    [fetchRoleForUser, setLoggedOut]
+    [fetchRoleForUser, setLoggedOut, role]
   );
 
+  // Keep this for manual calls (e.g., a "Retry" button), but DO NOT call on mount.
   const refreshAuth = useCallback(async () => {
     const reqId = ++reqIdRef.current;
     begin("refreshAuth");
@@ -291,12 +300,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (didInitRef.current) return;
     didInitRef.current = true;
 
-    refreshAuth();
-
     const { data: sub } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
+      async (event, session) => {
         const reqId = ++reqIdRef.current;
         begin("onAuthStateChange");
+
+        console.log("[Auth] event:", event);
 
         try {
           if (isLoggingOutRef.current) {
@@ -322,7 +331,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => {
       sub.subscription.unsubscribe();
     };
-  }, [begin, end, hydrateFromSession, refreshAuth, setLoggedOut]);
+  }, [begin, end, hydrateFromSession, setLoggedOut]);
 
   const value = useMemo<AuthContextValue>(
     () => ({
