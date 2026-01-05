@@ -1,6 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { adminConvertQuoteToShipment, adminListQuotes } from "../services/quotesService";
+import {
+  adminCloseQuoteNotConverted,
+  adminConvertQuoteToShipment,
+  adminListQuotes,
+  QUOTE_STATUS_CLOSED_NOT_CONVERTED,
+} from "../services/adminQuotesService";
 
 type QuoteRow = {
   id: string;
@@ -29,6 +34,7 @@ export default function AdminQuotesPage() {
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
   const [convertingId, setConvertingId] = useState<string | null>(null);
+  const [closingId, setClosingId] = useState<string | null>(null);
   const navigate = useNavigate();
 
   async function load() {
@@ -59,6 +65,22 @@ export default function AdminQuotesPage() {
       alert(e?.message ?? "Failed to convert quote");
     } finally {
       setConvertingId(null);
+    }
+  }
+
+  async function handleCloseNotConverted(quoteId: string) {
+    setClosingId(quoteId);
+    try {
+      await adminCloseQuoteNotConverted(quoteId);
+
+      // Make it feel instant: remove from local list immediately.
+      setQuotes((prev) =>
+        prev.filter((q) => (q.id ?? "") !== quoteId)
+      );
+    } catch (e: any) {
+      alert(e?.message ?? "Failed to close quote");
+    } finally {
+      setClosingId(null);
     }
   }
   
@@ -155,13 +177,29 @@ export default function AdminQuotesPage() {
                         </td>
 
                         <td className="px-4 py-3 text-right">
-                          <button
-                            disabled={convertingId === q.id}
-                            onClick={() => handleConvert(q.id)}
-                            className="inline-flex items-center justify-center rounded-full bg-brand-red px-4 py-2 text-xs font-semibold text-white shadow-soft-card hover:bg-brand-redSoft disabled:opacity-60"
-                          >
-                            {convertingId === q.id ? "Converting…" : "Convert to Shipment"}
-                          </button>
+                          <div className="flex flex-col items-end gap-2">
+                            <button
+                              disabled={convertingId === q.id || closingId === q.id}
+                              onClick={() => handleConvert(q.id)}
+                              className="inline-flex items-center justify-center rounded-full bg-brand-red px-4 py-2 text-xs font-semibold text-white shadow-soft-card hover:bg-brand-redSoft disabled:opacity-60"
+                            >
+                              {convertingId === q.id
+                                ? "Converting…"
+                                : "Convert to Shipment"}
+                            </button>
+
+                            {/* Close (Not Converted) */}
+                            <button
+                              disabled={closingId === q.id || convertingId === q.id}
+                              onClick={() => handleCloseNotConverted(q.id)}
+                              className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/5 px-4 py-2 text-xs font-semibold text-white/80 hover:bg-white/10 disabled:opacity-60"
+                              title={`Sets status to: ${QUOTE_STATUS_CLOSED_NOT_CONVERTED}`}
+                            >
+                              {closingId === q.id
+                                ? "Closing…"
+                                : "Close (Not Converted)"}
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     );

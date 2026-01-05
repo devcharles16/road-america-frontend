@@ -9,7 +9,12 @@ import {
   type TransportRequest,
   type TransportStatus,
 } from "../services/shipmentsService";
-import { adminConvertQuoteToShipment, adminListQuotes } from "../services/quotesService";
+import {
+  adminCloseQuoteNotConverted,
+  adminConvertQuoteToShipment,
+  adminListQuotes,
+  QUOTE_STATUS_CLOSED_NOT_CONVERTED,
+} from "../services/adminQuotesService";
 import { useAuth } from "../context/AuthContext";
 
 type AdminTab = "shipments" | "quotes";
@@ -60,6 +65,7 @@ const AdminShipmentsPage = () => {
   const [quotes, setQuotes] = useState<QuoteRow[]>([]);
   const [loadingQuotes, setLoadingQuotes] = useState(false);
   const [convertingId, setConvertingId] = useState<string | null>(null);
+  const [closingId, setClosingId] = useState<string | null>(null);
   const [quotesError, setQuotesError] = useState<string | null>(null);
 
   async function loadShipments() {
@@ -163,6 +169,23 @@ const AdminShipmentsPage = () => {
       setQuotesError(err?.message || "Failed to convert quote to shipment.");
     } finally {
       setConvertingId(null);
+    }
+  }
+
+  async function handleCloseQuoteNotConverted(quoteId: string) {
+    try {
+      setClosingId(quoteId);
+      setQuotesError(null);
+
+      await adminCloseQuoteNotConverted(quoteId);
+
+      // Instant UI: remove from local list.
+      setQuotes((prev) => prev.filter((q) => (q.id ?? "") !== quoteId));
+    } catch (err: any) {
+      console.error(err);
+      setQuotesError(err?.message || "Failed to close quote.");
+    } finally {
+      setClosingId(null);
     }
   }
 
@@ -402,15 +425,28 @@ const AdminShipmentsPage = () => {
                           </td>
                           <td className="px-3 py-2">{vehicle || "—"}</td>
                           <td className="px-3 py-2 text-right">
-                            <button
-                              onClick={() => handleConvertQuote(q.id)}
-                              disabled={convertingId === q.id}
-                              className="rounded-full bg-brand-red px-4 py-2 text-[11px] font-semibold text-white hover:bg-brand-redSoft disabled:opacity-60"
-                            >
-                              {convertingId === q.id
-                                ? "Converting…"
-                                : "Convert → Shipment"}
-                            </button>
+                            <div className="flex flex-col items-end gap-2">
+                              <button
+                                onClick={() => handleConvertQuote(q.id)}
+                                disabled={convertingId === q.id || closingId === q.id}
+                                className="rounded-full bg-brand-red px-4 py-2 text-[11px] font-semibold text-white hover:bg-brand-redSoft disabled:opacity-60"
+                              >
+                                {convertingId === q.id
+                                  ? "Converting…"
+                                  : "Convert → Shipment"}
+                              </button>
+
+                              <button
+                                onClick={() => handleCloseQuoteNotConverted(q.id)}
+                                disabled={closingId === q.id || convertingId === q.id}
+                                className="rounded-full border border-white/30 px-4 py-2 text-[11px] font-semibold text-white hover:border-brand-redSoft disabled:opacity-60"
+                                title={`Sets status to: ${QUOTE_STATUS_CLOSED_NOT_CONVERTED}`}
+                              >
+                                {closingId === q.id
+                                  ? "Closing…"
+                                  : "Close (Not Converted)"}
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       );
