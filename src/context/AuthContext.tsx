@@ -39,7 +39,7 @@ async function upsertProfileDefaultClient(u: any) {
     updated_at: new Date().toISOString(),
   };
 
-  // IMPORTANT: upsert only truly dedupes if profiles.id has a UNIQUE/PK constraint
+  // NOTE: requires profiles.id to be UNIQUE/PK to dedupe correctly
   await supabase.from("profiles").upsert(payload, { onConflict: "id" });
 }
 
@@ -83,11 +83,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [role, setRole] = useState<Role | undefined>(null);
   const [roleError, setRoleError] = useState<string | null>(null);
 
-  // NOTE: We keep `loading` in sync using a counter so it can’t get stuck true
+  // Loading is driven by a counter so it can’t get stuck true
   const [loading, setLoading] = useState(true);
   const pendingRef = useRef(0);
 
-  // Dev-only: StrictMode double mount protection
+  // Dev-only: protect against StrictMode double-effect init
   const didInitRef = useRef(false);
 
   const begin = useCallback((label: string) => {
@@ -102,19 +102,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setLoading(pendingRef.current > 0);
   }, []);
 
-  // Prevent stale async overwrites for session refresh flows
   const reqIdRef = useRef(0);
-
-  // Prevent “logout rehydrates session” races
   const isLoggingOutRef = useRef(false);
-
-  // Track active user so role results can't apply to the wrong user
   const activeUserIdRef = useRef<string | null>(null);
-
-  // Keep last known good role so transient fetch failures don't kick admins out
   const lastGoodRoleRef = useRef<Role>(null);
 
   const setLoggedOut = useCallback((err: string | null = null) => {
+    // Ensure we never remain "loading" while logged out
     pendingRef.current = 0;
     setLoading(false);
 
@@ -135,27 +129,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setRole(nextRole);
   }, []);
 
-  const applyRoleFetchError = useCallback(
-    (userId: string, message: string) => {
-      if (isLoggingOutRef.current) return;
-      if (activeUserIdRef.current !== userId) return;
+  const applyRoleFetchError = useCallback((userId: string, message: string) => {
+    if (isLoggingOutRef.current) return;
+    if (activeUserIdRef.current !== userId) return;
 
-      setRoleError(message);
+    setRoleError(message);
 
-      // If it's a timeout, keep role as "loading" so route guards don't redirect to client
-      if (String(message).includes("Timeout in profiles(role)")) {
-        setRole(undefined);
-        return;
-      }
+    // ✅ TIMEOUTS should not "downgrade" you to no-role.
+    // Keep role as "loading" so guards don't redirect to client login.
+    if (String(message).includes("Timeout in profiles(role)")) {
+      setRole(undefined);
+      return;
+    }
 
-      // Keep a known role if we already have one; otherwise fall back to last good role.
-      setRole((prev) => {
-        if (prev !== null && prev !== undefined) return prev; // keep admin/employee/client
-        return lastGoodRoleRef.current; // maybe null, but doesn't downgrade a real role
-      });
-    },
-    []
-  );
+    // Keep a known role if we already have one; otherwise fall back to last good role.
+    setRole((prev) => {
+      if (prev !== null && prev !== undefined) return prev; // keep admin/employee/client
+      return lastGoodRoleRef.current; // may be null, but won't downgrade an existing role
+    });
+  }, []);
 
   const fetchRoleForUser = useCallback(
     async (u: any) => {
@@ -170,7 +162,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         const { data, error } = await withTimeout(
           supabase.from("profiles").select("role").eq("id", userId).maybeSingle(),
-          15000, //
+          15000, // ✅ was 8000
           "profiles(role)"
         );
 
@@ -196,7 +188,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
           const { data: retryData, error: retryErr } = await withTimeout(
             supabase.from("profiles").select("role").eq("id", userId).maybeSingle(),
-            15000, // 
+            15000, // ✅ was 8000
             "profiles(role) retry"
           );
 
@@ -221,7 +213,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           return;
         }
 
-        // Profile exists
         const normalized = normalizeRole(data.role);
         applyRoleSafely(userId, normalized);
       } catch (e: any) {
@@ -243,10 +234,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       const userId = String(u.id);
 
-      // If it's the same user and role is already known (admin/employee/client OR null),
-      // don't wipe role or refetch on benign auth events.
+      // ✅ If it's the same user and role is already known (admin/employee/client OR null),
+      // don't wipe role / refetch on benign auth events.
       if (activeUserIdRef.current === userId && role !== undefined) {
-        setUser(u); // keep user fresh
+        setUser(u);
         return;
       }
 
@@ -254,7 +245,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       activeUserIdRef.current = userId;
       setRoleError(null);
 
-      // Only show "role loading" when we actually need to fetch it
+      // Role is loading
       setRole(undefined);
 
       await fetchRoleForUser(u);
@@ -262,7 +253,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     [fetchRoleForUser, role, setLoggedOut]
   );
 
-  // Keep this for manual calls (e.g., a "Retry" button), but DO NOT call on mount.
+  // Manual retry (useful for a "Retry" button)
   const refreshAuth = useCallback(async () => {
     const reqId = ++reqIdRef.current;
     begin("refreshAuth");
@@ -275,7 +266,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       const { data, error } = await withTimeout(
         supabase.auth.getSession(),
-        15000,
+        8000,
         "getSession"
       );
 
@@ -296,12 +287,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [begin, end, hydrateFromSession, setLoggedOut]);
 
+  // ✅ LOGOUT: instant UI (no loading spinner / no delay)
   const logout = useCallback(async () => {
     isLoggingOutRef.current = true;
 
-    // Immediately show logged out UI
+    // Immediately update UI to logged-out state
     setLoggedOut(null);
-    begin("logout");
 
     try {
       const { error } = await supabase.auth.signOut({ scope: "global" });
@@ -310,6 +301,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       clearSupabaseAuthStorage();
       clearAdminKey();
 
+      // Extra safety: ensure no session remains
       const { data } = await supabase.auth.getSession();
       if (data.session) {
         console.warn(
@@ -321,9 +313,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     } finally {
       isLoggingOutRef.current = false;
-      end("logout");
     }
-  }, [begin, end, setLoggedOut]);
+  }, [setLoggedOut]);
 
   useEffect(() => {
     if (didInitRef.current) return;
@@ -333,7 +324,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       async (event, session) => {
         const reqId = ++reqIdRef.current;
         begin("onAuthStateChange");
-
         console.log("[Auth] event:", event);
 
         try {
