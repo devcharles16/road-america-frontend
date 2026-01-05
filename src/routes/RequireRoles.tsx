@@ -1,54 +1,41 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import type { Role } from "../context/AuthContext";
 
-export function RequireRoles({
+export default function RequireRoles({
   allowed,
   redirectTo = "/login",
-  unauthorizedTo = "/",
 }: {
-  allowed: Role[];
+  allowed: Array<"admin" | "employee" | "client">;
   redirectTo?: string;
-  unauthorizedTo?: string;
 }) {
-  const { role, roleError, loading, user } = useAuth();
+  const { user, role, loading } = useAuth();
   const location = useLocation();
 
-  // 1) Still hydrating auth session
-  if (loading || (user && role === undefined)) {
+  // Wait for auth + role hydration
+  if (loading || role === undefined) {
     return (
-      <div className="p-6 text-white/60">
-        <div>Loading your account…</div>
-        {roleError && <div className="mt-2 text-xs text-white/40">{roleError}</div>}
+      <div className="p-6 text-white">
+        <div className="text-lg font-semibold">Loading your account…</div>
+        <div className="text-white/70 text-sm mt-2">
+          Please wait while we verify permissions.
+        </div>
       </div>
     );
   }
-  
 
-  // 2) Not logged in (do NOT require role to be present to redirect)
+  // Not signed in
   if (!user) {
     return <Navigate to={redirectTo} replace state={{ from: location }} />;
   }
 
-  // 3) Logged in, but role still not resolved
-  if (role === undefined) {
-    return <div className="p-6 text-white/60">Loading your account…</div>;
+  // Signed in but role missing/unknown
+  if (!role) {
+    return <Navigate to={redirectTo} replace state={{ from: location }} />;
   }
 
-  // 4) Logged in but role missing
-  if (role === null) {
-    return (
-      <div className="p-6 text-white/70">
-        <p>Signed in, but no role found for this account.</p>
-        {roleError && <p className="mt-2 text-white/50 text-sm">{roleError}</p>}
-        <p className="mt-4">Please contact an administrator.</p>
-      </div>
-    );
-  }
-
-  // 5) Wrong role
+  // Signed in but not allowed
   if (!allowed.includes(role)) {
-    return <Navigate to={unauthorizedTo} replace />;
+    return <Navigate to={redirectTo} replace state={{ from: location }} />;
   }
 
   return <Outlet />;

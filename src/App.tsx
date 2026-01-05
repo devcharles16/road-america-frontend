@@ -27,7 +27,7 @@ import PostLoginRedirectPage from "./pages/PostLoginRedirectPage";
 
 
 import AuthPublicGate from "./routes/AuthPublicGate";
-import { RequireRoles } from "./routes/RequireRoles";
+import RequireRoles from "./routes/RequireRoles";
 
 function App() {
   return (
@@ -95,9 +95,9 @@ function App() {
     <Route path="blog" element={<AdminBlogPage />} />
 
     {/* Admin-only */}
-    <Route element={<RequireRoles allowed={["admin"]} />}>
-      <Route path="users" element={<AdminUsersPage />} />
-    </Route>
+    <Route element={<RequireRoles allowed={["admin"]} redirectTo="/admin/login" />}>
+  <Route path="users" element={<AdminUsersPage />} />
+</Route>
   </Route>
 </Route>
 

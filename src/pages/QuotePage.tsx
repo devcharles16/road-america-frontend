@@ -87,7 +87,7 @@ async function handleSubmit(e: React.FormEvent) {
   setCreatedQuote(null);
 
   try {
-    // ✅ 0) Get captcha token
+    // 0) Get captcha token
     const siteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY as string | undefined;
     if (!siteKey) {
       throw new Error("Missing VITE_RECAPTCHA_SITE_KEY");
@@ -113,7 +113,7 @@ async function handleSubmit(e: React.FormEvent) {
     const normalizedYear =
       /^\d{4}$/.test(form.vehicleYear) ? form.vehicleYear : undefined;
 
-    // ✅ 1) Create a QUOTE (not a shipment)
+    // 1) Create a QUOTE (not a shipment)
     const created = await createQuote({
       firstName: form.firstName,
       lastName: form.lastName,
@@ -135,7 +135,7 @@ async function handleSubmit(e: React.FormEvent) {
       preferredPickupWindow: form.preferredPickupWindow,
       vehicleHeightMod: form.vehicleHeightMod,
 
-      // ✅ 2) send captcha token to backend
+      // 2) send captcha token to backend
       captchaToken,
     });
 
@@ -144,7 +144,7 @@ async function handleSubmit(e: React.FormEvent) {
     // ... keep your existing notification fetch exactly as-is ...
 
 
-      // ✅ 2) Best-effort email notification (keep this)
+      // 2) Best-effort email notification (keep this)
       const pickup = `${form.pickupCity}, ${form.pickupState}`;
       const dropoff = `${form.deliveryCity}, ${form.deliveryState}`;
 
@@ -168,7 +168,7 @@ async function handleSubmit(e: React.FormEvent) {
           vehicleHeightMod: form.vehicleHeightMod,
           preferredPickupWindow: form.preferredPickupWindow,
 
-          // ✅ IMPORTANT: reference id is now from the quote record
+          // IMPORTANT: reference id is now from the quote record
           referenceId: created.referenceId,
         }),
       }).catch((notifyErr) => {

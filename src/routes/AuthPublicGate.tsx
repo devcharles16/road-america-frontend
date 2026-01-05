@@ -12,7 +12,7 @@ type Props = {
 export default function AuthPublicGate({ children }: Props) {
   const location = useLocation();
 
-  // ✅ Always allow login routes so staff can sign in
+  // Always allow login routes so staff can sign in
   const allowList = ["/login", "/admin/login"];
   const isAllowed = allowList.includes(location.pathname);
 

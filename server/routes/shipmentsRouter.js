@@ -25,7 +25,7 @@ const ALLOWED_STATUSES = [
 router.post("/quotes", async (req, res) => {
   try {
     const input = req.body;
-// ✅ 0) Verify reCAPTCHA token (v3)
+// 0) Verify reCAPTCHA token (v3)
 const captchaToken = input.captchaToken;
 if (!captchaToken) {
   return res.status(400).json({ message: "Captcha required" });
@@ -53,7 +53,7 @@ const captcha = await verifyRes.json();
 const score = typeof captcha.score === "number" ? captcha.score : 0;
 const action = typeof captcha.action === "string" ? captcha.action : "";
 
-// ✅ Match the action you used in the frontend: "submit_quote"
+// Match the action you used in the frontend: "submit_quote"
 if (!captcha.success || action !== "submit_quote" || score < 0.5) {
   return res.status(403).json({
     message: "Captcha failed",

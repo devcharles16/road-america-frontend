@@ -40,7 +40,7 @@ const ClientLoginPage = () => {
         return;
       }
 
-      // ✅ Hand off routing to the post-login redirect page
+      // Hand off routing to the post-login redirect page
       navigate("/post-login", { replace: true });
     } catch (err: any) {
       console.error("[ClientLogin] exception", err);

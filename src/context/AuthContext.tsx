@@ -142,7 +142,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       setRoleError(message);
 
-      // ✅ If it's a timeout, keep role as "loading" so route guards don't redirect to client
+      // If it's a timeout, keep role as "loading" so route guards don't redirect to client
       if (String(message).includes("Timeout in profiles(role)")) {
         setRole(undefined);
         return;
@@ -170,7 +170,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         const { data, error } = await withTimeout(
           supabase.from("profiles").select("role").eq("id", userId).maybeSingle(),
-          15000, // ✅ was 8000
+          15000, //
           "profiles(role)"
         );
 
@@ -196,7 +196,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
           const { data: retryData, error: retryErr } = await withTimeout(
             supabase.from("profiles").select("role").eq("id", userId).maybeSingle(),
-            15000, // ✅ was 8000
+            15000, // 
             "profiles(role) retry"
           );
 
@@ -275,7 +275,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       const { data, error } = await withTimeout(
         supabase.auth.getSession(),
-        8000,
+        15000,
         "getSession"
       );
 
