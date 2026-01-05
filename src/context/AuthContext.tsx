@@ -111,97 +111,119 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Track active user so role results can't apply to the wrong user
   const activeUserIdRef = useRef<string | null>(null);
 
+  // Keep last known good role so transient fetch failures don't kick admins out
+  const lastGoodRoleRef = useRef<Role>(null);
+
   const setLoggedOut = useCallback((err: string | null = null) => {
-    // If we're logged out, we should never be "loading" forever
     pendingRef.current = 0;
     setLoading(false);
 
     setUser(null);
     setRole(null);
     setRoleError(err);
+
     activeUserIdRef.current = null;
+    lastGoodRoleRef.current = null;
   }, []);
 
-  const fetchRoleForUser = useCallback(async (u: any) => {
-    if (!u?.id) {
-      setRole(null);
-      setRoleError("Missing user id.");
-      return;
-    }
+  const applyRoleSafely = useCallback((userId: string, nextRole: Role) => {
+    if (isLoggingOutRef.current) return;
+    if (activeUserIdRef.current !== userId) return;
 
-    const userId = String(u.id);
+    lastGoodRoleRef.current = nextRole;
+    setRoleError(null);
+    setRole(nextRole);
+  }, []);
 
-    try {
-      const { data, error } = await withTimeout(
-        supabase.from("profiles").select("role").eq("id", userId).maybeSingle(),
-        8000,
-        "profiles(role)"
-      );
-
-      // Only apply if this is still the active logged-in user
+  const applyRoleFetchError = useCallback(
+    (userId: string, message: string) => {
       if (isLoggingOutRef.current) return;
       if (activeUserIdRef.current !== userId) return;
 
-      // Hard error (RLS, network, etc.)
-      if (error) {
+      setRoleError(message);
+
+      // Keep a known role if we already have one; otherwise fall back to last good role.
+      setRole((prev) => {
+        if (prev !== null && prev !== undefined) return prev; // keep admin/employee/client
+        return lastGoodRoleRef.current; // maybe null, but doesn't downgrade a real role
+      });
+    },
+    []
+  );
+
+  const fetchRoleForUser = useCallback(
+    async (u: any) => {
+      if (!u?.id) {
         setRole(null);
-        setRoleError(error.message);
+        setRoleError("Missing user id.");
         return;
       }
 
-      // No profile row → attempt to create default "client" profile
-      if (!data) {
-        try {
-          await upsertProfileDefaultClient(u);
-        } catch (e: any) {
-          if (activeUserIdRef.current === userId) {
-            setRole(null);
-            setRoleError(e?.message || "Failed to create default profile.");
-          }
-          return;
-        }
+      const userId = String(u.id);
 
-        const { data: retryData, error: retryErr } = await withTimeout(
-          supabase
-            .from("profiles")
-            .select("role")
-            .eq("id", userId)
-            .maybeSingle(),
+      try {
+        const { data, error } = await withTimeout(
+          supabase.from("profiles").select("role").eq("id", userId).maybeSingle(),
           8000,
-          "profiles(role) retry"
+          "profiles(role)"
         );
 
         if (isLoggingOutRef.current) return;
         if (activeUserIdRef.current !== userId) return;
 
-        if (retryErr) {
-          setRole(null);
-          setRoleError(retryErr.message);
+        if (error) {
+          applyRoleFetchError(userId, error.message);
           return;
         }
 
-        if (!retryData) {
-          setRole(null);
-          setRoleError("Profile row missing or access denied (RLS).");
+        // No profile row (or RLS returns null)
+        if (!data) {
+          try {
+            await upsertProfileDefaultClient(u);
+          } catch (e: any) {
+            applyRoleFetchError(
+              userId,
+              e?.message || "Failed to create default profile."
+            );
+            return;
+          }
+
+          const { data: retryData, error: retryErr } = await withTimeout(
+            supabase.from("profiles").select("role").eq("id", userId).maybeSingle(),
+            8000,
+            "profiles(role) retry"
+          );
+
+          if (isLoggingOutRef.current) return;
+          if (activeUserIdRef.current !== userId) return;
+
+          if (retryErr) {
+            applyRoleFetchError(userId, retryErr.message);
+            return;
+          }
+
+          if (!retryData) {
+            applyRoleFetchError(
+              userId,
+              "Profile row missing or access denied (RLS)."
+            );
+            return;
+          }
+
+          const normalized = normalizeRole(retryData.role);
+          applyRoleSafely(userId, normalized);
           return;
         }
 
-        setRoleError(null);
-        setRole(normalizeRole(retryData.role));
-        return;
+        // Profile exists
+        const normalized = normalizeRole(data.role);
+        applyRoleSafely(userId, normalized);
+      } catch (e: any) {
+        applyRoleFetchError(userId, e?.message || "Failed to load role.");
       }
-
-      // Profile exists
-      setRoleError(null);
-      setRole(normalizeRole(data.role));
-    } catch (e: any) {
-      if (isLoggingOutRef.current) return;
-      if (activeUserIdRef.current !== userId) return;
-
-      setRole(null);
-      setRoleError(e?.message || "Failed to load role.");
-    }
-  }, []);
+    },
+    [applyRoleFetchError, applyRoleSafely]
+  );
 
   const hydrateFromSession = useCallback(
     async (session: any) => {
@@ -215,9 +237,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       const userId = String(u.id);
 
-      // ✅ Ignore duplicate INITIAL_SESSION / refresh events for the same user
-      // If we already have a role for this user, don't wipe it or refetch.
-      if (activeUserIdRef.current === userId && role) {
+      // If it's the same user and role is already known (admin/employee/client OR null),
+      // don't wipe role or refetch on benign auth events.
+      if (activeUserIdRef.current === userId && role !== undefined) {
+        setUser(u); // keep user fresh
         return;
       }
 
@@ -225,12 +248,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       activeUserIdRef.current = userId;
       setRoleError(null);
 
-      // ✅ Only show "role loading" when we truly need to fetch
+      // Only show "role loading" when we actually need to fetch it
       setRole(undefined);
 
       await fetchRoleForUser(u);
     },
-    [fetchRoleForUser, setLoggedOut, role]
+    [fetchRoleForUser, role, setLoggedOut]
   );
 
   // Keep this for manual calls (e.g., a "Retry" button), but DO NOT call on mount.
