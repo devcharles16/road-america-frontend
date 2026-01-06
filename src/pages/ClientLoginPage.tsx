@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
+import { useAuth } from "../context/AuthContext";
 
 const ClientLoginPage = () => {
   const [email, setEmail] = useState("");
@@ -8,6 +9,7 @@ const ClientLoginPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { refreshAuth } = useAuth();
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -40,6 +42,16 @@ const ClientLoginPage = () => {
       if (!data?.user) {
         setError("Login failed. No user returned.");
         return;
+      }
+
+      // ✅ CRITICAL: Explicitly refresh auth to ensure session is hydrated
+      // This ensures the auth context recognizes the user and fetches the role
+      // before navigation happens
+      try {
+        await refreshAuth();
+      } catch (refreshError) {
+        console.error("[ClientLogin] refreshAuth error:", refreshError);
+        // Continue anyway - onAuthStateChange should still fire
       }
 
       // ✅ Single source of truth: always hand off to post-login routing
@@ -112,17 +124,6 @@ const ClientLoginPage = () => {
             </Link>
           </p>
 
-          {/* Optional: with single-login, this link is no longer needed.
-              If you keep it, point it to /login (same page) or remove it. */}
-          <p className="text-[11px] text-white/60 mt-2">
-            Admin or employee?{" "}
-            <Link
-              to="/login"
-              className="text-brand-redSoft hover:text-brand-red underline"
-            >
-              Use the same login.
-            </Link>
-          </p>
         </form>
       </div>
     </section>

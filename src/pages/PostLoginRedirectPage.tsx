@@ -26,7 +26,7 @@ export default function PostLoginRedirectPage() {
     if (role === undefined) return;
 
     if (isAdmin) {
-      navigate("/admin/quotes", { replace: true });
+      navigate("/admin/shipments", { replace: true });
       return;
     }
 

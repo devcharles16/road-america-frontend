@@ -244,23 +244,24 @@ if (!retryData) {
 
       const userId = String(u.id);
 
-     
-setUser(u);
+      // Set user first
+      setUser(u);
 
-// If same user and role already fetched or fetching, skip refetch
-if (
-  activeUserIdRef.current === userId &&
-  (roleFetchInProgressRef.current || roleFetchedForUserRef.current)
-) {
-  return;
-}
-
+      // Only skip if we're already fetching the role for this exact user
+      // This prevents duplicate fetches while still allowing fresh fetches after login
+      if (
+        activeUserIdRef.current === userId &&
+        roleFetchInProgressRef.current
+      ) {
+        // Role fetch already in progress for this user, don't start another
+        return;
+      }
 
       // New user or role not yet fetched - fetch it
-      setUser(u);
+      // Reset flags to ensure we always fetch after a fresh login
       activeUserIdRef.current = userId;
       setRoleError(null);
-      roleFetchedForUserRef.current = false; // Reset flag for new user
+      roleFetchedForUserRef.current = false; // Reset flag to allow fresh fetch
 
       // Role is loading
       setRole(undefined);

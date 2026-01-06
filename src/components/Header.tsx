@@ -90,7 +90,7 @@ const Header = () => {
           {/* Admin / Employee */}
           {authReady && isAdminUser && (
             <NavLink
-              to="/admin/quotes"
+              to="/admin/shipments"
               className={({ isActive }) =>
                 `hover:text-brand-redSoft transition ${
                   isActive ? "text-brand-redSoft" : "text-white/80"
@@ -157,7 +157,7 @@ const Header = () => {
 
             {authReady && isAdminUser && (
               <Link
-                to="/admin/quotes"
+                to="/admin/shipments"
                 onClick={() => setMobileOpen(false)}
                 className="block text-white/80"
               >

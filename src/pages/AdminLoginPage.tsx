@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
+import { useAuth } from "../context/AuthContext";
 
 console.log("LOGIN PAGE RENDER");
 const AdminLoginPage = () => {
@@ -10,6 +11,7 @@ const AdminLoginPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { refreshAuth } = useAuth();
 
 async function handleSubmit(e: React.FormEvent) {
   e.preventDefault();
@@ -26,6 +28,16 @@ async function handleSubmit(e: React.FormEvent) {
 
     if (error) throw error;
     if (!data.session) throw new Error("No session returned");
+
+    // ✅ CRITICAL: Explicitly refresh auth to ensure session is hydrated
+    // This ensures the auth context recognizes the user and fetches the role
+    // before navigation happens
+    try {
+      await refreshAuth();
+    } catch (refreshError) {
+      console.error("[AdminLogin] refreshAuth error:", refreshError);
+      // Continue anyway - onAuthStateChange should still fire
+    }
 
     // Go to admin root; RequireRoles + AuthContext will handle role/redirect
    navigate("/post-login", { replace: true });
