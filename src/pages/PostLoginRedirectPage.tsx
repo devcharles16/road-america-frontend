@@ -12,52 +12,34 @@ export default function PostLoginRedirectPage() {
     return () => clearInterval(t);
   }, []);
 
-  // Only redirect to login when we KNOW the user is logged out
-  useEffect(() => {
-    if (!loading && !user) {
-      navigate("/login", { replace: true });
-    }
-  }, [loading, user, navigate]);
-
   const isAdmin = useMemo(() => role === "admin" || role === "employee", [role]);
 
   useEffect(() => {
     // Wait for auth hydration
     if (loading) return;
 
-    // Not logged in
+    // If we don't have a user yet, DO NOT redirect to /login automatically.
+    // This prevents the "bounce back to login" loop during session hydration races.
     if (!user) return;
 
     // Logged in but role still resolving
     if (role === undefined) return;
 
     if (isAdmin) {
-      navigate("/admin", { replace: true });
+      navigate("/admin/quotes", { replace: true });
       return;
     }
 
-    if (role === "client") {
-      navigate("/my-shipments", { replace: true });
-      return;
-    }
-
-    // Logged in but no role / unknown role
-    navigate("/", { replace: true });
+    // Default non-admin path
+    navigate("/shipments", { replace: true });
   }, [loading, user, role, isAdmin, navigate]);
 
-  const stuck =
-    loading ||
-    (user && role === undefined) ||
-    (!user && waitedMs < 1500);
-
-  // Give role fetch more breathing room (matches your new 15s role timeout)
-  const stuckTooLong = stuck && waitedMs >= 15000;
+  const stuck = loading || (user && role === undefined) || (!user && waitedMs < 15000);
+  const stuckTooLong = !user && waitedMs >= 15000;
 
   return (
     <div className="min-h-[60vh] flex flex-col items-center justify-center text-white/70 px-6">
-      <div className="text-lg">
-        {stuck ? "Redirecting…" : "Redirect complete."}
-      </div>
+      <div className="text-lg">{stuck ? "Redirecting…" : "Redirect complete."}</div>
 
       {stuckTooLong && (
         <div className="mt-4 flex flex-wrap gap-3">
@@ -69,10 +51,10 @@ export default function PostLoginRedirectPage() {
           </button>
 
           <button
-            onClick={() => navigate("/admin/login", { replace: true })}
+            onClick={() => navigate("/login", { replace: true })}
             className="rounded-full bg-white/10 px-5 py-2 text-sm text-white hover:bg-white/15"
           >
-            Admin login
+            Back to Login
           </button>
 
           <button

@@ -12,36 +12,38 @@ const ClientLoginPage = () => {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
+    if (loading) return; // prevent double submits
+
     setLoading(true);
     setError(null);
 
-    console.log("[ClientLogin] submit", { email: email.trim() });
+    const trimmedEmail = email.trim();
+    console.log("[ClientLogin] submit", { email: trimmedEmail });
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: email.trim(),
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
+        email: trimmedEmail,
         password,
       });
 
       console.log("[ClientLogin] signInWithPassword result", {
         hasUser: !!data?.user,
         hasSession: !!data?.session,
-        error: error?.message ?? null,
+        error: signInError?.message ?? null,
       });
 
-      if (error) {
-        setError(error.message);
+      if (signInError) {
+        setError(signInError.message);
         return;
       }
 
-      // If Supabase returns no user at all, treat as failure
       if (!data?.user) {
         setError("Login failed. No user returned.");
         return;
       }
 
-      // Hand off routing to the post-login redirect page
-      navigate("/post-login", { replace: true });
+      // ✅ Single source of truth: always hand off to post-login routing
+      navigate("/post-login", { replace: true, state: { fromLogin: true } });
     } catch (err: any) {
       console.error("[ClientLogin] exception", err);
       setError(err?.message ?? "Login failed.");
@@ -110,13 +112,15 @@ const ClientLoginPage = () => {
             </Link>
           </p>
 
+          {/* Optional: with single-login, this link is no longer needed.
+              If you keep it, point it to /login (same page) or remove it. */}
           <p className="text-[11px] text-white/60 mt-2">
             Admin or employee?{" "}
             <Link
-              to="/admin/login"
+              to="/login"
               className="text-brand-redSoft hover:text-brand-red underline"
             >
-              Use the admin login instead.
+              Use the same login.
             </Link>
           </p>
         </form>

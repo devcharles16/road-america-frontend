@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 
@@ -17,16 +17,13 @@ import ClientLoginPage from "./pages/ClientLoginPage";
 import ClientRegisterPage from "./pages/ClientRegisterPage";
 import MyShipmentsPage from "./pages/MyShipmentsPage";
 
-import AdminLoginPage from "./pages/AdminLoginPage";
 import AdminLayout from "./layouts/AdminLayout";
 import AdminDashboardPage from "./pages/AdminDashboardPage";
 import AdminShipmentsPage from "./pages/AdminShipmentsPage";
 import AdminBlogPage from "./pages/AdminBlogPage";
 import AdminUsersPage from "./pages/AdminUsersPage";
 import PostLoginRedirectPage from "./pages/PostLoginRedirectPage";
-
-
-import AuthPublicGate from "./routes/AuthPublicGate";
+import AdminQuotesPage from "./pages/AdminQuotesPage";
 import RequireRoles from "./routes/RequireRoles";
 
 function App() {
@@ -46,37 +43,19 @@ function App() {
           <Route path="/blog/:slug" element={<BlogPostPage />} />
 
           {/* Auth pages exist, but are NOT public while troubleshooting */}
-          <Route
-            path="/login"
-            element={
-              <AuthPublicGate>
-                <ClientLoginPage />
-              </AuthPublicGate>
-            }
-          />
+          <Route path="/login" element={<ClientLoginPage />} />
+
           <Route
             path="/register"
-            element={
-              <AuthPublicGate>
-                <ClientRegisterPage />
-              </AuthPublicGate>
-            }
+            element={ <ClientRegisterPage /> }
           />
-          <Route
-            path="/admin/login"
-            element={
-              <AuthPublicGate>
-                <AdminLoginPage />
-              </AuthPublicGate>
-            }
-          />
-
+          <Route path="/admin/login" element={<Navigate to="/login" replace />} />
           {/* Post-login redirect (you can keep this public or gate it too) */}
           <Route path="/post-login" element={<PostLoginRedirectPage />} />
 
           {/* Client-protected */}
           <Route element={<RequireRoles allowed={["client"]} />}>
-            <Route path="/my-shipments" element={<MyShipmentsPage />} />
+            <Route path="/shipments" element={<MyShipmentsPage />} />
           </Route>
 
           {/* Footer-only pages */}
@@ -86,16 +65,17 @@ function App() {
          {/* Admin + Employee */}
 <Route
   element={
-    <RequireRoles allowed={["admin", "employee"]} redirectTo="/admin/login" />
+    <RequireRoles allowed={["admin", "employee"]} redirectTo="/login" />
   }
 >
-  <Route path="/admin" element={<AdminLayout />}>
+  <Route path="/admin/*" element={<AdminLayout />}>
     <Route index element={<AdminDashboardPage />} />
+    <Route path="quotes" element={<AdminQuotesPage />} />
     <Route path="shipments" element={<AdminShipmentsPage />} />
     <Route path="blog" element={<AdminBlogPage />} />
 
     {/* Admin-only */}
-    <Route element={<RequireRoles allowed={["admin"]} redirectTo="/admin/login" />}>
+    <Route element={<RequireRoles allowed={["admin"]} redirectTo="/login" />}>
   <Route path="users" element={<AdminUsersPage />} />
 </Route>
   </Route>

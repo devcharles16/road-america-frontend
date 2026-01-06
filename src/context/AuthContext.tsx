@@ -32,14 +32,12 @@ function normalizeRole(input: any): Role {
 async function upsertProfileDefaultClient(u: any) {
   if (!u?.id) return;
 
-  const payload: any = {
+  const payload = {
     id: u.id,
     email: u.email ?? null,
-    role: "client",
     updated_at: new Date().toISOString(),
   };
 
-  // NOTE: requires profiles.id to be UNIQUE/PK to dedupe correctly
   await supabase.from("profiles").upsert(payload, { onConflict: "id" });
 }
 
@@ -80,7 +78,7 @@ function withTimeout<T>(
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<any | null>(null);
-  const [role, setRole] = useState<Role | undefined>(null);
+const [role, setRole] = useState<Role | undefined>(undefined);
   const [roleError, setRoleError] = useState<string | null>(null);
 
   // Loading is driven by a counter so it can’t get stuck true
@@ -106,6 +104,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const isLoggingOutRef = useRef(false);
   const activeUserIdRef = useRef<string | null>(null);
   const lastGoodRoleRef = useRef<Role>(null);
+  // Track if role fetch is in progress to avoid stale closure issues
+  const roleFetchInProgressRef = useRef(false);
+  // Track if we've successfully fetched role for current user (distinguishes "not fetched" from "fetched and got null")
+  const roleFetchedForUserRef = useRef(false);
 
   const setLoggedOut = useCallback((err: string | null = null) => {
     // Ensure we never remain "loading" while logged out
@@ -118,6 +120,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     activeUserIdRef.current = null;
     lastGoodRoleRef.current = null;
+    roleFetchInProgressRef.current = false;
+    roleFetchedForUserRef.current = false;
   }, []);
 
   const applyRoleSafely = useCallback((userId: string, nextRole: Role) => {
@@ -137,10 +141,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // ✅ TIMEOUTS should not "downgrade" you to no-role.
     // Keep role as "loading" so guards don't redirect to client login.
+    // Don't mark as fetched so we can retry on next auth event.
     if (String(message).includes("Timeout in profiles(role)")) {
       setRole(undefined);
+      roleFetchedForUserRef.current = false; // Allow retry
       return;
     }
+
+    // For other errors, mark as fetched to avoid retrying on every auth event
+    // (user can still manually retry via refreshAuth)
+    roleFetchedForUserRef.current = true;
 
     // Keep a known role if we already have one; otherwise fall back to last good role.
     setRole((prev) => {
@@ -188,25 +198,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
           const { data: retryData, error: retryErr } = await withTimeout(
             supabase.from("profiles").select("role").eq("id", userId).maybeSingle(),
-            15000, // ✅ was 8000
+            15000, 
             "profiles(role) retry"
           );
 
           if (isLoggingOutRef.current) return;
           if (activeUserIdRef.current !== userId) return;
 
+          
+
           if (retryErr) {
             applyRoleFetchError(userId, retryErr.message);
             return;
           }
+if (!retryData) {
+  // Safe fallback: assume client without error
+  applyRoleSafely(userId, "client");
+  return;
+}
 
-          if (!retryData) {
-            applyRoleFetchError(
-              userId,
-              "Profile row missing or access denied (RLS)."
-            );
-            return;
-          }
 
           const normalized = normalizeRole(retryData.role);
           applyRoleSafely(userId, normalized);
@@ -234,23 +244,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       const userId = String(u.id);
 
-      // ✅ If it's the same user and role is already known (admin/employee/client OR null),
-      // don't wipe role / refetch on benign auth events.
-      if (activeUserIdRef.current === userId && role !== undefined) {
-        setUser(u);
-        return;
-      }
+     
+setUser(u);
 
+// If same user and role already fetched or fetching, skip refetch
+if (
+  activeUserIdRef.current === userId &&
+  (roleFetchInProgressRef.current || roleFetchedForUserRef.current)
+) {
+  return;
+}
+
+
+      // New user or role not yet fetched - fetch it
       setUser(u);
       activeUserIdRef.current = userId;
       setRoleError(null);
+      roleFetchedForUserRef.current = false; // Reset flag for new user
 
       // Role is loading
       setRole(undefined);
+      roleFetchInProgressRef.current = true;
 
-      await fetchRoleForUser(u);
+      try {
+        await fetchRoleForUser(u);
+        roleFetchedForUserRef.current = true; // Mark as fetched (even if role is null)
+      } finally {
+        roleFetchInProgressRef.current = false;
+      }
     },
-    [fetchRoleForUser, role, setLoggedOut]
+    [fetchRoleForUser, setLoggedOut]
   );
 
   // Manual retry (useful for a "Retry" button)
@@ -316,6 +339,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [setLoggedOut]);
 
+  // Set up auth state change listener
   useEffect(() => {
     if (didInitRef.current) return;
     didInitRef.current = true;
@@ -350,6 +374,50 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => {
       sub.subscription.unsubscribe();
     };
+  }, [begin, end, hydrateFromSession, setLoggedOut]);
+
+  // ✅ CRITICAL FIX: Explicitly fetch initial session on mount
+  // onAuthStateChange may not fire immediately if session is already in localStorage
+  useEffect(() => {
+    if (!didInitRef.current) return; // Wait for onAuthStateChange setup
+
+    const fetchInitialSession = async () => {
+      const reqId = ++reqIdRef.current;
+      begin("initialSession");
+
+      try {
+        if (isLoggingOutRef.current) return;
+
+        const { data, error } = await withTimeout(
+          supabase.auth.getSession(),
+          8000,
+          "getSession(initial)"
+        );
+
+        if (reqIdRef.current !== reqId) return;
+        if (isLoggingOutRef.current) return;
+
+        if (error || !data.session) {
+          // No session - ensure we're logged out
+          setLoggedOut(error?.message ?? null);
+          return;
+        }
+
+        // Session exists - hydrate it
+        // hydrateFromSession will check if user is already loaded
+        await hydrateFromSession(data.session);
+      } catch (e: any) {
+        if (reqIdRef.current !== reqId) return;
+        console.error("[Auth] Initial session fetch failed:", e);
+        // Don't set logged out on error - let onAuthStateChange handle it
+      } finally {
+        end("initialSession");
+      }
+    };
+
+    // Small delay to let onAuthStateChange fire first (if it will)
+    const timer = setTimeout(fetchInitialSession, 100);
+    return () => clearTimeout(timer);
   }, [begin, end, hydrateFromSession, setLoggedOut]);
 
   const value = useMemo<AuthContextValue>(
