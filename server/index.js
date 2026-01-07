@@ -55,7 +55,7 @@ const corsOptions = {
 // CORS must be BEFORE routes
 app.use(cors(corsOptions));
 // Handle all preflight requests
-app.options("/*", cors(corsOptions));
+app.options(/.*/, cors(corsOptions));
 
 // Parse JSON
 app.use(express.json());
