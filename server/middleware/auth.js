@@ -1,14 +1,25 @@
 import supabase from "../supabaseClient.js";
 
 async function getUserAndRole(req) {
-  const authHeader = req.headers.authorization || "";
+  const authHeader =
+  req.headers.authorization || req.headers.Authorization || "";
+  
+  console.log('[AUTH] Request headers:', {
+    authorization: req.headers.authorization,
+    Authorization: req.headers.Authorization,
+    allHeaders: Object.keys(req.headers)
+  });
+  
   const token = authHeader.startsWith("Bearer ")
     ? authHeader.slice(7)
     : null;
 
   if (!token) {
+    console.log('[AUTH] No token found in request');
     return { user: null, role: null };
   }
+  
+  console.log('[AUTH] Token found, length:', token.length);
 
   const { data, error } = await supabase.auth.getUser(token);
 
@@ -34,18 +45,22 @@ async function getUserAndRole(req) {
 }
 
 export function requireAuth(req, res, next) {
+  console.log('[AUTH] requireAuth middleware called for:', req.method, req.path);
   getUserAndRole(req)
     .then(({ user, role }) => {
       if (!user) {
+        console.log('[AUTH] No user found, returning 401');
         return res.status(401).json({ error: "Missing auth token" });
       }
+      console.log('[AUTH] User authenticated:', user.id, 'Role:', role);
       req.user = user;
       req.userRole = role;
       next();
     })
-    .catch(() =>
-      res.status(500).json({ error: "Auth check failed" })
-    );
+    .catch((err) => {
+      console.error('[AUTH] Auth check failed:', err);
+      res.status(500).json({ error: "Auth check failed" });
+    });
 }
 
 export function requireRole(role) {

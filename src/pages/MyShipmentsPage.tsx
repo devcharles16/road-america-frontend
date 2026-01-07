@@ -37,7 +37,6 @@ const MyShipmentsPage = () => {
     } catch (err: any) {
       console.error(err);
 
-      // ✅ Notes:
       // - listMyShipments throws "Not authenticated" if there's no session token.
       // - Treat that as "send them to login" instead of showing an error forever.
       const msg = err?.message || "Failed to load your shipments.";
@@ -57,7 +56,6 @@ const MyShipmentsPage = () => {
   }
 
   useEffect(() => {
-    // ✅ Notes (critical):
     // - Wait for auth hydration to finish.
     // - If the user is not logged in, redirect to login immediately.
     if (authLoading) return;
@@ -67,7 +65,7 @@ const MyShipmentsPage = () => {
       return;
     }
 
-    // ✅ Now it is safe to call listMyShipments()
+    // Now it is safe to call listMyShipments()
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authLoading, user]);

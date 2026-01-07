@@ -22,11 +22,54 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 4000;
+app.set("trust proxy", 1);
 
-
+// CORS configuration
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps, Postman, or same-origin)
+    if (!origin) {
+      console.log('[CORS] No origin header - allowing');
+      return callback(null, true);
+    }
+    
+    // List of allowed origins
+    const allowedOrigins = [
+      'http://localhost:5173',
+      'http://localhost:5174',
+      'http://localhost:4173',
+      'https://roadamericatransport.com',
+      'https://www.roadamericatransport.com',
+      process.env.FRONTEND_URL,
+    ].filter(Boolean);
+    
+    console.log(`[CORS] Request from origin: ${origin}`);
+    console.log(`[CORS] Allowed origins:`, allowedOrigins);
+    
+    if (allowedOrigins.includes(origin)) {
+      console.log(`[CORS] Origin ${origin} is allowed`);
+      return callback(null, true);
+    } else {
+      console.warn(`[CORS] Origin ${origin} not in allowed list, but allowing anyway for development`);
+      // For development: allow unknown origins but log them
+      // For production: uncomment the next line and remove the return callback
+      // return callback(new Error(`CORS blocked origin: ${origin}`));
+      return callback(null, true); // Allow it anyway for now, but log it
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control'],
+  preflightContinue: false,
+  optionsSuccessStatus: 204,
+  exposedHeaders: ['Content-Range', 'X-Content-Range'],
+  maxAge: 86400, // 24 hours
+};
 
 // Middleware
-app.use(cors());
+// CORS middleware automatically handles OPTIONS preflight requests
+app.use(cors(corsOptions));
+
 app.use(express.json());
 
 // Health check

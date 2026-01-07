@@ -119,7 +119,7 @@ router.post(
   requireOneOf(["admin", "employee"]),
   async (req, res) => {
     try {
-      const { quoteId, userId } = req.body || {};
+      const { quoteId } = req.body || {};
       if (!quoteId) {
         return res.status(400).json({ message: "quoteId is required" });
       }
@@ -144,6 +144,32 @@ router.post(
 
       if (fetchErr) throw fetchErr;
       let shipmentRow = shipment;
+// Attach shipment to user automatically if possible
+if (!shipmentRow.user_id && shipmentRow.customer_email) {
+  const email = shipmentRow.customer_email.trim().toLowerCase();
+
+  const { data: userMatch } = await supabase
+    .from("auth.users")
+    .select("id")
+    .ilike("email", email)
+    .maybeSingle();
+
+  if (userMatch?.id) {
+    const { data: updated } = await supabase
+      .from("shipments")
+      .update({
+        user_id: userMatch.id,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", shipmentId)
+      .select("*")
+      .single();
+
+    if (updated) {
+      shipmentRow = updated;
+    }
+  }
+}
 
 // If userId is provided, attach it to the shipment (best effort)
 if (userId) {
