@@ -305,27 +305,32 @@ const AdminShipmentsPage = () => {
                           </span>
                         </td>
                         <td className="px-3 py-2">
-                          <select
-                            value={s.status}
-                            disabled={savingId === s.id}
-                            onChange={(e) =>
-                              handleStatusChange(
-                                s.id,
-                                e.target.value as TransportStatus
-                              )
-                            }
-                            className="rounded-full border border-white/20 bg-[#121212]/60 px-2 py-1 text-[11px] outline-none focus:border-brand-redSoft"
-                          >
-                            {STATUS_OPTIONS.map((status) => (
-                              <option key={status} value={status}>
-                                {status}
-                              </option>
-                            ))}
-                          </select>
-                        </td>
-                        <td className="px-3 py-2 text-[10px] text-white/60">
-                          {new Date(s.updatedAt).toLocaleString()}
-                        </td>
+  <select
+    value={(s.status ?? "") as string}
+    disabled={savingId === s.id}
+    onChange={(e) => {
+      const next = e.target.value as TransportStatus;
+      handleStatusChange(s.id, next);
+    }}
+    className="rounded-full border border-white/20 bg-[#121212]/60 px-2 py-1 text-[11px] outline-none focus:border-brand-redSoft"
+  >
+    {/* Allows value="" when status is null/undefined */}
+    <option value="" disabled>
+      Select status…
+    </option>
+
+    {STATUS_OPTIONS.map((status) => (
+      <option key={status} value={status}>
+        {status}
+      </option>
+    ))}
+  </select>
+</td>
+
+<td className="px-3 py-2 text-[10px] text-white/60">
+  {s.updatedAt ? new Date(s.updatedAt).toLocaleString() : "—"}
+</td>
+
                       </tr>
                     ))}
                   </tbody>
