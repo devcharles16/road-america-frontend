@@ -78,15 +78,12 @@ function withTimeout<T>(
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<any | null>(null);
-const [role, setRole] = useState<Role | undefined>(undefined);
+  const [role, setRole] = useState<Role | undefined>(undefined);
   const [roleError, setRoleError] = useState<string | null>(null);
 
   // Loading is driven by a counter so it can’t get stuck true
   const [loading, setLoading] = useState(true);
   const pendingRef = useRef(0);
-
-  // Dev-only: protect against StrictMode double-effect init
-  const didInitRef = useRef(false);
 
   const begin = useCallback((label: string) => {
     pendingRef.current += 1;
@@ -102,15 +99,19 @@ const [role, setRole] = useState<Role | undefined>(undefined);
 
   const reqIdRef = useRef(0);
   const isLoggingOutRef = useRef(false);
+
+  // Track which user we've fully hydrated + fetched role for
   const activeUserIdRef = useRef<string | null>(null);
-  const lastGoodRoleRef = useRef<Role>(null);
-  // Track if role fetch is in progress to avoid stale closure issues
+  const roleFetchedForUserIdRef = useRef<string | null>(null);
   const roleFetchInProgressRef = useRef(false);
-  // Track if we've successfully fetched role for current user (distinguishes "not fetched" from "fetched and got null")
-  const roleFetchedForUserRef = useRef(false);
+
+  // Prevent duplicate subscriptions in dev edge cases
+  const didSubscribeRef = useRef(false);
+
+  // Avoid re-processing the same session over and over
+  const lastSeenUserIdRef = useRef<string | null>(null);
 
   const setLoggedOut = useCallback((err: string | null = null) => {
-    // Ensure we never remain "loading" while logged out
     pendingRef.current = 0;
     setLoading(false);
 
@@ -119,44 +120,9 @@ const [role, setRole] = useState<Role | undefined>(undefined);
     setRoleError(err);
 
     activeUserIdRef.current = null;
-    lastGoodRoleRef.current = null;
+    roleFetchedForUserIdRef.current = null;
     roleFetchInProgressRef.current = false;
-    roleFetchedForUserRef.current = false;
-  }, []);
-
-  const applyRoleSafely = useCallback((userId: string, nextRole: Role) => {
-    if (isLoggingOutRef.current) return;
-    if (activeUserIdRef.current !== userId) return;
-
-    lastGoodRoleRef.current = nextRole;
-    setRoleError(null);
-    setRole(nextRole);
-  }, []);
-
-  const applyRoleFetchError = useCallback((userId: string, message: string) => {
-    if (isLoggingOutRef.current) return;
-    if (activeUserIdRef.current !== userId) return;
-
-    setRoleError(message);
-
-    // ✅ TIMEOUTS should not "downgrade" you to no-role.
-    // Keep role as "loading" so guards don't redirect to client login.
-    // Don't mark as fetched so we can retry on next auth event.
-    if (String(message).includes("Timeout in profiles(role)")) {
-      setRole(undefined);
-      roleFetchedForUserRef.current = false; // Allow retry
-      return;
-    }
-
-    // For other errors, mark as fetched to avoid retrying on every auth event
-    // (user can still manually retry via refreshAuth)
-    roleFetchedForUserRef.current = true;
-
-    // Keep a known role if we already have one; otherwise fall back to last good role.
-    setRole((prev) => {
-      if (prev !== null && prev !== undefined) return prev; // keep admin/employee/client
-      return lastGoodRoleRef.current; // may be null, but won't downgrade an existing role
-    });
+    lastSeenUserIdRef.current = null;
   }, []);
 
   const fetchRoleForUser = useCallback(
@@ -169,10 +135,32 @@ const [role, setRole] = useState<Role | undefined>(undefined);
 
       const userId = String(u.id);
 
+      // Already fetched role for this user (and user didn't change)
+      if (roleFetchedForUserIdRef.current === userId) return;
+
+      // If a role fetch is already running for this same user, don't start another
+      if (
+        roleFetchInProgressRef.current &&
+        activeUserIdRef.current === userId
+      ) {
+        return;
+      }
+
+      roleFetchInProgressRef.current = true;
+      activeUserIdRef.current = userId;
+
+      // Mark role as loading (only if we don't already have a concrete role)
+      setRole((prev) => (prev === undefined ? prev : undefined));
+      setRoleError(null);
+
       try {
         const { data, error } = await withTimeout(
-          supabase.from("profiles").select("role").eq("id", userId).maybeSingle(),
-          15000, // ✅ was 8000
+          supabase
+            .from("profiles")
+            .select("role")
+            .eq("id", userId)
+            .maybeSingle(),
+          15000,
           "profiles(role)"
         );
 
@@ -180,59 +168,69 @@ const [role, setRole] = useState<Role | undefined>(undefined);
         if (activeUserIdRef.current !== userId) return;
 
         if (error) {
-          applyRoleFetchError(userId, error.message);
+          setRoleError(error.message);
+          // keep role loading so guards don't misroute; allow retry later
+          setRole(undefined);
           return;
         }
 
-        // No profile row (or RLS returns null)
         if (!data) {
+          // No profile row: create one, then retry once
           try {
             await upsertProfileDefaultClient(u);
           } catch (e: any) {
-            applyRoleFetchError(
-              userId,
-              e?.message || "Failed to create default profile."
-            );
+            setRoleError(e?.message || "Failed to create default profile.");
+            setRole(undefined);
             return;
           }
 
           const { data: retryData, error: retryErr } = await withTimeout(
-            supabase.from("profiles").select("role").eq("id", userId).maybeSingle(),
-            15000, 
+            supabase
+              .from("profiles")
+              .select("role")
+              .eq("id", userId)
+              .maybeSingle(),
+            15000,
             "profiles(role) retry"
           );
 
           if (isLoggingOutRef.current) return;
           if (activeUserIdRef.current !== userId) return;
 
-          
-
           if (retryErr) {
-            applyRoleFetchError(userId, retryErr.message);
+            setRoleError(retryErr.message);
+            setRole(undefined);
             return;
           }
-if (!retryData) {
-  // Safe fallback: assume client without error
-  applyRoleSafely(userId, "client");
-  return;
-}
 
+          // Safe fallback: default to client
+          if (!retryData) {
+            setRoleError(null);
+            setRole("client");
+            roleFetchedForUserIdRef.current = userId;
+            return;
+          }
 
-          const normalized = normalizeRole(retryData.role);
-          applyRoleSafely(userId, normalized);
+          setRoleError(null);
+          setRole(normalizeRole(retryData.role));
+          roleFetchedForUserIdRef.current = userId;
           return;
         }
 
-        const normalized = normalizeRole(data.role);
-        applyRoleSafely(userId, normalized);
+        setRoleError(null);
+        setRole(normalizeRole(data.role));
+        roleFetchedForUserIdRef.current = userId;
       } catch (e: any) {
-        applyRoleFetchError(userId, e?.message || "Failed to load role.");
+        setRoleError(e?.message || "Failed to load role.");
+        setRole(undefined);
+      } finally {
+        roleFetchInProgressRef.current = false;
       }
     },
-    [applyRoleFetchError, applyRoleSafely]
+    []
   );
 
-  const hydrateFromSession = useCallback(
+  const hydrate = useCallback(
     async (session: any) => {
       if (isLoggingOutRef.current) return;
 
@@ -244,40 +242,24 @@ if (!retryData) {
 
       const userId = String(u.id);
 
-      // Set user first
-      setUser(u);
-
-      // Only skip if we're already fetching the role for this exact user
-      // This prevents duplicate fetches while still allowing fresh fetches after login
-      if (
-        activeUserIdRef.current === userId &&
-        roleFetchInProgressRef.current
-      ) {
-        // Role fetch already in progress for this user, don't start another
+      // ✅ Ignore duplicate hydration for same user within the same “burst”
+      // This is what stops the repeating SIGNED_IN spam from re-triggering role fetches.
+      if (lastSeenUserIdRef.current === userId && user?.id === userId) {
+        // If role hasn't been fetched yet, still fetch it
+        if (roleFetchedForUserIdRef.current !== userId) {
+          await fetchRoleForUser(u);
+        }
         return;
       }
 
-      // New user or role not yet fetched - fetch it
-      // Reset flags to ensure we always fetch after a fresh login
-      activeUserIdRef.current = userId;
-      setRoleError(null);
-      roleFetchedForUserRef.current = false; // Reset flag to allow fresh fetch
+      lastSeenUserIdRef.current = userId;
 
-      // Role is loading
-      setRole(undefined);
-      roleFetchInProgressRef.current = true;
-
-      try {
-        await fetchRoleForUser(u);
-        roleFetchedForUserRef.current = true; // Mark as fetched (even if role is null)
-      } finally {
-        roleFetchInProgressRef.current = false;
-      }
+      setUser(u);
+      await fetchRoleForUser(u);
     },
-    [fetchRoleForUser, setLoggedOut]
+    [fetchRoleForUser, setLoggedOut, user?.id]
   );
 
-  // Manual retry (useful for a "Retry" button)
   const refreshAuth = useCallback(async () => {
     const reqId = ++reqIdRef.current;
     begin("refreshAuth");
@@ -302,20 +284,19 @@ if (!retryData) {
         return;
       }
 
-      await hydrateFromSession(data.session);
+      await hydrate(data.session);
     } catch (e: any) {
       if (reqIdRef.current !== reqId) return;
       setLoggedOut(e?.message || "Failed to refresh auth session.");
     } finally {
       end("refreshAuth");
     }
-  }, [begin, end, hydrateFromSession, setLoggedOut]);
+  }, [begin, end, hydrate, setLoggedOut]);
 
-  // ✅ LOGOUT: instant UI (no loading spinner / no delay)
   const logout = useCallback(async () => {
     isLoggingOutRef.current = true;
 
-    // Immediately update UI to logged-out state
+    // Instant UI
     setLoggedOut(null);
 
     try {
@@ -325,7 +306,7 @@ if (!retryData) {
       clearSupabaseAuthStorage();
       clearAdminKey();
 
-      // Extra safety: ensure no session remains
+      // Extra safety
       const { data } = await supabase.auth.getSession();
       if (data.session) {
         console.warn(
@@ -340,86 +321,75 @@ if (!retryData) {
     }
   }, [setLoggedOut]);
 
-  // Set up auth state change listener
+  // Subscribe once + hydrate initial session once
   useEffect(() => {
-    if (didInitRef.current) return;
-    didInitRef.current = true;
+    if (didSubscribeRef.current) return;
+    didSubscribeRef.current = true;
 
-    const { data: sub } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        const reqId = ++reqIdRef.current;
-        begin("onAuthStateChange");
-        console.log("[Auth] event:", event);
+    let alive = true;
 
-        try {
-          if (isLoggingOutRef.current) {
-            if (!session) setLoggedOut(null);
-            return;
-          }
+    const sub = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (!alive) return;
 
-          if (!session) {
-            setLoggedOut(null);
-            return;
-          }
+      const reqId = ++reqIdRef.current;
+      begin("onAuthStateChange");
+      console.log("[Auth] event:", event);
 
-          await hydrateFromSession(session);
-        } catch (e: any) {
-          if (reqIdRef.current !== reqId) return;
-          setLoggedOut(e?.message || "Auth state change failed.");
-        } finally {
-          end("onAuthStateChange");
+      try {
+        if (isLoggingOutRef.current) {
+          if (!session) setLoggedOut(null);
+          return;
         }
+
+        if (!session) {
+          setLoggedOut(null);
+          return;
+        }
+
+        await hydrate(session);
+      } catch (e: any) {
+        if (reqIdRef.current !== reqId) return;
+        setLoggedOut(e?.message || "Auth state change failed.");
+      } finally {
+        end("onAuthStateChange");
       }
-    );
+    });
 
-    return () => {
-      sub.subscription.unsubscribe();
-    };
-  }, [begin, end, hydrateFromSession, setLoggedOut]);
-
-  // ✅ CRITICAL FIX: Explicitly fetch initial session on mount
-  // onAuthStateChange may not fire immediately if session is already in localStorage
-  useEffect(() => {
-    if (!didInitRef.current) return; // Wait for onAuthStateChange setup
-
-    const fetchInitialSession = async () => {
+    // Initial session hydration (no timer, no duplicate loop)
+    (async () => {
       const reqId = ++reqIdRef.current;
       begin("initialSession");
 
       try {
-        if (isLoggingOutRef.current) return;
-
         const { data, error } = await withTimeout(
           supabase.auth.getSession(),
           8000,
           "getSession(initial)"
         );
 
+        if (!alive) return;
         if (reqIdRef.current !== reqId) return;
         if (isLoggingOutRef.current) return;
 
         if (error || !data.session) {
-          // No session - ensure we're logged out
           setLoggedOut(error?.message ?? null);
           return;
         }
 
-        // Session exists - hydrate it
-        // hydrateFromSession will check if user is already loaded
-        await hydrateFromSession(data.session);
-      } catch (e: any) {
-        if (reqIdRef.current !== reqId) return;
+        await hydrate(data.session);
+      } catch (e) {
+        // Don't force logout on a transient init error; you can still recover on auth events
         console.error("[Auth] Initial session fetch failed:", e);
-        // Don't set logged out on error - let onAuthStateChange handle it
       } finally {
         end("initialSession");
       }
-    };
+    })();
 
-    // Small delay to let onAuthStateChange fire first (if it will)
-    const timer = setTimeout(fetchInitialSession, 100);
-    return () => clearTimeout(timer);
-  }, [begin, end, hydrateFromSession, setLoggedOut]);
+    return () => {
+      alive = false;
+      sub.data.subscription.unsubscribe();
+    };
+  }, [begin, end, hydrate, setLoggedOut]);
 
   const value = useMemo<AuthContextValue>(
     () => ({
