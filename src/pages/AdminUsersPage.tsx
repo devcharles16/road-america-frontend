@@ -1,117 +1,123 @@
-import { useCallback, useEffect, useState } from "react";
-import { supabase } from "../lib/supabaseClient";
+import { useEffect, useState } from "react";
+import { adminListUsers, type AdminUserRow } from "../services/adminUsersService";
 
-type UserRow = {
-  id: string;
-  email: string;
-  role?: string | null;
-  created_at: string;
-};
+function fmtDate(iso?: string | null) {
+  if (!iso) return "—";
+  try {
+    return new Date(iso).toLocaleString();
+  } catch {
+    return iso;
+  }
+}
 
 export default function AdminUsersPage() {
-  const [users, setUsers] = useState<UserRow[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [users, setUsers] = useState<AdminUserRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const loadUsers = useCallback(async () => {
-    setLoading(true);
-    setErrorMsg(null);
-
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("id, email, role, created_at")
-      .order("created_at", { ascending: false });
-
-    if (error) {
-      console.error("[AdminUsersPage] loadUsers error:", error);
+  async function load() {
+    try {
+      setLoading(true);
+      setError(null);
+      const rows = await adminListUsers();
+      setUsers(rows);
+    } catch (e: any) {
+      console.error(e);
+      setError(e?.message || "Failed to load users.");
       setUsers([]);
-      setErrorMsg(error.message || "Failed to load users.");
+    } finally {
       setLoading(false);
-      return;
     }
-
-    setUsers((data ?? []) as UserRow[]);
-    setLoading(false);
-  }, []);
+  }
 
   useEffect(() => {
-    let alive = true;
-
-    (async () => {
-      // Prevent state updates if the component unmounts while awaiting the request
-      try {
-        await loadUsers();
-      } finally {
-        if (!alive) return;
-      }
-    })();
-
-    return () => {
-      alive = false;
-    };
-  }, [loadUsers]);
+    load();
+  }, []);
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between gap-3">
-        <h1 className="text-xl font-semibold text-white">Users</h1>
-        <button
-          type="button"
-          onClick={loadUsers}
-          className="rounded-md border border-white/10 bg-white/5 px-3 py-2 text-sm text-white hover:bg-white/10"
-        >
-          Refresh
-        </button>
-      </div>
+    <section className="bg-brand-dark py-10 text-white min-h-[70vh]">
+      <div className="mx-auto max-w-6xl px-4">
+        <div className="mb-6 flex items-start justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-semibold">Users</h1>
+            <p className="text-white/70 text-sm">
+              Admin view of profiles in the system.
+            </p>
+          </div>
 
-      {loading ? (
-        <p className="text-white/70">Loading users...</p>
-      ) : (
-        <>
-          {errorMsg ? (
-            <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-4">
-              <p className="text-sm text-red-200">{errorMsg}</p>
-              <p className="mt-1 text-xs text-red-200/70">
-                If you see users in Supabase but not here, it’s usually because this page must query
-                <span className="font-semibold"> profiles</span> and your RLS policy may be blocking admin reads.
-              </p>
-            </div>
-          ) : null}
+          <button
+            onClick={load}
+            className="rounded-lg bg-white/10 px-4 py-2 text-sm hover:bg-white/15 active:bg-white/20"
+            type="button"
+          >
+            Refresh
+          </button>
+        </div>
 
-          {users.length === 0 ? (
-            <div className="rounded-lg border border-white/10 bg-white/5 p-6 text-center">
-              <p className="text-white font-medium">No users to display</p>
-              <p className="text-white/60 text-sm mt-1">
-                This usually means the <span className="font-semibold">profiles</span> table is empty, or access is
-                blocked by Row Level Security.
-              </p>
-            </div>
-          ) : (
-            <div className="overflow-x-auto rounded-lg border border-white/10">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-white/10 bg-white/[0.03]">
-                    <th className="px-4 py-3 text-left font-medium text-white/80">Email</th>
-                    <th className="px-4 py-3 text-left font-medium text-white/80">Role</th>
-                    <th className="px-4 py-3 text-left font-medium text-white/80">Created</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {users.map((u) => (
-                    <tr key={u.id} className="border-b border-white/5 last:border-b-0">
-                      <td className="px-4 py-3 text-white">{u.email}</td>
-                      <td className="px-4 py-3 text-white/80">{u.role ?? "user"}</td>
-                      <td className="px-4 py-3 text-white/60">
-                        {u.created_at ? new Date(u.created_at).toLocaleDateString() : "—"}
+        {loading && (
+          <div className="rounded-xl border border-white/10 bg-black/20 p-6">
+            <p className="text-white/80">Loading users…</p>
+          </div>
+        )}
+
+        {!loading && error && (
+          <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-6">
+            <p className="font-medium">Couldn’t load users</p>
+            <p className="text-white/80 mt-1">{error}</p>
+            <p className="text-white/60 mt-3 text-sm">
+              This is usually caused by RLS blocking admins from selecting{" "}
+              <code className="text-white/80">profiles</code>.
+            </p>
+          </div>
+        )}
+
+        {!loading && !error && users.length === 0 && (
+          <div className="rounded-xl border border-white/10 bg-black/20 p-8 text-center">
+            <p className="text-lg font-semibold">No users found</p>
+            <p className="text-white/70 mt-2">
+              If you see users under Authentication → Users, but none here, then
+              profiles are missing or RLS is blocking access.
+            </p>
+          </div>
+        )}
+
+        {!loading && !error && users.length > 0 && (
+          <div className="overflow-hidden rounded-xl border border-white/10">
+            <table className="w-full text-left text-sm">
+              <thead className="bg-white/5 text-white/80">
+                <tr>
+                  <th className="px-4 py-3">Name</th>
+                  <th className="px-4 py-3">Email</th>
+                  <th className="px-4 py-3">Role</th>
+                  <th className="px-4 py-3">Created</th>
+                  <th className="px-4 py-3">User ID</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/10">
+                {users.map((u) => {
+                  const name =
+                    [u.first_name, u.last_name].filter(Boolean).join(" ") || "—";
+                  return (
+                    <tr key={u.id} className="hover:bg-white/5">
+                      <td className="px-4 py-3">{name}</td>
+                      <td className="px-4 py-3">{u.email ?? "—"}</td>
+                      <td className="px-4 py-3">
+                        <span className="rounded-md bg-white/10 px-2 py-1">
+                          {u.role ?? "—"}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">{fmtDate(u.created_at)}</td>
+                      <td className="px-4 py-3 font-mono text-xs text-white/70">
+                        {u.id}
                       </td>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </>
-      )}
-    </div>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    </section>
   );
 }

@@ -1,5 +1,5 @@
 import express from "express";
-import { requireAuth,requireRole, requireOneOf } from "../middleware/auth.js";
+import { requireAuth, requireRole, requireOneOf, requireClient } from "../middleware/auth.js";
 import supabase from "../supabaseClient.js";
 
 
@@ -238,7 +238,7 @@ router.get("/track", async (req, res) => {
 router.get(
   "/my-shipments",
   requireAuth,
-  requireRole("client"),
+  requireClient,
   async (req, res) => {
     try {
       const userId = req.user?.id;

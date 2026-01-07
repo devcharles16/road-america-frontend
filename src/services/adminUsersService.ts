@@ -17,6 +17,15 @@ export type CreatedUser = {
   role: NewUserRole;
 };
 
+export type AdminUserRow = {
+  id: string;
+  email: string | null;
+  first_name: string | null;
+  last_name: string | null;
+  role: string | null;
+  created_at: string | null;
+};
+
 async function getAccessToken(): Promise<string | null> {
   const { data } = await supabase.auth.getSession();
   return data.session?.access_token ?? null;
@@ -61,7 +70,15 @@ async function handleResponse<T>(res: Response): Promise<T> {
   throw new Error(errorMessage);
 }
 
+export async function adminListUsers(): Promise<AdminUserRow[]> {
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("id,email,first_name,last_name,role,created_at")
+    .order("created_at", { ascending: false });
 
+  if (error) throw new Error(error.message);
+  return (data ?? []) as AdminUserRow[];
+}
 export async function createUser(
   input: CreateUserInput
 ): Promise<CreatedUser> {

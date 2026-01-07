@@ -1,7 +1,19 @@
 // src/services/shipmentsService.ts
-import { API_BASE_URL } from "../config/api";
-import { getAccessTokenOrThrow } from "./apiClient";
+//
+// ✅ Notes (why this rewrite)
+// - This file mixes PUBLIC (no login), CUSTOMER (logged-in customer), and ADMIN/EMPLOYEE endpoints.
+// - Your 403 issue was caused because the CUSTOMER endpoint `/api/my-shipments` was using
+//   `getAccessTokenOrThrow()` (an admin-style helper) instead of the customer session token.
+// - Fix: `listMyShipments()` now pulls the access token directly from Supabase auth.
+//
+// ✅ Rules of thumb
+// - PUBLIC endpoints: no Authorization header
+// - CUSTOMER endpoints: use `supabase.auth.getSession()` and send Bearer access_token
+// - ADMIN/EMPLOYEE endpoints: use `getAccessTokenOrThrow()` (if that helper enforces role/admin)
 
+import { API_BASE_URL } from "../config/api";
+import { supabase } from "../lib/supabaseClient"; // ✅ customer session token lives here
+import { getAccessTokenOrThrow } from "./apiClient"; // ✅ keep for admin/employee routes only
 
 export type TransportStatus =
   | "Submitted"
@@ -13,80 +25,110 @@ export type TransportStatus =
 export type RunningCondition = "running" | "non-running";
 export type TransportType = "open" | "enclosed";
 
+/**
+ * Shipment row returned by backend.
+ * Notes:
+ * - Keep fields optional-ish to avoid TS breakage if backend adds/removes fields.
+ * - Your UI can still rely on required fields like id/referenceId where appropriate.
+ */
 export type TransportRequest = {
   id: string;
   referenceId: string;
-  customerName: string;
-  customerEmail: string;
+
+  // Customer
+  customerName?: string | null;
+  customerEmail?: string | null;
   customerPhone?: string | null;
-  pickupCity: string;
-  pickupState: string;
-  deliveryCity: string;
-  deliveryState: string;
-  vehicleYear?: string | null;
+
+  // Route
+  pickupCity?: string | null;
+  pickupState?: string | null;
+  deliveryCity?: string | null;
+  deliveryState?: string | null;
+
+  // Vehicle
+  vehicleYear?: string | number | null;
   vehicleMake?: string | null;
   vehicleModel?: string | null;
   vin?: string | null;
-  runningCondition?: RunningCondition | null;
-  transportType?: TransportType | null;
-  status: TransportStatus;
-  eta?: string | null;
-  userId?: string | null;
-  createdAt: string;
-  updatedAt: string;
+
+  // Shipment details
+  runningCondition?: RunningCondition | string | null;
+  transportType?: TransportType | string | null;
+  pickupWindow?: string | null;
+  vehicleHeightMod?: string | null;
+
+  notes?: string | null;
+  status?: TransportStatus | string | null;
+
+  createdAt?: string | null;
+  updatedAt?: string | null;
+
+  // optional linkage
+  quoteId?: string | null;
 };
 
-export type CreateTransportInput = {
-  pickupCity: string;
-  pickupState: string;
-  deliveryCity: string;
-  deliveryState: string;
-  vehicleYear?: string;
-  vehicleMake?: string;
-  vehicleModel?: string;
-  vin?: string;
-  runningCondition?: RunningCondition;
-  transportType?: TransportType;
-  customerName: string;
-  customerEmail: string;
-  customerPhone?: string;
-  userId?: string;
-};
-
-/** QUOTES */
+/** PUBLIC: Quote intake payload (no login required) */
 export type CreateQuoteInput = {
-  firstName: string;
-  lastName: string;
-  customerEmail: string;
-  customerPhone?: string;
+  firstName?: string | null;
+  lastName?: string | null;
+  customerName?: string | null;
 
-  pickupCity: string;
-  pickupState: string;
-  deliveryCity: string;
-  deliveryState: string;
+  customerEmail?: string | null;
+  customerPhone?: string | null;
 
-  vehicleYear?: string;
-  vehicleMake?: string;
-  vehicleModel?: string;
-  vin?: string;
+  pickupCity?: string | null;
+  pickupState?: string | null;
+  deliveryCity?: string | null;
+  deliveryState?: string | null;
 
-  runningCondition?: RunningCondition;
-  transportType?: TransportType;
+  vehicleYear?: string | number | null;
+  vehicleMake?: string | null;
+  vehicleModel?: string | null;
+  vin?: string | null;
 
-  preferredPickupWindow?: string;
-  vehicleHeightMod?: string;
-  notes?: string;
-  captchaToken?: string;
+  runningCondition?: RunningCondition | string | null;
+  transportType?: TransportType | string | null;
+
+  preferredPickupWindow?: string | null;
+  vehicleHeightMod?: string | null;
+
+  notes?: string | null;
+  captchaToken?: string | null;
 };
 
-/** Keep this minimal to avoid snake_case vs camelCase mismatch */
 export type QuoteCreated = {
   id: string;
-  referenceId: string; // RA-100000 etc
+  referenceId: string;
 };
 
+/** PUBLIC: Shipment intake payload (if you keep a public create-shipment request flow) */
+export type CreateTransportInput = {
+  customerName?: string | null;
+  customerEmail?: string | null;
+  customerPhone?: string | null;
+
+  pickupCity?: string | null;
+  pickupState?: string | null;
+  deliveryCity?: string | null;
+  deliveryState?: string | null;
+
+  vehicleYear?: string | number | null;
+  vehicleMake?: string | null;
+  vehicleModel?: string | null;
+  vin?: string | null;
+
+  runningCondition?: RunningCondition | string | null;
+  transportType?: TransportType | string | null;
+
+  pickupWindow?: string | null;
+  vehicleHeightMod?: string | null;
+
+  notes?: string | null;
+};
 
 async function handleResponse<T>(res: Response): Promise<T> {
+  // NOTE: This keeps the error message readable if backend returns JSON or plain text.
   if (!res.ok) {
     const text = await res.text().catch(() => "");
     throw new Error(
@@ -99,17 +141,18 @@ async function handleResponse<T>(res: Response): Promise<T> {
 /**
  * PUBLIC: Create a new QUOTE
  * POST /api/quotes
+ *
+ * Notes:
+ * - No Authorization header (public lead form)
+ * - Backend returns { id, referenceId, ... }
  */
-export async function createQuote(
-  input: CreateQuoteInput
-): Promise<QuoteCreated> {
+export async function createQuote(input: CreateQuoteInput): Promise<QuoteCreated> {
   const res = await fetch(`${API_BASE_URL}/api/quotes`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(input),
   });
 
-  // Backend returns { id, referenceId, ...data }
   const data = await handleResponse<any>(res);
 
   return {
@@ -119,10 +162,12 @@ export async function createQuote(
 }
 
 /**
- * PUBLIC: Create a new shipment directly (NOT the quote page anymore)
+ * PUBLIC: Create a new shipment request
  * POST /api/shipments
  *
- * You can keep this for “direct booking” flows.
+ * Notes:
+ * - Keep this public only if your backend is designed that way.
+ * - If you intend "shipments" to be customer-authenticated only, we should add Authorization here later.
  */
 export async function createTransportRequest(
   input: CreateTransportInput
@@ -133,22 +178,15 @@ export async function createTransportRequest(
     body: JSON.stringify(input),
   });
 
-  // TEMP DEBUG — remove later
-  if (!res.ok) {
-    const text = await res.text();
-    console.error("Create shipment failed:", res.status, text);
-    throw new Error(`Create shipment failed: ${res.status}`);
-  }
-
-  const created = await res.json();
-  console.log("Created shipment:", created);
-
-  return created;
+  return handleResponse<TransportRequest>(res);
 }
 
 /**
  * ADMIN/EMPLOYEE: List all shipments
  * GET /api/shipments
+ *
+ * Notes:
+ * - This should stay using getAccessTokenOrThrow() if that helper enforces admin/employee permissions.
  */
 export async function listShipments(): Promise<TransportRequest[]> {
   const token = await getAccessTokenOrThrow();
@@ -171,8 +209,8 @@ export async function updateShipmentStatus(
   const res = await fetch(`${API_BASE_URL}/api/shipments/${id}/status`, {
     method: "PATCH",
     headers: {
-      "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
     },
     body: JSON.stringify({ status }),
   });
@@ -180,26 +218,32 @@ export async function updateShipmentStatus(
   return handleResponse<TransportRequest>(res);
 }
 
- // ================================
-  // API: List shipments for logged-in client
-  // ================================
-  // Calls backend endpoint: GET /api/my-shipments
-  // Backend MUST:
-  // - Validate Supabase JWT from Authorization header
-  // - Determine user identity (user id + email)
-  // - Return shipments for that user (commonly user_id OR customer_email)
-  //
-  // If this returns [], check:
-  // - shipments.user_id is null (very common if shipments were created from quotes)
-  // - backend is filtering only by user_id
-  // - token parsing / auth middleware
-  // ================================
+/**
+ * CUSTOMER: List shipments for the currently logged-in customer
+ * GET /api/my-shipments
+ *
+ * ✅ Key change (fixes your 403 regression):
+ * - Use the current Supabase session access_token (customer auth)
+ * - Do NOT use getAccessTokenOrThrow() here (that’s for admin/employee flows)
+ */
 export async function listMyShipments(): Promise<TransportRequest[]> {
-  const token = await getAccessTokenOrThrow();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  const accessToken = session?.access_token;
+
+  // Notes:
+  // - If the UI calls this before auth hydration finishes, accessToken can be null.
+  // - In that case, the page should redirect to /login or wait until auth loading completes.
+  if (!accessToken) {
+    throw new Error("Not authenticated");
+  }
+
   const res = await fetch(`${API_BASE_URL}/api/my-shipments`, {
     method: "GET",
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${accessToken}`,
       "Cache-Control": "no-store", // helps avoid “it feels cached” issues
     },
     cache: "no-store",
@@ -211,6 +255,10 @@ export async function listMyShipments(): Promise<TransportRequest[]> {
 /**
  * PUBLIC: Track a specific shipment by reference ID + email
  * GET /api/track?referenceId=...&email=...
+ *
+ * Notes:
+ * - No auth required
+ * - Returns null if not found (404)
  */
 export async function trackShipmentByRefAndEmail(
   referenceId: string,

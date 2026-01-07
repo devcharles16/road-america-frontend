@@ -28,7 +28,9 @@ async function getUserAndRole(req) {
     return { user, role: null };
   }
 
-  return { user, role: profile?.role || null };
+  // Normalize role to lowercase for consistency
+  const role = profile?.role ? String(profile.role).trim().toLowerCase() : null;
+  return { user, role };
 }
 
 export function requireAuth(req, res, next) {
@@ -66,6 +68,25 @@ export function requireOneOf(roles) {
     if (!roles.includes(req.userRole)) {
       return res.status(403).json({ error: "Forbidden" });
     }
+    next();
+  };
+}
+
+/**
+ * Allow clients or users with null role (default clients).
+ * Deny admin and employee roles.
+ * This is for endpoints that should be accessible to regular customers.
+ */
+export function requireClient() {
+  return (req, res, next) => {
+    if (!req.user) {
+      return res.status(401).json({ error: "Missing auth token" });
+    }
+    // Deny admin and employee explicitly
+    if (req.userRole === "admin" || req.userRole === "employee") {
+      return res.status(403).json({ error: "Forbidden" });
+    }
+    // Allow client role or null (default clients who haven't had role set)
     next();
   };
 }
