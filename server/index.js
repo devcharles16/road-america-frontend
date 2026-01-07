@@ -3,18 +3,10 @@ import cors from "cors";
 import dotenv from "dotenv";
 
 import supabase from "./supabaseClient.js";
-import {
-  requireAuth,
-  requireRole,
-  requireOneOf,
-} from "./middleware/auth.js";
-
+import { requireAuth, requireRole, requireOneOf } from "./middleware/auth.js";
 
 import { sendStatusUpdate } from "./notifications/transportStatus.js";
-import {
-  sendNewQuoteAlert,
-  sendQuoteConfirmationEmail,
-} from "./notifications/adminAlerts.js";
+import { sendNewQuoteAlert, sendQuoteConfirmationEmail } from "./notifications/adminAlerts.js";
 
 import shipmentsRouter from "./routes/shipmentsRouter.js";
 
@@ -22,61 +14,64 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 4000;
+
+// If behind Render / proxies
 app.set("trust proxy", 1);
 
-// CORS configuration
+/** =========================================================
+ * CORS (FIXED)
+ * - You are using Authorization: Bearer <token>
+ * - You are NOT using cookies, so credentials should be false
+ * ========================================================= */
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "http://localhost:4173",
+  "https://roadamericatransport.com",
+  "https://www.roadamericatransport.com",
+  process.env.FRONTEND_URL,
+].filter(Boolean);
+
 const corsOptions = {
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps, Postman, or same-origin)
-    if (!origin) {
-      console.log('[CORS] No origin header - allowing');
-      return callback(null, true);
-    }
-    
-    // List of allowed origins
-    const allowedOrigins = [
-      'http://localhost:5173',
-      'http://localhost:5174',
-      'http://localhost:4173',
-      'https://roadamericatransport.com',
-      'https://www.roadamericatransport.com',
-      process.env.FRONTEND_URL,
-    ].filter(Boolean);
-    
-    console.log(`[CORS] Request from origin: ${origin}`);
-    console.log(`[CORS] Allowed origins:`, allowedOrigins);
-    
+  origin: (origin, cb) => {
+    // Allow requests with no origin (Postman, server-to-server)
+    if (!origin) return cb(null, true);
+
     if (allowedOrigins.includes(origin)) {
-      console.log(`[CORS] Origin ${origin} is allowed`);
-      return callback(null, true);
-    } else {
-      console.warn(`[CORS] Origin ${origin} not in allowed list, but allowing anyway for development`);
-      // For development: allow unknown origins but log them
-      // For production: uncomment the next line and remove the return callback
-      // return callback(new Error(`CORS blocked origin: ${origin}`));
-      return callback(null, true); // Allow it anyway for now, but log it
+      return cb(null, true);
     }
+
+    console.warn(`[CORS] Blocked origin: ${origin}`);
+    // Block unknown origins cleanly (so behavior is predictable)
+    return cb(null, false);
   },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control'],
-  preflightContinue: false,
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "Cache-Control"],
   optionsSuccessStatus: 204,
-  exposedHeaders: ['Content-Range', 'X-Content-Range'],
-  maxAge: 86400, // 24 hours
+  credentials: false, // ✅ IMPORTANT for Bearer-token auth
+  maxAge: 86400,
 };
 
-// Middleware
-// CORS middleware automatically handles OPTIONS preflight requests
+// CORS must be BEFORE routes
 app.use(cors(corsOptions));
+// Handle all preflight requests
+app.options("/*", cors(corsOptions));
 
+// Parse JSON
 app.use(express.json());
 
-// Health check
-app.get("/api/health", (req, res) => {
-  res.json({ status: "ok", service: "road-america-email-api" });
+// (Optional) Debug request origins while testing
+app.use((req, _res, next) => {
+  if (req.path.startsWith("/api/")) {
+    console.log("[REQ]", req.method, req.path, "origin=", req.headers.origin);
+  }
+  next();
 });
 
+// Health check
+app.get("/api/health", (_req, res) => {
+  res.json({ status: "ok", service: "road-america-email-api" });
+});
 
 /**
  * POST /api/notifications/status
@@ -108,20 +103,16 @@ app.post("/api/notifications/status", async (req, res) => {
       });
     }
 
-    res.json({ success: true });
+    return res.json({ success: true });
   } catch (err) {
     console.error("Status notification error:", err);
-    res.status(500).json({ success: false, message: "Server error" });
+    return res.status(500).json({ success: false, message: "Server error" });
   }
 });
 
 /**
  * POST /api/notifications/new-quote
- * Body: {firstName,lastName,email,phone, pickup, dropoff,vehicleYear,vehicleMake,
- * vehicleModel,runningCondition,transportType,preferredPickupWindow,referenceId
- * }
  */
-
 app.post("/api/notifications/new-quote", async (req, res) => {
   try {
     const {
@@ -138,63 +129,59 @@ app.post("/api/notifications/new-quote", async (req, res) => {
       runningCondition,
       vehicleHeightMod,
       transportType,
-       preferredPickupWindow,
+      preferredPickupWindow,
       referenceId,
     } = req.body || {};
-
-    const fullName = [firstName, lastName].filter(Boolean).join(" ").trim();
 
     const vehicleText =
       (vehicleRaw && String(vehicleRaw).trim()) ||
       [vehicleYear, vehicleMake, vehicleModel].filter(Boolean).join(" ").trim() ||
       "-";
 
-const adminResult = await sendNewQuoteAlert({
-  firstName,
-  lastName,
-  email,
-  phone,
-  pickup,
-  dropoff,
-  vehicle: vehicleText,
-  runningCondition,
-  vehicleHeightMod,
-  transportType,
-   preferredPickupWindow,
-  referenceId,
-});
+    const adminResult = await sendNewQuoteAlert({
+      firstName,
+      lastName,
+      email,
+      phone,
+      pickup,
+      dropoff,
+      vehicle: vehicleText,
+      runningCondition,
+      vehicleHeightMod,
+      transportType,
+      preferredPickupWindow,
+      referenceId,
+    });
 
-const customerResult = await sendQuoteConfirmationEmail({
-  firstName,
-  lastName,
-  email,
-  pickup,
-  dropoff,
-  vehicle: vehicleText,
-  runningCondition,
-  vehicleHeightMod,
-  transportType,
-   preferredPickupWindow,
-  referenceId,
-});
+    const customerResult = await sendQuoteConfirmationEmail({
+      firstName,
+      lastName,
+      email,
+      pickup,
+      dropoff,
+      vehicle: vehicleText,
+      runningCondition,
+      vehicleHeightMod,
+      transportType,
+      preferredPickupWindow,
+      referenceId,
+    });
 
-// Use results (prevents "unused" + helps debugging)
-if (adminResult?.success === false) {
-  console.error("Admin alert failed:", adminResult.error || adminResult.err);
-}
-if (customerResult?.success === false) {
-  console.error("Customer confirmation failed:", customerResult.error || customerResult.err);
-}
+    if (adminResult?.success === false) {
+      console.error("Admin alert failed:", adminResult.error || adminResult.err);
+    }
+    if (customerResult?.success === false) {
+      console.error("Customer confirmation failed:", customerResult.error || customerResult.err);
+    }
 
-return res.json({ ok: true });
-
+    return res.json({ ok: true });
   } catch (err) {
     console.error("new-quote notification error:", err);
     return res.status(500).json({ error: "Failed to send quote notifications." });
   }
 });
 
-
+// ---------- PUBLIC BLOG ROUTES ----------
 function slugify(str) {
   return String(str || "")
     .toLowerCase()
@@ -220,12 +207,7 @@ function mapPostRow(row) {
   };
 }
 
-
-
-// ---------- PUBLIC BLOG ROUTES ----------
-
-// GET /api/blog - list published posts
-app.get("/api/blog", async (req, res) => {
+app.get("/api/blog", async (_req, res) => {
   try {
     const { data, error } = await supabase
       .from("blog_posts")
@@ -239,15 +221,13 @@ app.get("/api/blog", async (req, res) => {
       return res.status(500).json({ error: "Failed to fetch blog posts." });
     }
 
-    const posts = (data || []).map(mapPostRow);
-    return res.json(posts);
+    return res.json((data || []).map(mapPostRow));
   } catch (err) {
     console.error("Unexpected error in GET /api/blog:", err);
     return res.status(500).json({ error: "Unexpected error." });
   }
 });
 
-// GET /api/blog/:slug - single published post
 app.get("/api/blog/:slug", async (req, res) => {
   const { slug } = req.params;
   try {
@@ -263,9 +243,7 @@ app.get("/api/blog/:slug", async (req, res) => {
       return res.status(500).json({ error: "Failed to fetch blog post." });
     }
 
-    if (!data) {
-      return res.status(404).json({ error: "Post not found." });
-    }
+    if (!data) return res.status(404).json({ error: "Post not found." });
 
     return res.json(mapPostRow(data));
   } catch (err) {
@@ -274,261 +252,182 @@ app.get("/api/blog/:slug", async (req, res) => {
   }
 });
 
-// ---------- ADMIN BLOG ROUTES (ADMIN ONLY) ----------
+// ---------- ADMIN BLOG ROUTES ----------
+app.get("/api/admin/blog", requireAuth, requireRole("admin"), async (_req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from("blog_posts")
+      .select("*")
+      .order("created_at", { ascending: false });
 
-// GET /api/admin/blog - list all posts
-app.get(
-  "/api/admin/blog",
-  requireAuth,
-  requireRole("admin"),
-  async (req, res) => {
-    try {
-      const { data, error } = await supabase
-        .from("blog_posts")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      if (error) {
-        console.error("Error fetching admin blog posts:", error);
-        return res.status(500).json({ error: "Failed to fetch blog posts." });
-      }
-
-      const posts = (data || []).map(mapPostRow);
-      return res.json(posts);
-    } catch (err) {
-      console.error("Unexpected error in GET /api/admin/blog:", err);
-      return res.status(500).json({ error: "Unexpected error." });
+    if (error) {
+      console.error("Error fetching admin blog posts:", error);
+      return res.status(500).json({ error: "Failed to fetch blog posts." });
     }
+
+    return res.json((data || []).map(mapPostRow));
+  } catch (err) {
+    console.error("Unexpected error in GET /api/admin/blog:", err);
+    return res.status(500).json({ error: "Unexpected error." });
   }
-);
+});
 
-// POST /api/admin/blog - create post
-app.post(
-  "/api/admin/blog",
-  requireAuth,
-  requireRole("admin"),
-  async (req, res) => {
-    const { title, slug, excerpt, content, status, imageUrl } = req.body || {};
-    if (!title) {
-      return res.status(400).json({ error: "Title is required." });
+app.post("/api/admin/blog", requireAuth, requireRole("admin"), async (req, res) => {
+  const { title, slug, excerpt, content, status, imageUrl } = req.body || {};
+  if (!title) return res.status(400).json({ error: "Title is required." });
+
+  const finalSlug = slugify(slug || title);
+  const safeStatus = status === "published" ? "published" : "draft";
+  const publishedAt = safeStatus === "published" ? new Date().toISOString() : null;
+
+  try {
+    const { data, error } = await supabase
+      .from("blog_posts")
+      .insert({
+        title,
+        slug: finalSlug,
+        excerpt: excerpt || null,
+        content: content || "",
+        status: safeStatus,
+        published_at: publishedAt,
+        image_url: imageUrl || null,
+      })
+      .select("*")
+      .single();
+
+    if (error) {
+      console.error("Error creating blog post:", error);
+      return res.status(500).json({ error: "Failed to create blog post." });
     }
 
-    const finalSlug = slugify(slug || title);
+    return res.status(201).json(mapPostRow(data));
+  } catch (err) {
+    console.error("Unexpected error in POST /api/admin/blog:", err);
+    return res.status(500).json({ error: "Unexpected error." });
+  }
+});
+
+app.patch("/api/admin/blog/:id", requireAuth, requireRole("admin"), async (req, res) => {
+  const { id } = req.params;
+  const { title, slug, excerpt, content, status, imageUrl } = req.body || {};
+
+  const updates = {};
+  if (title !== undefined) updates.title = title;
+  if (slug !== undefined) updates.slug = slugify(slug || title || "");
+  if (excerpt !== undefined) updates.excerpt = excerpt;
+  if (content !== undefined) updates.content = content;
+  if (status !== undefined) {
     const safeStatus = status === "published" ? "published" : "draft";
-    const publishedAt =
-      safeStatus === "published" ? new Date().toISOString() : null;
-
-    try {
-      const { data, error } = await supabase
-        .from("blog_posts")
-        .insert({
-          title,
-          slug: finalSlug,
-          excerpt: excerpt || null,
-          content: content || "",
-          status: safeStatus,
-          published_at: publishedAt,
-          image_url: imageUrl || null,
-        })
-        .select("*")
-        .single();
-
-      if (error) {
-        console.error("Error creating blog post:", error);
-        return res.status(500).json({ error: "Failed to create blog post." });
-      }
-
-      return res.status(201).json(mapPostRow(data));
-    } catch (err) {
-      console.error("Unexpected error in POST /api/admin/blog:", err);
-      return res.status(500).json({ error: "Unexpected error." });
-    }
+    updates.status = safeStatus;
+    updates.published_at = safeStatus === "published" ? new Date().toISOString() : null;
   }
-);
+  if (imageUrl !== undefined) updates.image_url = imageUrl || null;
 
-// PATCH /api/admin/blog/:id - update post
-app.patch(
-  "/api/admin/blog/:id",
-  requireAuth,
-  requireRole("admin"),
-  async (req, res) => {
-    const { id } = req.params;
-    const { title, slug, excerpt, content, status, imageUrl } = req.body || {};
+  try {
+    const { data, error } = await supabase
+      .from("blog_posts")
+      .update(updates)
+      .eq("id", id)
+      .select("*")
+      .single();
 
-    const updates = {};
-    if (title !== undefined) updates.title = title;
-    if (slug !== undefined) updates.slug = slugify(slug || title || "");
-    if (excerpt !== undefined) updates.excerpt = excerpt;
-    if (content !== undefined) updates.content = content;
-    if (status !== undefined) {
-      const safeStatus = status === "published" ? "published" : "draft";
-      updates.status = safeStatus;
-      if (safeStatus === "published") {
-        updates.published_at = new Date().toISOString();
-      } else {
-        updates.published_at = null;
-      }
+    if (error) {
+      console.error("Error updating blog post:", error);
+      return res.status(500).json({ error: "Failed to update blog post." });
     }
-    if (imageUrl !== undefined) {
-      updates.image_url = imageUrl || null;
-    }
+    if (!data) return res.status(404).json({ error: "Post not found." });
 
-    try {
-      const { data, error } = await supabase
-        .from("blog_posts")
-        .update(updates)
-        .eq("id", id)
-        .select("*")
-        .single();
-
-      if (error) {
-        console.error("Error updating blog post:", error);
-        return res.status(500).json({ error: "Failed to update blog post." });
-      }
-
-      if (!data) {
-        return res.status(404).json({ error: "Post not found." });
-      }
-
-      return res.json(mapPostRow(data));
-    } catch (err) {
-      console.error("Unexpected error in PATCH /api/admin/blog/:id:", err);
-      return res.status(500).json({ error: "Unexpected error." });
-    }
+    return res.json(mapPostRow(data));
+  } catch (err) {
+    console.error("Unexpected error in PATCH /api/admin/blog/:id:", err);
+    return res.status(500).json({ error: "Unexpected error." });
   }
-);
+});
 
-// DELETE /api/admin/blog/:id - delete post
-app.delete(
-  "/api/admin/blog/:id",
-  requireAuth,
-  requireRole("admin"),
-  async (req, res) => {
-    const { id } = req.params;
-    try {
-      const { error } = await supabase
-        .from("blog_posts")
-        .delete()
-        .eq("id", id);
-
-      if (error) {
-        console.error("Error deleting blog post:", error);
-        return res.status(500).json({ error: "Failed to delete blog post." });
-      }
-
-      return res.status(204).send();
-    } catch (err) {
-      console.error("Unexpected error in DELETE /api/admin/blog/:id:", err);
-      return res.status(500).json({ error: "Unexpected error." });
+app.delete("/api/admin/blog/:id", requireAuth, requireRole("admin"), async (req, res) => {
+  const { id } = req.params;
+  try {
+    const { error } = await supabase.from("blog_posts").delete().eq("id", id);
+    if (error) {
+      console.error("Error deleting blog post:", error);
+      return res.status(500).json({ error: "Failed to delete blog post." });
     }
+    return res.status(204).send();
+  } catch (err) {
+    console.error("Unexpected error in DELETE /api/admin/blog/:id:", err);
+    return res.status(500).json({ error: "Unexpected error." });
   }
-);
-// ---------- ADMIN USER MANAGEMENT ROUTES (ADMIN ONLY) ----------
+});
 
-// GET /api/admin/users - list all profiles
-app.get(
-  "/api/admin/users",
-  requireAuth,
-  requireRole("admin"),
-  async (req, res) => {
-    try {
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("id, email, role, full_name, created_at")
-        .order("created_at", { ascending: false });
+// ---------- ADMIN USER MANAGEMENT ROUTES ----------
+app.get("/api/admin/users", requireAuth, requireRole("admin"), async (_req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("id, email, role, full_name, created_at")
+      .order("created_at", { ascending: false });
 
-      if (error) {
-        console.error("Error fetching admin users:", error);
-        return res
-          .status(500)
-          .json({ error: "Failed to fetch users." });
-      }
-
-      return res.json(data || []);
-    } catch (err) {
-      console.error("Unexpected error in GET /api/admin/users:", err);
-      return res.status(500).json({ error: "Unexpected error." });
+    if (error) {
+      console.error("Error fetching admin users:", error);
+      return res.status(500).json({ error: "Failed to fetch users." });
     }
+
+    return res.json(data || []);
+  } catch (err) {
+    console.error("Unexpected error in GET /api/admin/users:", err);
+    return res.status(500).json({ error: "Unexpected error." });
   }
-);
+});
 
-// POST /api/admin/users - create a new user with a role
-app.post(
-  "/api/admin/users",
-  requireAuth,
-  requireRole("admin"),
-  async (req, res) => {
-    const { email, password, role, fullName } = req.body || {};
+app.post("/api/admin/users", requireAuth, requireRole("admin"), async (req, res) => {
+  const { email, password, role, fullName } = req.body || {};
 
-    if (!email || !password || !role) {
-      return res
-        .status(400)
-        .json({ error: "email, password, and role are required." });
-    }
-
-    const allowedRoles = ["admin", "employee", "client"];
-    if (!allowedRoles.includes(role)) {
-      return res
-        .status(400)
-        .json({ error: "Invalid role. Must be admin, employee, or client." });
-    }
-
-    try {
-      // 1) Create Supabase auth user (requires service role key in supabaseClient)
-      const { data: created, error: createError } =
-        await supabase.auth.admin.createUser({
-          email,
-          password,
-          email_confirm: true,
-          user_metadata: {
-            full_name: fullName || null,
-          },
-        });
-
-      if (createError) {
-        console.error("Error creating Supabase auth user:", createError);
-        return res
-          .status(500)
-          .json({ error: "Failed to create auth user." });
-      }
-
-      const user = created?.user;
-      if (!user) {
-        return res
-          .status(500)
-          .json({ error: "Auth user not returned from Supabase." });
-      }
-
-      // 2) Insert profile row with role mapping
-      const { data: profile, error: profileError } = await supabase
-        .from("profiles")
-        .insert({
-          id: user.id,
-          email,
-          role,
-          full_name: fullName || null,
-        })
-        .select("id, email, role, full_name, created_at")
-        .single();
-
-      if (profileError) {
-        console.error("Error inserting profile row:", profileError);
-        return res
-          .status(500)
-          .json({ error: "User created, but failed to save profile." });
-      }
-
-      return res.status(201).json(profile);
-    } catch (err) {
-      console.error("Unexpected error in POST /api/admin/users:", err);
-      return res.status(500).json({ error: "Unexpected error." });
-    }
+  if (!email || !password || !role) {
+    return res.status(400).json({ error: "email, password, and role are required." });
   }
-);
 
-// 🔹 Mount shipments router here: this gives you /api/shipments
+  const allowedRoles = ["admin", "employee", "client"];
+  if (!allowedRoles.includes(role)) {
+    return res.status(400).json({ error: "Invalid role. Must be admin, employee, or client." });
+  }
+
+  try {
+    const { data: created, error: createError } = await supabase.auth.admin.createUser({
+      email,
+      password,
+      email_confirm: true,
+      user_metadata: { full_name: fullName || null },
+    });
+
+    if (createError) {
+      console.error("Error creating Supabase auth user:", createError);
+      return res.status(500).json({ error: "Failed to create auth user." });
+    }
+
+    const user = created?.user;
+    if (!user) return res.status(500).json({ error: "Auth user not returned from Supabase." });
+
+    const { data: profile, error: profileError } = await supabase
+      .from("profiles")
+      .insert({ id: user.id, email, role, full_name: fullName || null })
+      .select("id, email, role, full_name, created_at")
+      .single();
+
+    if (profileError) {
+      console.error("Error inserting profile row:", profileError);
+      return res.status(500).json({ error: "User created, but failed to save profile." });
+    }
+
+    return res.status(201).json(profile);
+  } catch (err) {
+    console.error("Unexpected error in POST /api/admin/users:", err);
+    return res.status(500).json({ error: "Unexpected error." });
+  }
+});
+
+// ✅ Mount your API routes (includes /api/my-shipments)
 app.use("/api", shipmentsRouter);
 
 app.listen(PORT, () => {
-  console.log(`Email notification server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
