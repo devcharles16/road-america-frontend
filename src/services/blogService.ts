@@ -1,6 +1,7 @@
 
 import { API_BASE_URL } from "../config/api";
 import { getAccessTokenOrThrow } from "./apiClient";
+import { supabase } from "../lib/supabaseClient";
 
 export type BlogStatus = "draft" | "published";
 
@@ -32,8 +33,25 @@ async function handleResponse<T>(res: Response): Promise<T> {
 
 // PUBLIC
 export async function fetchPublishedPosts(): Promise<BlogPost[]> {
-  const res = await fetch(`${API_BASE_URL}/api/blog`);
-  return handleResponse<BlogPost[]>(res);
+  const { data, error } = await supabase
+    .from("blog")
+    .select(
+      "id, slug, title, excerpt, status, imageUrl, publishedAt, createdAt, updatedAt"
+    )
+    .eq("status", "published")
+    .order("publishedAt", { ascending: false });
+
+  if (error) {
+    console.error("Error fetching posts:", error);
+    throw new Error(error.message);
+  }
+
+  // Cast to BlogPost[] but keeping content empty to save bandwidth
+  // The list view doesn't need the full content body
+  return (data || []).map((post: any) => ({
+    ...post,
+    content: "", // satisfy the type definition
+  })) as BlogPost[];
 }
 
 export async function fetchPostBySlug(
