@@ -64,8 +64,7 @@ const Header = () => {
               key={item.to}
               to={item.to}
               className={({ isActive }) =>
-                `hover:text-white transition ${
-                  isActive ? "text-white" : "text-white/80"
+                `hover:text-white transition ${isActive ? "text-white" : "text-white/80"
                 }`
               }
             >
@@ -78,8 +77,7 @@ const Header = () => {
             <NavLink
               to="/shipments"
               className={({ isActive }) =>
-                `hover:text-brand-red transition ${
-                  isActive ? "text-brand-red" : "text-white/80"
+                `hover:text-brand-red transition ${isActive ? "text-brand-red" : "text-white/80"
                 }`
               }
             >
@@ -92,8 +90,7 @@ const Header = () => {
             <NavLink
               to="/admin/shipments"
               className={({ isActive }) =>
-                `hover:text-brand-redSoft transition ${
-                  isActive ? "text-brand-redSoft" : "text-white/80"
+                `hover:text-brand-redSoft transition ${isActive ? "text-brand-redSoft" : "text-white/80"
                 }`
               }
             >
@@ -109,7 +106,7 @@ const Header = () => {
             </>
           ) : (
             <>
-              <span className="text-xs text-white/50">
+              <span className="text-xs text-white/50 max-w-[120px] truncate inline-block align-middle">
                 {displayName}
                 {!loading && role ? ` · ${role}` : ""}
               </span>

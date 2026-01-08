@@ -41,17 +41,17 @@ const AdminBlogPage = () => {
       console.error(err);
       setError(
         err?.message ||
-          "Failed to load blog posts. You may not have access to this area."
+        "Failed to load blog posts. You may not have access to this area."
       );
     } finally {
       setLoading(false);
     }
   }
 
-useEffect(() => {
-  load();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-}, []);
+  useEffect(() => {
+    load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
 
   function startNew() {
@@ -72,49 +72,49 @@ useEffect(() => {
     });
   }
   async function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
-  const file = e.target.files?.[0];
-  if (!file) return;
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-  try {
-    setUploadingImage(true);
-    setError(null);
+    try {
+      setUploadingImage(true);
+      setError(null);
 
-    // Get current session to use user id for folder path
-    const { data } = await supabase.auth.getUser();
-    const userId = data.user?.id || "unknown-admin";
+      // Get current session to use user id for folder path
+      const { data } = await supabase.auth.getUser();
+      const userId = data.user?.id || "unknown-admin";
 
-    const ext = file.name.split(".").pop();
-    const fileName = `${userId}/${Date.now()}.${ext || "jpg"}`;
+      const ext = file.name.split(".").pop();
+      const fileName = `${userId}/${Date.now()}.${ext || "jpg"}`;
 
-    const { error: uploadError } = await supabase.storage
-      .from("blog-images")
-      .upload(fileName, file);
+      const { error: uploadError } = await supabase.storage
+        .from("blog-images")
+        .upload(fileName, file);
 
-    if (uploadError) {
-      console.error(uploadError);
-      setError("Failed to upload image.");
-      return;
+      if (uploadError) {
+        console.error(uploadError);
+        setError("Failed to upload image.");
+        return;
+      }
+
+      const { data: urlData } = supabase.storage
+        .from("blog-images")
+        .getPublicUrl(fileName);
+
+      const publicUrl = urlData?.publicUrl;
+
+      if (!publicUrl) {
+        setError("Could not get image URL after upload.");
+        return;
+      }
+
+      setForm((f) => ({ ...f, imageUrl: publicUrl }));
+    } catch (err: any) {
+      console.error(err);
+      setError(err?.message || "Unexpected error uploading image.");
+    } finally {
+      setUploadingImage(false);
     }
-
-    const { data: urlData } = supabase.storage
-      .from("blog-images")
-      .getPublicUrl(fileName);
-
-    const publicUrl = urlData?.publicUrl;
-
-    if (!publicUrl) {
-      setError("Could not get image URL after upload.");
-      return;
-    }
-
-    setForm((f) => ({ ...f, imageUrl: publicUrl }));
-  } catch (err: any) {
-    console.error(err);
-    setError(err?.message || "Unexpected error uploading image.");
-  } finally {
-    setUploadingImage(false);
   }
-}
 
 
   async function handleSave(e: React.FormEvent) {
@@ -210,15 +210,14 @@ useEffect(() => {
                 {posts.map((post) => (
                   <li
                     key={post.id}
-                    className={`flex items-center justify-between gap-3 rounded-xl border border-white/10 px-3 py-2 ${
-                      editingId === post.id ? "bg-white/10" : "bg-black/40"
-                    }`}
+                    className={`flex items-center justify-between gap-3 rounded-xl border border-white/10 px-3 py-2 ${editingId === post.id ? "bg-white/10" : "bg-black/40"
+                      }`}
                   >
-                    <div>
+                    <div className="min-w-0 flex-1">
                       <p className="font-semibold text-white truncate">
                         {post.title}
                       </p>
-                      <p className="text-[10px] text-white/50">
+                      <p className="text-[10px] text-white/50 truncate">
                         {post.status.toUpperCase()} · {post.slug}
                       </p>
                     </div>
@@ -265,34 +264,34 @@ useEffect(() => {
                 className="w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-xs text-white outline-none focus:border-brand-redSoft"
               />
             </div>
-<div>
-  <label className="block text-[11px] text-white/70 mb-1">
-    Featured image
-  </label>
-  {form.imageUrl && (
-    <div className="mb-2">
-      <img
-        src={form.imageUrl}
-        alt="Blog featured"
-        className="h-32 w-full max-w-xs rounded-lg object-cover border border-white/15"
-      />
-    </div>
-  )}
-  <div className="flex items-center gap-3 text-[11px]">
-    <input
-      type="file"
-      accept="image/*"
-      onChange={handleImageChange}
-      className="text-xs text-white/70"
-    />
-    {uploadingImage && (
-      <span className="text-white/60">Uploading…</span>
-    )}
-  </div>
-  <p className="mt-1 text-[10px] text-white/40">
-    Recommended: 1200x630px JPG or PNG.
-  </p>
-</div>
+            <div>
+              <label className="block text-[11px] text-white/70 mb-1">
+                Featured image
+              </label>
+              {form.imageUrl && (
+                <div className="mb-2">
+                  <img
+                    src={form.imageUrl}
+                    alt="Blog featured"
+                    className="h-32 w-full max-w-xs rounded-lg object-cover border border-white/15"
+                  />
+                </div>
+              )}
+              <div className="flex items-center gap-3 text-[11px]">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="text-xs text-white/70"
+                />
+                {uploadingImage && (
+                  <span className="text-white/60">Uploading…</span>
+                )}
+              </div>
+              <p className="mt-1 text-[10px] text-white/40">
+                Recommended: 1200x630px JPG or PNG.
+              </p>
+            </div>
 
             <div>
               <label className="block text-[11px] text-white/70 mb-1">
@@ -365,8 +364,8 @@ useEffect(() => {
                 {saving
                   ? "Saving..."
                   : editingId
-                  ? "Save Changes"
-                  : "Create Post"}
+                    ? "Save Changes"
+                    : "Create Post"}
               </button>
             </div>
           </form>

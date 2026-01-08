@@ -1,6 +1,7 @@
 // src/pages/QuotePage.tsx
 import { useState } from "react";
 import { US_STATES } from "../services/states";
+import QuoteSuccessModal from "../components/QuoteSuccessModal";
 
 import { API_BASE_URL } from "../config/api";
 import {
@@ -60,88 +61,90 @@ function capitalizeFirst(value: string) {
 const QuotePage = () => {
   const [form, setForm] = useState<QuoteFormState>(defaultForm);
   const [loading, setLoading] = useState(false);
-  
+
   const [createdQuote, setCreatedQuote] = useState<QuoteCreated | null>(null);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   }
-function handleCapitalizeBlur(
-  field: keyof QuoteFormState
-) {
-  return (e: React.FocusEvent<HTMLInputElement>) => {
-    setForm((prev) => ({
-      ...prev,
-      [field]: capitalizeFirst(e.target.value.trim()),
-    }));
-  };
-}
+  function handleCapitalizeBlur(
+    field: keyof QuoteFormState
+  ) {
+    return (e: React.FocusEvent<HTMLInputElement>) => {
+      setForm((prev) => ({
+        ...prev,
+        [field]: capitalizeFirst(e.target.value.trim()),
+      }));
+    };
+  }
 
-;
-async function handleSubmit(e: React.FormEvent) {
-  e.preventDefault();
-  setLoading(true);
-  setError(null);
-  setCreatedQuote(null);
+  ;
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    setCreatedQuote(null);
 
-  try {
-    // 0) Get captcha token
-    const siteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY as string | undefined;
-    if (!siteKey) {
-      throw new Error("Missing VITE_RECAPTCHA_SITE_KEY");
-    }
+    try {
+      // 0) Get captcha token
+      const siteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY as string | undefined;
+      if (!siteKey) {
+        throw new Error("Missing VITE_RECAPTCHA_SITE_KEY");
+      }
 
-    if (!window.grecaptcha) {
-      throw new Error("Captcha not ready. Please refresh and try again.");
-    }
+      if (!window.grecaptcha) {
+        throw new Error("Captcha not ready. Please refresh and try again.");
+      }
 
-    const captchaToken: string = await new Promise((resolve, reject) => {
-      window.grecaptcha!.ready(async () => {
-        try {
-          const token = await window.grecaptcha!.execute(siteKey, {
-            action: "submit_quote",
-          });
-          resolve(token);
-        } catch (err) {
-          reject(err);
-        }
+      const captchaToken: string = await new Promise((resolve, reject) => {
+        window.grecaptcha!.ready(async () => {
+          try {
+            const token = await window.grecaptcha!.execute(siteKey, {
+              action: "submit_quote",
+            });
+            resolve(token);
+          } catch (err) {
+            reject(err);
+          }
+        });
       });
-    });
 
-    const normalizedYear =
-      /^\d{4}$/.test(form.vehicleYear) ? form.vehicleYear : undefined;
+      const normalizedYear =
+        /^\d{4}$/.test(form.vehicleYear) ? form.vehicleYear : undefined;
 
-    // 1) Create a QUOTE (not a shipment)
-    const created = await createQuote({
-      firstName: form.firstName,
-      lastName: form.lastName,
-      customerEmail: form.email,
-      customerPhone: form.phone || undefined,
+      // 1) Create a QUOTE (not a shipment)
+      const created = await createQuote({
+        firstName: form.firstName,
+        lastName: form.lastName,
+        customerEmail: form.email,
+        customerPhone: form.phone || undefined,
 
-      pickupCity: form.pickupCity,
-      pickupState: form.pickupState,
-      deliveryCity: form.deliveryCity,
-      deliveryState: form.deliveryState,
+        pickupCity: form.pickupCity,
+        pickupState: form.pickupState,
+        deliveryCity: form.deliveryCity,
+        deliveryState: form.deliveryState,
 
-      vehicleYear: normalizedYear,
-      vehicleMake: form.vehicleMake || undefined,
-      vehicleModel: form.vehicleModel || undefined,
-      vin: form.vin || undefined,
+        vehicleYear: normalizedYear,
+        vehicleMake: form.vehicleMake || undefined,
+        vehicleModel: form.vehicleModel || undefined,
+        vin: form.vin || undefined,
 
-      runningCondition: form.runningCondition,
-      transportType: form.transportType,
-      preferredPickupWindow: form.preferredPickupWindow,
-      vehicleHeightMod: form.vehicleHeightMod,
+        runningCondition: form.runningCondition,
+        transportType: form.transportType,
+        preferredPickupWindow: form.preferredPickupWindow,
+        vehicleHeightMod: form.vehicleHeightMod,
 
-      // 2) send captcha token to backend
-      captchaToken,
-    });
+        // 2) send captcha token to backend
+        captchaToken,
+      });
 
-    setCreatedQuote(created);
+      setCreatedQuote(created);
+      setShowSuccessModal(true);
 
-    // ... keep your existing notification fetch exactly as-is ...
+      // ... keep your existing notification fetch exactly as-is ...
 
 
       // 2) Best-effort email notification (keep this)
@@ -184,27 +187,27 @@ async function handleSubmit(e: React.FormEvent) {
       setLoading(false);
     }
   }
-const requiredValues = [
-  form.firstName,
-  form.lastName,
-  form.email,
-  form.phone,
-  form.pickupCity,
-  form.pickupState,
-  form.deliveryCity,
-  form.deliveryState,
-  form.vehicleYear,
-  form.vehicleMake,
-  form.vehicleModel,
-  form.runningCondition,
-  form.transportType,
-  form.preferredPickupWindow,
-  form.vehicleHeightMod,
-];
+  const requiredValues = [
+    form.firstName,
+    form.lastName,
+    form.email,
+    form.phone,
+    form.pickupCity,
+    form.pickupState,
+    form.deliveryCity,
+    form.deliveryState,
+    form.vehicleYear,
+    form.vehicleMake,
+    form.vehicleModel,
+    form.runningCondition,
+    form.transportType,
+    form.preferredPickupWindow,
+    form.vehicleHeightMod,
+  ];
 
-const isFormValid = requiredValues.every(
-  (v) => String(v ?? "").trim() !== ""
-);
+  const isFormValid = requiredValues.every(
+    (v) => String(v ?? "").trim() !== ""
+  );
   return (
     <section className="bg-brand-dark py-12 text-white">
       <div className="mx-auto max-w-4xl px-4">
@@ -246,20 +249,20 @@ const isFormValid = requiredValues.every(
                 </div>
                 <div>
                   <label className="block text-xs text-white/70">State</label>
-                 <select
-  name="pickupState"
-  value={form.pickupState}
-  onChange={handleChange}
-  className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
-  required
->
-  <option value="">Select state</option>
-  {US_STATES.map((state) => (
-    <option key={state.code} value={state.code}>
-      {state.name}
-    </option>
-  ))}
-</select>
+                  <select
+                    name="pickupState"
+                    value={form.pickupState}
+                    onChange={handleChange}
+                    className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+                    required
+                  >
+                    <option value="">Select state</option>
+                    {US_STATES.map((state) => (
+                      <option key={state.code} value={state.code}>
+                        {state.name}
+                      </option>
+                    ))}
+                  </select>
 
 
                 </div>
@@ -286,19 +289,19 @@ const isFormValid = requiredValues.every(
                 <div>
                   <label className="block text-xs text-white/70">State</label>
                   <select
-  name="deliveryState"
-  value={form.deliveryState}
-  onChange={handleChange}
-  className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
-  required
->
-  <option value="">Select state</option>
-  {US_STATES.map((state) => (
-    <option key={state.code} value={state.code}>
-      {state.name}
-    </option>
-  ))}
-</select>
+                    name="deliveryState"
+                    value={form.deliveryState}
+                    onChange={handleChange}
+                    className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+                    required
+                  >
+                    <option value="">Select state</option>
+                    {US_STATES.map((state) => (
+                      <option key={state.code} value={state.code}>
+                        {state.name}
+                      </option>
+                    ))}
+                  </select>
 
                 </div>
               </div>
@@ -320,7 +323,7 @@ const isFormValid = requiredValues.every(
                   value={form.vehicleYear}
                   onChange={handleChange}
                   className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
-                required
+                  required
                 />
               </div>
 
@@ -333,7 +336,7 @@ const isFormValid = requiredValues.every(
                   onChange={handleChange}
                   onBlur={handleCapitalizeBlur("vehicleMake")}
                   className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
-                required/>
+                  required />
               </div>
 
               <div className="md:col-span-2">
@@ -345,7 +348,7 @@ const isFormValid = requiredValues.every(
                   onChange={handleChange}
                   onBlur={handleCapitalizeBlur("vehicleModel")}
                   className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
-                required
+                  required
                 />
               </div>
             </div>
@@ -363,7 +366,7 @@ const isFormValid = requiredValues.every(
                     onChange={handleChange}
                     className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
 
-                 />
+                  />
                 </div>
               )}
 
@@ -376,7 +379,7 @@ const isFormValid = requiredValues.every(
                     onChange={handleChange}
                     className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
                   >
-                     <option value="">Select Running Condition</option>
+                    <option value="">Select Running Condition</option>
                     <option value="running">Running</option>
                     <option value="non-running">Non-Running</option>
                   </select>
@@ -393,7 +396,7 @@ const isFormValid = requiredValues.every(
                     className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
                     required
                   >
-                     <option value="">Select Vehicle Height</option>
+                    <option value="">Select Vehicle Height</option>
                     <option value="stock">Stock (no lift or lowering)</option>
                     <option value="lifted">Lifted</option>
                     <option value="lowered">Lowered</option>
@@ -409,7 +412,7 @@ const isFormValid = requiredValues.every(
                     onChange={handleChange}
                     className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
                   >
-                     <option value="">Select Transport Type</option>
+                    <option value="">Select Transport Type</option>
                     <option value="open">Open Carrier</option>
                     <option value="enclosed">Enclosed Carrier</option>
                   </select>
@@ -436,7 +439,7 @@ const isFormValid = requiredValues.every(
                   className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
                   required
                 >
-                   <option value="">Select Pickup Window</option>
+                  <option value="">Select Pickup Window</option>
                   <option value="asap_1_3">ASAP (1-3 days)</option>
                   <option value="this_week">This week</option>
                   <option value="next_1_2_weeks">Next 1-2 weeks</option>
@@ -506,43 +509,34 @@ const isFormValid = requiredValues.every(
           </div>
 
           {/* Submit */}
-         <div className="flex flex-col gap-3 border-t border-white/10 pt-6 text-sm">
-           <p className="text-xs text-white/70 italic text-center">
-    *All fields are required
-  </p>
-  <button
-    type="submit"
-    disabled={loading || !isFormValid}
-    className={`inline-flex items-center justify-center rounded-full px-8 py-3 text-sm font-semibold text-white shadow-soft-card transition
-      ${
-        loading || !isFormValid
-          ? "bg-brand-red/60 cursor-not-allowed"
-          : "bg-brand-red hover:bg-brand-redSoft"
-      }
+          <div className="flex flex-col gap-3 border-t border-white/10 pt-6 text-sm">
+            <p className="text-xs text-white/70 italic text-center">
+              *All fields are required
+            </p>
+            <button
+              type="submit"
+              disabled={loading || !isFormValid}
+              className={`inline-flex items-center justify-center rounded-full px-8 py-3 text-sm font-semibold text-white shadow-soft-card transition
+      ${loading || !isFormValid
+                  ? "bg-brand-red/60 cursor-not-allowed"
+                  : "bg-brand-red hover:bg-brand-redSoft"
+                }
     `}
-  >
-    {loading ? "Submitting..." : "Get My Transport Quote"}
-  </button>
+            >
+              {loading ? "Submitting..." : "Get My Transport Quote"}
+            </button>
 
-  <p className="text-xs text-white/60 text-center">
-    By submitting, you agree to be contacted about your quote request.
-  </p>
+            <p className="text-xs text-white/60 text-center">
+              By submitting, you agree to be contacted about your quote request.
+            </p>
             {error && <p className="text-xs text-red-400">{error}</p>}
 
             {createdQuote && (
-              <div className="mt-2 rounded-xl bg-brand-dark/70 px-4 py-3 text-xs text-white/80 border border-brand-red/40">
-                <p className="font-semibold text-brand-redSoft">
-                  Thank you! Your quote request has been received.
-                </p>
-                <p className="mt-1">
-                  Reference ID:{" "}
-                  <span className="font-mono">{createdQuote.referenceId}</span>
-                </p>
-                <p className="mt-1 text-white/70">
-                  Save this Reference ID. If you decide to proceed, we’ll use the
-                  same Reference ID when your quote becomes an active shipment.
-                </p>
-              </div>
+              <QuoteSuccessModal
+                isOpen={showSuccessModal}
+                onClose={() => setShowSuccessModal(false)}
+                quote={createdQuote}
+              />
             )}
           </div>
         </form>
