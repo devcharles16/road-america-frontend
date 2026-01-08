@@ -1,3 +1,4 @@
+console.log("🚀 SERVER BOOT — CORS v2026-01-07");
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
