@@ -425,6 +425,12 @@ app.post("/api/admin/users", requireAuth, requireRole("admin"), async (req, res)
     return res.status(500).json({ error: "Unexpected error." });
   }
 });
+app.use((req, _res, next) => {
+  if (req.path.includes("my-shipments")) {
+    console.log("📥 HIT", req.method, req.path, "origin=", req.headers.origin);
+  }
+  next();
+});
 
 // ✅ Mount your API routes (includes /api/my-shipments)
 app.use("/api", shipmentsRouter);
