@@ -34,12 +34,12 @@ async function handleResponse<T>(res: Response): Promise<T> {
 // PUBLIC
 export async function fetchPublishedPosts(): Promise<BlogPost[]> {
   const { data, error } = await supabase
-    .from("blog")
+    .from("blog_posts")
     .select(
-      "id, slug, title, excerpt, status, imageUrl, publishedAt, createdAt, updatedAt"
+      "id, slug, title, excerpt, status, imageUrl:image_url, publishedAt:published_at, createdAt:created_at, updatedAt:updated_at"
     )
     .eq("status", "published")
-    .order("publishedAt", { ascending: false });
+    .order("published_at", { ascending: false });
 
   if (error) {
     console.error("Error fetching posts:", error);
