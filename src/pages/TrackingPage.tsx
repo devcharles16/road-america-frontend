@@ -13,6 +13,7 @@ import {
   CheckCircle2,
   HelpCircle,
 } from "lucide-react";
+import LoadingState from "../components/LoadingState";
 
 type TrackingFormState = {
   referenceId: string;
@@ -222,9 +223,7 @@ const TrackingPage = () => {
             )}
 
             {loading && (
-              <p className="text-xs text-white/60">
-                Looking up your shipment...
-              </p>
+              <LoadingState message="Looking up your shipment..." />
             )}
 
             {shipment && (
@@ -282,8 +281,8 @@ const TrackingPage = () => {
                       isActive
                         ? "border-brand-red/60 bg-brand-red/20 text-brand-redSoft shadow-[0_0_18px_rgba(255,0,0,0.22)]"
                         : isCompleted
-                        ? "border-brand-red/40 bg-brand-red/10 text-white/80"
-                        : "border-white/25 bg-brand-dark text-white/55",
+                          ? "border-brand-red/40 bg-brand-red/10 text-white/80"
+                          : "border-white/25 bg-brand-dark text-white/55",
                     ].join(" ");
 
                     return (

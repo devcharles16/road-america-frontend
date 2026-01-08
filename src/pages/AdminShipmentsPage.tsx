@@ -15,6 +15,7 @@ import {
   QUOTE_STATUS_CLOSED_NOT_CONVERTED,
 } from "../services/adminQuotesService";
 import { useAuth } from "../context/AuthContext";
+import LoadingState from "../components/LoadingState";
 
 type AdminTab = "shipments" | "quotes";
 
@@ -77,7 +78,7 @@ const AdminShipmentsPage = () => {
       console.error(err);
       setShipmentsError(
         err?.message ||
-          "Failed to load shipments. You may not have access to this area."
+        "Failed to load shipments. You may not have access to this area."
       );
     } finally {
       setLoadingShipments(false);
@@ -126,9 +127,8 @@ const AdminShipmentsPage = () => {
       // 3) Fire Status Update Email Notification (non-blocking)
       const pickup = `${updated.pickupCity}, ${updated.pickupState}`;
       const dropoff = `${updated.deliveryCity}, ${updated.deliveryState}`;
-      const vehicle = `${updated.vehicleYear ?? ""} ${updated.vehicleMake ?? ""} ${
-        updated.vehicleModel ?? ""
-      }`.trim();
+      const vehicle = `${updated.vehicleYear ?? ""} ${updated.vehicleMake ?? ""} ${updated.vehicleModel ?? ""
+        }`.trim();
 
       fetch(`${API_BASE_URL}/api/notifications/status`, {
         method: "POST",
@@ -245,7 +245,7 @@ const AdminShipmentsPage = () => {
             )}
 
             {loadingShipments ? (
-              <p className="text-xs text-white/60">Loading shipments…</p>
+              <LoadingState message="Loading shipments..." />
             ) : shipments.length === 0 ? (
               <p className="text-xs text-white/60">
                 No shipments found yet. Once quote requests are converted to
@@ -305,31 +305,31 @@ const AdminShipmentsPage = () => {
                           </span>
                         </td>
                         <td className="px-3 py-2">
-  <select
-    value={(s.status ?? "") as string}
-    disabled={savingId === s.id}
-    onChange={(e) => {
-      const next = e.target.value as TransportStatus;
-      handleStatusChange(s.id, next);
-    }}
-    className="rounded-full border border-white/20 bg-[#121212]/60 px-2 py-1 text-[11px] outline-none focus:border-brand-redSoft"
-  >
-    {/* Allows value="" when status is null/undefined */}
-    <option value="" disabled>
-      Select status…
-    </option>
+                          <select
+                            value={(s.status ?? "") as string}
+                            disabled={savingId === s.id}
+                            onChange={(e) => {
+                              const next = e.target.value as TransportStatus;
+                              handleStatusChange(s.id, next);
+                            }}
+                            className="rounded-full border border-white/20 bg-[#121212]/60 px-2 py-1 text-[11px] outline-none focus:border-brand-redSoft"
+                          >
+                            {/* Allows value="" when status is null/undefined */}
+                            <option value="" disabled>
+                              Select status…
+                            </option>
 
-    {STATUS_OPTIONS.map((status) => (
-      <option key={status} value={status}>
-        {status}
-      </option>
-    ))}
-  </select>
-</td>
+                            {STATUS_OPTIONS.map((status) => (
+                              <option key={status} value={status}>
+                                {status}
+                              </option>
+                            ))}
+                          </select>
+                        </td>
 
-<td className="px-3 py-2 text-[10px] text-white/60">
-  {s.updatedAt ? new Date(s.updatedAt).toLocaleString() : "—"}
-</td>
+                        <td className="px-3 py-2 text-[10px] text-white/60">
+                          {s.updatedAt ? new Date(s.updatedAt).toLocaleString() : "—"}
+                        </td>
 
                       </tr>
                     ))}
@@ -357,7 +357,7 @@ const AdminShipmentsPage = () => {
             </div>
 
             {loadingQuotes ? (
-              <p className="text-xs text-white/60">Loading quotes…</p>
+              <LoadingState message="Loading quotes..." />
             ) : quotes.length === 0 ? (
               <p className="text-xs text-white/60">No quotes found.</p>
             ) : (

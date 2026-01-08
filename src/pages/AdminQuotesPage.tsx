@@ -6,6 +6,7 @@ import {
   adminListQuotes,
   QUOTE_STATUS_CLOSED_NOT_CONVERTED,
 } from "../services/adminQuotesService";
+import LoadingState from "../components/LoadingState";
 
 type QuoteRow = {
   id: string;
@@ -83,7 +84,7 @@ export default function AdminQuotesPage() {
       setClosingId(null);
     }
   }
-  
+
 
 
 
@@ -113,7 +114,7 @@ export default function AdminQuotesPage() {
 
         <div className="mt-6 rounded-2xl border border-white/10 bg-black/30 shadow-soft-card overflow-hidden">
           {loading ? (
-            <div className="p-6 text-white/70">Loading quotes…</div>
+            <LoadingState message="Loading quotes..." />
           ) : err ? (
             <div className="p-6 text-red-300">{err}</div>
           ) : rows.length === 0 ? (
@@ -147,8 +148,8 @@ export default function AdminQuotesPage() {
                             {q.customer_email ?? "—"}
                           </div>
                           <div className="text-xs text-white/60">
-  {q.referenceId ?? q.id}
-</div>
+                            {q.referenceId ?? q.id}
+                          </div>
 
                         </td>
 

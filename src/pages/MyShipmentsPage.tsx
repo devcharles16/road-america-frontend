@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { listMyShipments, type TransportRequest } from "../services/shipmentsService";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import LoadingState from "../components/LoadingState";
 
 const MyShipmentsPage = () => {
   // ✅ Notes:
@@ -64,7 +65,7 @@ const MyShipmentsPage = () => {
       navigate("/login", { replace: true });
       return;
     }
-console.log("About to load shipments. user =", user);
+    console.log("About to load shipments. user =", user);
 
     // Now it is safe to call listMyShipments()
     load();
@@ -93,7 +94,7 @@ console.log("About to load shipments. user =", user);
             - While auth is hydrating, we show a loading state rather than calling the API.
         */}
         {authLoading || loading ? (
-          <p className="text-xs text-white/60">Loading your shipments…</p>
+          <LoadingState message="Loading your shipments..." />
         ) : shipments.length === 0 ? (
           <div className="text-center mt-6">
             <p className="text-xs text-white/60">
