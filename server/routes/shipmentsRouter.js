@@ -25,42 +25,42 @@ const ALLOWED_STATUSES = [
 router.post("/quotes", async (req, res) => {
   try {
     const input = req.body;
-// 0) Verify reCAPTCHA token (v3)
-const captchaToken = input.captchaToken;
-if (!captchaToken) {
-  return res.status(400).json({ message: "Captcha required" });
-}
+    // 0) Verify reCAPTCHA token (v3)
+    const captchaToken = input.captchaToken;
+    if (!captchaToken) {
+      return res.status(400).json({ message: "Captcha required" });
+    }
 
-const secret = process.env.RECAPTCHA_SECRET_KEY;
-if (!secret) {
-  console.error("Missing RECAPTCHA_SECRET_KEY");
-  return res.status(500).json({ message: "Captcha not configured" });
-}
+    const secret = process.env.RECAPTCHA_SECRET_KEY;
+    if (!secret) {
+      console.error("Missing RECAPTCHA_SECRET_KEY");
+      return res.status(500).json({ message: "Captcha not configured" });
+    }
 
-const verifyRes = await fetch("https://www.google.com/recaptcha/api/siteverify", {
-  method: "POST",
-  headers: { "Content-Type": "application/x-www-form-urlencoded" },
-  body: new URLSearchParams({
-    secret,
-    response: captchaToken,
-    // remoteip: req.ip, // optional; can cause issues behind proxies if not configured
-  }),
-});
+    const verifyRes = await fetch("https://www.google.com/recaptcha/api/siteverify", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        secret,
+        response: captchaToken,
+        // remoteip: req.ip, // optional; can cause issues behind proxies if not configured
+      }),
+    });
 
-const captcha = await verifyRes.json();
+    const captcha = await verifyRes.json();
 
-// Typical v3 response has: success, score, action, challenge_ts, hostname, error-codes
-const score = typeof captcha.score === "number" ? captcha.score : 0;
-const action = typeof captcha.action === "string" ? captcha.action : "";
+    // Typical v3 response has: success, score, action, challenge_ts, hostname, error-codes
+    const score = typeof captcha.score === "number" ? captcha.score : 0;
+    const action = typeof captcha.action === "string" ? captcha.action : "";
 
-// Match the action you used in the frontend: "submit_quote"
-if (!captcha.success || action !== "submit_quote" || score < 0.5) {
-  return res.status(403).json({
-    message: "Captcha failed",
-    // Optional for debugging; you can remove in production:
-    details: { success: captcha.success, score, action, errors: captcha["error-codes"] },
-  });
-}
+    // Match the action you used in the frontend: "submit_quote"
+    if (!captcha.success || action !== "submit_quote" || score < 0.5) {
+      return res.status(403).json({
+        message: "Captcha failed",
+        // Optional for debugging; you can remove in production:
+        details: { success: captcha.success, score, action, errors: captcha["error-codes"] },
+      });
+    }
     const payload = {
       first_name: input.firstName ?? null,
       last_name: input.lastName ?? null,
@@ -144,46 +144,46 @@ router.post(
 
       if (fetchErr) throw fetchErr;
       let shipmentRow = shipment;
-// Attach shipment to user automatically if possible
-if (!shipmentRow.user_id && shipmentRow.customer_email) {
-  const email = shipmentRow.customer_email.trim().toLowerCase();
+      // Attach shipment to user automatically if possible
+      if (!shipmentRow.user_id && shipmentRow.customer_email) {
+        const email = shipmentRow.customer_email.trim().toLowerCase();
 
-  const { data: userMatch } = await supabase
-    .from("auth.users")
-    .select("id")
-    .ilike("email", email)
-    .maybeSingle();
+        const { data: userMatch } = await supabase
+          .from("auth.users")
+          .select("id")
+          .ilike("email", email)
+          .maybeSingle();
 
-  if (userMatch?.id) {
-    const { data: updated } = await supabase
-      .from("shipments")
-      .update({
-        user_id: userMatch.id,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", shipmentId)
-      .select("*")
-      .single();
+        if (userMatch?.id) {
+          const { data: updated } = await supabase
+            .from("shipments")
+            .update({
+              user_id: userMatch.id,
+              updated_at: new Date().toISOString(),
+            })
+            .eq("id", shipmentId)
+            .select("*")
+            .single();
 
-    if (updated) {
-      shipmentRow = updated;
-    }
-  }
-}
+          if (updated) {
+            shipmentRow = updated;
+          }
+        }
+      }
 
-// If userId is provided, attach it to the shipment (best effort)
-if (userId) {
-  const { data: updated, error: updErr } = await supabase
-    .from("shipments")
-    .update({ user_id: userId, updated_at: new Date().toISOString() })
-    .eq("id", shipmentId)
-    .select("*")
-    .single();
+      // If userId is provided, attach it to the shipment (best effort)
+      if (userId) {
+        const { data: updated, error: updErr } = await supabase
+          .from("shipments")
+          .update({ user_id: userId, updated_at: new Date().toISOString() })
+          .eq("id", shipmentId)
+          .select("*")
+          .single();
 
-  if (!updErr && updated) {
-    shipmentRow = updated;
-  }
-}
+        if (!updErr && updated) {
+          shipmentRow = updated;
+        }
+      }
 
       // 3) Respond in the same style your frontend expects
       return res.status(201).json({
@@ -191,7 +191,7 @@ if (userId) {
         referenceId: shipmentRow.reference_id,
         ...shipmentRow,
       });
-      
+
     } catch (err) {
       console.error("Convert quote → shipment error:", err);
       return res.status(500).json({ message: "Server error converting quote to shipment" });
@@ -221,34 +221,34 @@ router.get("/track", async (req, res) => {
     if (!data) return res.status(404).json({ message: "Shipment not found" });
 
     return res.json({
-  id: data.id,
-  referenceId: data.reference_id,
+      id: data.id,
+      referenceId: data.reference_id,
 
-  customerName: data.customer_name,
-  customerEmail: data.customer_email,
-  customerPhone: data.customer_phone,
+      customerName: data.customer_name,
+      customerEmail: data.customer_email,
+      customerPhone: data.customer_phone,
 
-  pickupCity: data.pickup_city,
-  pickupState: data.pickup_state,
-  deliveryCity: data.delivery_city,
-  deliveryState: data.delivery_state,
+      pickupCity: data.pickup_city,
+      pickupState: data.pickup_state,
+      deliveryCity: data.delivery_city,
+      deliveryState: data.delivery_state,
 
-  vehicleYear: data.vehicle_year,
-  vehicleMake: data.vehicle_make,
-  vehicleModel: data.vehicle_model,
-  vin: data.vin,
+      vehicleYear: data.vehicle_year,
+      vehicleMake: data.vehicle_make,
+      vehicleModel: data.vehicle_model,
+      vin: data.vin,
 
-  runningCondition: data.running_condition,
-  transportType: data.transport_type,
+      runningCondition: data.running_condition,
+      transportType: data.transport_type,
 
-  status: data.status,
-  eta: data.eta,
+      status: data.status,
+      eta: data.eta,
 
-  userId: data.user_id,
+      userId: data.user_id,
 
-  createdAt: data.created_at,
-  updatedAt: data.updated_at,
-});
+      createdAt: data.created_at,
+      updatedAt: data.updated_at,
+    });
 
   } catch (err) {
     console.error("Track shipment error:", err);
@@ -352,7 +352,37 @@ router.get(
       if (error) throw error;
 
       return res.json(
-        (data ?? []).map((s) => ({ ...s, referenceId: s.reference_id }))
+        (data ?? []).map((s) => ({
+          id: s.id,
+          referenceId: s.reference_id,
+
+          customerName: s.customer_name,
+          customerEmail: s.customer_email,
+          customerPhone: s.customer_phone,
+
+          pickupCity: s.pickup_city,
+          pickupState: s.pickup_state,
+          deliveryCity: s.delivery_city,
+          deliveryState: s.delivery_state,
+
+          vehicleYear: s.vehicle_year,
+          vehicleMake: s.vehicle_make,
+          vehicleModel: s.vehicle_model,
+          vin: s.vin,
+
+          runningCondition: s.running_condition,
+          transportType: s.transport_type,
+          pickupWindow: s.pickup_window,
+          vehicleHeightMod: s.vehicle_height_mod,
+
+          notes: s.notes,
+          status: s.status,
+          eta: s.eta,
+
+          userId: s.user_id,
+          createdAt: s.created_at,
+          updatedAt: s.updated_at,
+        }))
       );
     } catch (err) {
       console.error("List shipments error:", err);
@@ -389,7 +419,37 @@ router.patch(
 
       if (error) throw error;
 
-      return res.json({ ...data, referenceId: data.reference_id });
+      return res.json({
+        id: data.id,
+        referenceId: data.reference_id,
+
+        customerName: data.customer_name,
+        customerEmail: data.customer_email,
+        customerPhone: data.customer_phone,
+
+        pickupCity: data.pickup_city,
+        pickupState: data.pickup_state,
+        deliveryCity: data.delivery_city,
+        deliveryState: data.delivery_state,
+
+        vehicleYear: data.vehicle_year,
+        vehicleMake: data.vehicle_make,
+        vehicleModel: data.vehicle_model,
+        vin: data.vin,
+
+        runningCondition: data.running_condition,
+        transportType: data.transport_type,
+        pickupWindow: data.pickup_window,
+        vehicleHeightMod: data.vehicle_height_mod,
+
+        notes: data.notes,
+        status: data.status,
+        eta: data.eta,
+
+        userId: data.user_id,
+        createdAt: data.created_at,
+        updatedAt: data.updated_at,
+      });
     } catch (err) {
       console.error("Update status error:", err);
       return res.status(500).json({ message: "Server error updating status" });
