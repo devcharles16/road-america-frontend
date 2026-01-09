@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import ReactMarkdown from "react-markdown";
 import {
   adminListPosts,
   adminCreatePost,
@@ -322,18 +323,53 @@ const AdminBlogPage = () => {
               />
             </div>
 
-            <div>
-              <label className="block text-[11px] text-white/70 mb-1">
-                Content
-              </label>
-              <textarea
-                value={form.content}
-                onChange={(e) =>
-                  setForm((f) => ({ ...f, content: e.target.value }))
-                }
-                rows={10}
-                className="w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-xs text-white outline-none focus:border-brand-redSoft"
-              />
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* Left Column: Inputs */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <label className="block text-[11px] text-white/70">
+                    Content (Markdown)
+                  </label>
+                  <details className="group relative">
+                    <summary className="list-none cursor-pointer text-[11px] text-brand-redSoft hover:text-brand-red font-semibold">
+                      Formatting Help
+                    </summary>
+                    <div className="absolute right-0 top-6 z-10 w-64 rounded-xl border border-white/10 bg-[#1a1b1e] p-4 shadow-soft-card">
+                      <h4 className="mb-2 text-xs font-semibold text-white">Markdown Cheatsheet</h4>
+                      <ul className="space-y-2 text-[10px] text-white/70">
+                        <li className="flex justify-between"><span>Heading</span> <code className="text-brand-redSoft"># Title</code></li>
+                        <li className="flex justify-between"><span>Sub-heading</span> <code className="text-brand-redSoft">## Title</code></li>
+                        <li className="flex justify-between"><span>Bold</span> <code className="text-brand-redSoft">**bold**</code></li>
+                        <li className="flex justify-between"><span>Italic</span> <code className="text-brand-redSoft">*italic*</code></li>
+                        <li className="flex justify-between"><span>Link</span> <code className="text-brand-redSoft">[text](url)</code></li>
+                        <li className="flex justify-between"><span>List</span> <code className="text-brand-redSoft">- item</code></li>
+                        <li className="flex justify-between"><span>Image</span> <code className="text-brand-redSoft">![alt](url)</code></li>
+                      </ul>
+                    </div>
+                  </details>
+                </div>
+                <textarea
+                  value={form.content}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, content: e.target.value }))
+                  }
+                  rows={20}
+                  className="w-full h-[600px] rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-xs text-white outline-none focus:border-brand-redSoft font-mono"
+                  placeholder="# Write your post here..."
+                />
+              </div>
+
+              {/* Right Column: Preview */}
+              <div className="space-y-3">
+                <label className="block text-[11px] text-white/70 mb-1">
+                  Live Preview
+                </label>
+                <div className="h-[600px] overflow-y-auto rounded-xl border border-white/15 bg-black/40 px-4 py-4">
+                  <article className="prose prose-invert prose-sm max-w-none prose-headings:font-display prose-a:text-brand-redSoft prose-img:rounded-xl">
+                    <ReactMarkdown>{form.content || "*Nothing to preview yet...*"}</ReactMarkdown>
+                  </article>
+                </div>
+              </div>
             </div>
 
             <div className="flex items-center justify-between gap-3 pt-1">

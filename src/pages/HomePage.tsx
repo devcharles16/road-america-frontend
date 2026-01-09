@@ -1,6 +1,7 @@
 // src/pages/HomePage.tsx
 import { useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
+import { Car } from "lucide-react";
 
 const services = [
   {
@@ -42,14 +43,17 @@ const blogPosts = [
   {
     title: "How to Prepare Your Car for Transport",
     tag: "Guides",
+    href: "/blog/how-to-prepare-your-car-for-transport",
   },
   {
     title: "Open vs. Enclosed Auto Shipping",
     tag: "Education",
+    href: "/blog/open-vs-enclosed-auto-transport-which-option-is-best-for-your-vehicle",
   },
   {
     title: "What to Expect on Pickup Day",
     tag: "Tips",
+    href: "/blog/what-to-expect-on-pickup-day",
   },
 ];
 
@@ -94,8 +98,8 @@ function HeroSection() {
   const navigate = useNavigate();
 
   const [shipment] = useState(() => {
-  return sampleShipments[Math.floor(Math.random() * sampleShipments.length)];
-});
+    return sampleShipments[Math.floor(Math.random() * sampleShipments.length)];
+  });
 
 
   return (
@@ -126,11 +130,11 @@ function HeroSection() {
               Get a Quote
             </button>
             <button
-          onClick={() => navigate("/track")}
-          className="rounded-full border border-white/30 bg-transparent px-6 py-3 text-sm font-semibold text-white/90 hover:border-white"
->
-            Track Shipment
-          </button>
+              onClick={() => navigate("/track")}
+              className="rounded-full border border-white/30 bg-transparent px-6 py-3 text-sm font-semibold text-white/90 hover:border-white"
+            >
+              Track Shipment
+            </button>
           </div>
 
           <div className="mt-6 flex flex-wrap gap-6 text-xs text-white/60">
@@ -156,51 +160,51 @@ function HeroSection() {
               <span className="rounded-full bg-white/10 px-3 py-1">
                 Live Transport Snapshot
               </span>
-              <span>#{`RA-10234`}</span>
+              <span>{`RA-10234`}</span>
             </div>
 
-<div className="rounded-2xl bg-black/40 p-4 transition-all duration-500">
-  <div className="flex items-center justify-between text-xs text-white/80">
-    <div>
-      <p className="text-[11px] uppercase tracking-wide text-white/50">
-        Pickup
-      </p>
-      <p className="font-semibold">{shipment.pickup}</p>
-    </div>
+            <div className="rounded-2xl bg-black/40 p-4 transition-all duration-500">
+              <div className="flex items-center justify-between text-xs text-white/80">
+                <div>
+                  <p className="text-[11px] uppercase tracking-wide text-white/50">
+                    Pickup
+                  </p>
+                  <p className="font-semibold">{shipment.pickup}</p>
+                </div>
 
-    <div className="text-brand-red">┃┃┃</div>
+                <Car className="text-brand-red w-5 h-5" />
 
-    <div className="text-right">
-      <p className="text-[11px] uppercase tracking-wide text-white/50">
-        Delivery
-      </p>
-      <p className="font-semibold">{shipment.delivery}</p>
-    </div>
-  </div>
+                <div className="text-right">
+                  <p className="text-[11px] uppercase tracking-wide text-white/50">
+                    Delivery
+                  </p>
+                  <p className="font-semibold">{shipment.delivery}</p>
+                </div>
+              </div>
 
-  <div className="mt-6 flex items-center justify-between text-xs text-white/70">
-    <div>
-      <p className="text-[11px] uppercase text-white/50">Vehicle</p>
-      <p>{shipment.vehicle}</p>
-    </div>
+              <div className="mt-6 flex items-center justify-between text-xs text-white/70">
+                <div>
+                  <p className="text-[11px] uppercase text-white/50">Vehicle</p>
+                  <p>{shipment.vehicle}</p>
+                </div>
 
-    <div>
-      <p className="text-[11px] uppercase text-white/50">Status</p>
-      <p className="rounded-full bg-brand-red/20 px-3 py-1 text-[11px] font-semibold text-brand-redSoft">
-        {shipment.status}
-      </p>
-    </div>
-  </div>
+                <div>
+                  <p className="text-[11px] uppercase text-white/50">Status</p>
+                  <p className="rounded-full bg-brand-red/20 px-3 py-1 text-[11px] font-semibold text-brand-redSoft">
+                    {shipment.status}
+                  </p>
+                </div>
+              </div>
 
-  <div className="mt-4 h-1.5 rounded-full bg-white/10">
-    <div
-      className="h-full rounded-full bg-brand-redSoft transition-all duration-500"
-      style={{ width: `${shipment.progress * 100}%` }}
-    />
-  </div>
+              <div className="mt-4 h-1.5 rounded-full bg-white/10">
+                <div
+                  className="h-full rounded-full bg-brand-redSoft transition-all duration-500"
+                  style={{ width: `${shipment.progress * 100}%` }}
+                />
+              </div>
 
-  <p className="mt-3 text-[11px] text-white/60">{shipment.eta}</p>
-</div>
+              <p className="mt-3 text-[11px] text-white/60">{shipment.eta}</p>
+            </div>
 
           </div>
         </div>
@@ -245,12 +249,12 @@ function ServicesSection() {
                 {service.description}
               </p>
               <Link
-  to={service.href}
-  aria-label={service.ariaLabel ?? `Learn more about ${service.title}`}
-  className="mt-4 inline-block text-xs font-semibold text-brand-red hover:text-brand-redSoft"
->
-  Learn more →
-</Link>
+                to={service.href}
+                aria-label={service.ariaLabel ?? `Learn more about ${service.title}`}
+                className="mt-4 inline-block text-xs font-semibold text-brand-red hover:text-brand-redSoft"
+              >
+                Learn more →
+              </Link>
 
             </article>
           ))}
@@ -309,34 +313,35 @@ function BlogPreviewSection() {
             </p>
           </div>
           <Link
-  to="/blog"
-  className="text-brand-redSoft hover:text-brand-red text-sm font-semibold"
->
-  View all articles →
-</Link>
+            to="/blog"
+            className="text-brand-redSoft hover:text-brand-red text-sm font-semibold"
+          >
+            View all articles →
+          </Link>
         </div>
 
         <div className="grid gap-6 md:grid-cols-3">
           {blogPosts.map((post) => (
-            <article
+            <Link
               key={post.title}
-              className="flex flex-col rounded-2xl border border-gray-100 bg-white p-4 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
+              to={post.href}
+              className="group flex flex-col rounded-2xl border border-gray-100 bg-white p-4 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
             >
               <div className="mb-3 h-24 rounded-xl bg-gradient-to-tr from-brand-dark via-brand-gray to-brand-red/70" />
               <span className="text-[11px] font-semibold uppercase tracking-wide text-brand-redSoft">
                 {post.tag}
               </span>
-              <h3 className="mt-2 text-sm font-semibold text-brand-dark">
+              <h3 className="mt-2 text-sm font-semibold text-brand-dark group-hover:text-brand-redSoft transition-colors">
                 {post.title}
               </h3>
               <p className="mt-1 text-xs text-gray-600">
                 Short teaser copy about the topic. This will link to the full
                 article in your blog.
               </p>
-              <button className="mt-3 text-xs font-semibold text-brand-red hover:text-brand-redSoft">
+              <span className="mt-3 text-xs font-semibold text-brand-red group-hover:text-brand-redSoft">
                 Read article →
-              </button>
-            </article>
+              </span>
+            </Link>
           ))}
         </div>
       </div>
@@ -364,28 +369,28 @@ function CallToActionSection() {
           >
             Get a Quote
           </button>
-         <button
-  onClick={() => {
-    const w = window as any;
+          <button
+            onClick={() => {
+              const w = window as any;
 
-    const openChat = () => {
-      if (!w.tidioChatApi) return;
-      w.tidioChatApi.open();
-      w.tidioChatApi.messageFromVisitor(
-        "Hi, I'd like to talk to a transport specialist."
-      );
-    };
+              const openChat = () => {
+                if (!w.tidioChatApi) return;
+                w.tidioChatApi.open();
+                w.tidioChatApi.messageFromVisitor(
+                  "Hi, I'd like to talk to a transport specialist."
+                );
+              };
 
-    if (w.tidioChatApi) {
-      openChat();
-    } else {
-      document.addEventListener("tidioChat-ready", openChat, { once: true });
-    }
-  }}
-  className="rounded-full border border-white/30 px-8 py-3 text-sm font-semibold text-white hover:border-white"
->
-  Talk to a Transport Specialist
-</button>
+              if (w.tidioChatApi) {
+                openChat();
+              } else {
+                document.addEventListener("tidioChat-ready", openChat, { once: true });
+              }
+            }}
+            className="rounded-full border border-white/30 px-8 py-3 text-sm font-semibold text-white hover:border-white"
+          >
+            Talk to a Transport Specialist
+          </button>
 
         </div>
       </div>

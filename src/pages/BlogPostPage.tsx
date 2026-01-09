@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
+import ReactMarkdown from "react-markdown";
 import { fetchPostBySlug, type BlogPost } from "../services/blogService";
 
 const BlogPostPage = () => {
@@ -63,29 +64,27 @@ const BlogPostPage = () => {
         </Link>
 
         <h1 className="mt-3 text-3xl font-display font-semibold">
-  {post.title}
-</h1>
-{post.publishedAt && (
-  <p className="mt-2 text-xs text-white/60">
-    {new Date(post.publishedAt).toLocaleDateString()}
-  </p>
-)}
+          {post.title}
+        </h1>
+        {post.publishedAt && (
+          <p className="mt-2 text-xs text-white/60">
+            {new Date(post.publishedAt).toLocaleDateString()}
+          </p>
+        )}
 
-{post.imageUrl && (
-  <div className="mt-6 mb-4 rounded-2xl overflow-hidden border border-white/10">
-    <img
-      src={post.imageUrl}
-      alt={post.title}
-      className="w-full max-h-96 object-cover"
-    />
-  </div>
-)}
+        {post.imageUrl && (
+          <div className="mt-6 mb-4 rounded-2xl overflow-hidden border border-white/10">
+            <img
+              src={post.imageUrl}
+              alt={post.title}
+              className="w-full max-h-96 object-cover"
+            />
+          </div>
+        )}
 
-<article className="mt-6 prose prose-invert prose-sm max-w-none">
-  <p className="whitespace-pre-line text-sm text-white/80">
-    {post.content}
-  </p>
-</article>
+        <article className="mt-6 prose prose-invert prose-sm max-w-none prose-headings:font-display prose-a:text-brand-redSoft hover:prose-a:text-brand-red prose-img:rounded-xl">
+          <ReactMarkdown>{post.content}</ReactMarkdown>
+        </article>
 
       </div>
     </main>
