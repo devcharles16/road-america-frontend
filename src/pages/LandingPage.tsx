@@ -233,8 +233,8 @@ const LandingPage = () => {
                         </h1>
 
                         <p className="text-lg text-white/70 mb-8 max-w-xl leading-relaxed">
-                            We ship your vehicle safely and securely across all 50 states.
-                            Get an instant free quote and see why thousands choose Road America.
+                            We ship your vehicle safely and securely across the United States.
+                            Get an instant free quote and see why thousands choose Road America Auto Transport.
                         </p>
 
                         <div className="flex flex-col gap-4 mb-10">
@@ -470,7 +470,7 @@ const LandingPage = () => {
 
                     <div className="grid md:grid-cols-2 gap-6">
                         {[
-                            { name: "Sarah J.", role: "Moved from CA to TX", text: "I was nervous about shipping my car for the first time, but Road America made it so easy. The driver was professional and my car arrived a day early!", stars: 5 },
+                            { name: "Sarah J.", role: "Moved from CA to TX", text: "I was nervous about shipping my car for the first time, but Road America Auto Transport made it so easy. The driver was professional and my car arrived a day early!", stars: 5 },
                             { name: "Michael T.", role: "Bought a Car Online", text: "Great price and excellent communication. They kept me updated throughout the whole process. Highly recommend.", stars: 5 }
                         ].map((review, i) => (
                             <div key={i} className="bg-white/5 border border-white/10 p-6 rounded-2xl text-left">

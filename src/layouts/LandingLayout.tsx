@@ -16,11 +16,7 @@ const LandingLayout = () => {
                             Road America Auto Transport
                         </span>
                     </Link>
-                    <div className="text-sm font-semibold text-white/80">
-                        <a href="tel:1-800-555-0199" className="hover:text-brand-red">
-                            1-800-555-0199
-                        </a>
-                    </div>
+
                 </div>
             </header>
 
