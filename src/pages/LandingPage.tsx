@@ -8,7 +8,7 @@ import {
     type RunningCondition,
     type TransportType,
 } from "../services/shipmentsService";
-import { ShieldCheck, Truck, Clock, CheckCircle2, Star, ChevronDown, ChevronUp } from "lucide-react";
+import { ShieldCheck, Truck, Clock, CheckCircle2, Star, ChevronDown } from "lucide-react";
 
 type QuoteFormState = {
     pickupCity: string;
