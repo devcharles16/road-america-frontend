@@ -49,7 +49,7 @@ export default function AdminDashboardPage() {
             Admin Dashboard
           </h1>
           <p className="mt-2 text-sm text-white/60 max-w-xl">
-            High-level view of Road America operations. Monitor shipments,
+            High-level view of Road America Auto Transport operations. Monitor shipments,
             quotes, and content at a glance.
           </p>
         </div>

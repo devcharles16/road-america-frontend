@@ -12,9 +12,9 @@ const TermsPage = () => {
           <p className="mt-6 text-sm leading-6 text-white/75">
             These Terms &amp; Conditions (“Terms”) constitute a legally binding
             agreement between <span className="font-semibold text-white">Road America Auto Transport</span>{" "}
-            (“Road America,” “RA,” “we,” “us,” or “our”) and the customer (“Customer,”
+            (“Road America Auto Transport,” “RA,” “we,” “us,” or “our”) and the customer (“Customer,”
             “you,” or “your”). By requesting services, booking transportation, submitting
-            payment, or otherwise authorizing Road America to arrange transportation,
+            payment, or otherwise authorizing Road America Auto Transport to arrange transportation,
             you acknowledge that you have read, understood, and agreed to these Terms.
           </p>
         </header>
@@ -27,13 +27,13 @@ const TermsPage = () => {
 
           <p className="text-sm leading-6 text-white/75">
             Road America Auto Transport is a <span className="font-semibold text-white">licensed transportation broker</span>,
-            not a motor carrier. Road America arranges transportation services by matching customers with{" "}
+            not a motor carrier. Road America Auto Transport arranges transportation services by matching customers with{" "}
             <span className="font-semibold text-white">federally licensed and insured motor carriers</span>{" "}
             registered with the Federal Motor Carrier Safety Administration (FMCSA).
           </p>
 
           <div className="rounded-2xl border border-white/10 bg-black/30 p-6 shadow-soft-card">
-            <p className="text-sm font-semibold text-white">Road America does not:</p>
+            <p className="text-sm font-semibold text-white">Road America Auto Transport does not:</p>
             <ul className="mt-3 list-disc space-y-2 pl-5 text-sm text-white/75">
               <li>Transport vehicles</li>
               <li>Take physical possession of vehicles</li>
@@ -57,7 +57,7 @@ const TermsPage = () => {
           <ul className="list-disc space-y-2 pl-5 text-sm text-white/75">
             <li>Customer’s written or electronic acceptance of these Terms, or</li>
             <li>
-              Submission of payment, deposit, or authorization for Road America to begin
+              Submission of payment, deposit, or authorization for Road America Auto Transport to begin
               dispatch or carrier-sourcing efforts.
             </li>
           </ul>
@@ -77,9 +77,9 @@ const TermsPage = () => {
               </h3>
 
               <ul className="space-y-2 text-sm text-white/80">
-                <li>• Road America manages full logistics coordination</li>
-                <li>• Customer pays Road America the full transport amount</li>
-                <li>• Road America pays the carrier directly</li>
+                <li>• Road America Auto Transport manages full logistics coordination</li>
+                <li>• Customer pays Road America Auto Transport the full transport amount</li>
+                <li>• Road America Auto Transport pays the carrier directly</li>
                 <li>• Includes broker fee and applicable electronic payment processing fees</li>
               </ul>
 
@@ -95,8 +95,8 @@ const TermsPage = () => {
               </h3>
 
               <ul className="space-y-2 text-sm text-white/80">
-                <li>• Road America secures a carrier</li>
-                <li>• Customer pays Road America the broker fee plus applicable processing fees</li>
+                <li>• Road America Auto Transport secures a carrier</li>
+                <li>• Customer pays Road America Auto Transport the broker fee plus applicable processing fees</li>
                 <li>
                   • Customer pays the carrier directly at delivery (typically in cash,
                   certified funds, or as specified by the carrier)
@@ -114,7 +114,7 @@ const TermsPage = () => {
             <div className="rounded-2xl border border-white/10 bg-black/30 p-6 shadow-soft-card">
               <h3 className="text-lg font-semibold text-white">3.5 Pricing &amp; Quote Accuracy</h3>
               <p className="mt-2 text-sm leading-6 text-white/75">
-                All price quotes provided by Road America are estimates based on the
+                All price quotes provided by Road America Auto Transport are estimates based on the
                 information supplied by the Customer and current market conditions.
                 Carrier pricing is not guaranteed and may change due to fuel costs,
                 supply and demand, vehicle size, vehicle condition, route, seasonality,
@@ -129,7 +129,7 @@ const TermsPage = () => {
               <p className="mt-2 text-sm leading-6 text-white/75">
                 If the Customer provides inaccurate or incomplete vehicle information
                 including but not limited to size, weight, operability, modifications,
-                or pickup accessibility, Road America and the carrier may adjust pricing,
+                or pickup accessibility, Road America Auto Transport and the carrier may adjust pricing,
                 cancel the order, or refuse transport. Additional fees may apply and are
                 the sole responsibility of the Customer.
               </p>
@@ -149,7 +149,7 @@ const TermsPage = () => {
               <h3 className="mb-3 text-lg font-semibold text-white">Dispatch Defined</h3>
 
               <p className="text-sm leading-6 text-white/75">
-                “Dispatch” occurs when Road America has begun carrier sourcing, posted
+                “Dispatch” occurs when Road America Auto Transport has begun carrier sourcing, posted
                 the load, negotiated pricing, reserved carrier capacity, or otherwise
                 initiated efforts to assign a carrier.
               </p>
@@ -172,7 +172,7 @@ const TermsPage = () => {
                 <div className="rounded-xl border border-emerald-400/20 bg-emerald-400/10 p-4">
                   <p className="font-semibold text-emerald-200">Before dispatch</p>
                   <p className="mt-1 text-xs leading-5 text-white/75">
-                    Refunds may be issued at Road America’s discretion, minus all merchant
+                    Refunds may be issued at Road America Auto Transport’s discretion, minus all merchant
                     and processing fees.
                   </p>
                 </div>
@@ -242,7 +242,7 @@ const TermsPage = () => {
             </ul>
 
             <p className="mt-5 text-sm font-semibold text-white">
-              Road America and the carrier are not responsible for:
+              Road America Auto Transport and the carrier are not responsible for:
             </p>
             <ul className="mt-3 list-disc space-y-2 pl-5 text-sm text-white/75">
               <li>Pre-existing damage</li>
@@ -261,7 +261,7 @@ const TermsPage = () => {
           <div className="rounded-2xl border border-white/10 bg-black/30 p-6 shadow-soft-card">
             <p className="text-sm leading-6 text-white/75">
               Personal items are <span className="font-semibold text-white">not permitted</span> inside vehicles unless expressly
-              authorized by the carrier. Road America and carriers assume{" "}
+              authorized by the carrier. Road America Auto Transport and carriers assume{" "}
               <span className="font-semibold text-white">no liability</span> for loss, theft, or damage to personal property
               left inside the vehicle.
             </p>
@@ -284,10 +284,10 @@ const TermsPage = () => {
 
               <ul className="mt-4 space-y-2 text-sm text-white/85">
                 <li>
-                  • <span className="font-semibold text-white">Road America is a broker</span>, not a motor carrier
+                  • <span className="font-semibold text-white">Road America Auto Transport is a broker</span>, not a motor carrier
                 </li>
                 <li>• The transporting carrier’s cargo insurance applies during transit</li>
-                <li>• Road America’s liability is limited to its role as a broker</li>
+                <li>• Road America Auto Transport’s liability is limited to its role as a broker</li>
                 <li>• Carrier insurance coverage may include exclusions and deductibles</li>
                 <li>
                   • <span className="font-semibold text-white">Supplemental insurance</span> is the Customer’s responsibility if desired
@@ -315,7 +315,7 @@ const TermsPage = () => {
                 <li>• Claims must be pursued primarily through the carrier’s insurance</li>
                 <li>• Pre-existing damage and mechanical issues are not covered</li>
                 <li>• Delays caused by weather, traffic, or mechanical issues are not guaranteed events</li>
-                <li>• Broker liability (if any) is limited to fees paid to Road America</li>
+                <li>• Broker liability (if any) is limited to fees paid to Road America Auto Transport</li>
               </ul>
 
               <div className="mt-5 rounded-xl border border-white/10 bg-black/20 p-4">
@@ -408,7 +408,7 @@ const TermsPage = () => {
               </p>
 
               <ul className="mt-4 space-y-2 text-sm text-white/85">
-                <li>• Road America does not process verbal or phone claims</li>
+                <li>• Road America Auto Transport does not process verbal or phone claims</li>
                 <li>• Late submissions are not accepted</li>
                 <li>• Claims not noted on the Bill of Lading at delivery are invalid</li>
               </ul>
@@ -428,7 +428,7 @@ const TermsPage = () => {
           <h2 className="text-xl font-bold text-white">10. Limitation of Broker Liability</h2>
 
           <div className="rounded-2xl border border-white/10 bg-black/30 p-6 shadow-soft-card">
-            <p className="text-sm leading-6 text-white/75">Road America shall not be liable for:</p>
+            <p className="text-sm leading-6 text-white/75">Road America Auto Transport shall not be liable for:</p>
             <ul className="mt-3 list-disc space-y-2 pl-5 text-sm text-white/75">
               <li>Carrier delays</li>
               <li>Acts or omissions of carriers</li>
@@ -554,7 +554,7 @@ const TermsPage = () => {
               <div className="rounded-xl border border-white/10 bg-white/5 p-4">
                 <p className="text-xs font-semibold text-white/80">Updates</p>
                 <p className="mt-1 text-xs leading-5 text-white/70">
-                  Road America may update these Terms at any time by posting the revised version on its website.
+                  Road America Auto Transport may update these Terms at any time by posting the revised version on its website.
                 </p>
               </div>
 
@@ -574,7 +574,7 @@ const TermsPage = () => {
 
           <div className="rounded-2xl border border-white/10 bg-black/30 p-6 shadow-soft-card">
             <p className="text-sm leading-6 text-white/75">
-              Customer communications should be directed through official Road America communication channels.
+              Customer communications should be directed through official Road America Auto Transport communication channels.
               Damage claims are accepted <span className="font-semibold text-white">by email only</span> as stated above.
             </p>
           </div>
@@ -587,7 +587,7 @@ const TermsPage = () => {
           <div className="rounded-2xl border border-white/10 bg-black/30 p-6 shadow-soft-card">
             <p className="text-sm leading-6 text-white/75">
               By providing a phone number, email address, or submitting a request through our website,
-              Customer consents to receive communications from Road America via phone, email, and SMS for purposes
+              Customer consents to receive communications from Road America Auto Transport via phone, email, and SMS for purposes
               related to quotes, dispatch, transport updates, billing, and customer service.
             </p>
 

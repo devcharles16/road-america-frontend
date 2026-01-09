@@ -16,7 +16,7 @@ export default function AdminLayout() {
       <aside className="hidden md:flex w-64 flex-col border-r border-white/10 bg-black/70">
         <div className="px-6 py-5 border-b border-white/10">
           <p className="text-[11px] uppercase tracking-[0.2em] text-white/40">
-            Road America
+            Road America Auto Transport
           </p>
           <p className="mt-1 text-sm font-semibold">Admin Console</p>
         </div>
@@ -57,7 +57,7 @@ export default function AdminLayout() {
             <p className="text-[11px] uppercase tracking-[0.2em] text-white/40">
               Admin
             </p>
-            <p className="text-sm font-semibold">Road America</p>
+            <p className="text-sm font-semibold"> Auto Transport</p>
           </div>
           {/* Could add a menu button later if you want a mobile drawer */}
         </header>

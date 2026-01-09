@@ -13,7 +13,7 @@ const LandingLayout = () => {
                             className="h-8 w-auto object-contain transition-transform group-hover:scale-105"
                         />
                         <span className="text-sm md:text-lg font-display font-bold tracking-wide text-white whitespace-nowrap">
-                            Road America
+                            Road America Auto Transport
                         </span>
                     </Link>
 

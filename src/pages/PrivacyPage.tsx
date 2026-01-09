@@ -11,7 +11,7 @@ const PrivacyPage = () => {
         <section className="mt-8 space-y-6 text-sm leading-relaxed text-white/80">
 
           <h2 className="font-bold">1. Introduction</h2>
-<p >Welcome to Road America Transport ("we," "our," "us"). We are committed to protecting your privacy and ensuring that your personal information is handled in a safe and responsible manner. This Privacy Policy outlines how we collect, use, and protect your information when you visit our website [<a href="https://roadamericatransport.com/" target="_blank">https://roadamericatransport.com</a>] ("Website") and use our services.</p>
+<p >Welcome to Road America Auto Transport ("we," "our," "us"). We are committed to protecting your privacy and ensuring that your personal information is handled in a safe and responsible manner. This Privacy Policy outlines how we collect, use, and protect your information when you visit our website [<a href="https://roadamericatransport.com/" target="_blank">https://roadamericatransport.com</a>] ("Website") and use our services.</p>
 <h2 className="font-bold">2. Information We Collect</h2>
 <p >We may collect the following types of information:</p>
 <ul>
