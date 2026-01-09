@@ -74,3 +74,4 @@ Use a ref to track "role fetch in progress" instead of relying on state value ch
 ### Fix 4: Ensure Single Source of Truth
 Always fetch role from database when user changes, don't rely on cached state.
 
+

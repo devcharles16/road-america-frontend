@@ -77,6 +77,7 @@ export default function QuoteSuccessModal({
                             </p>
 
                             <button
+                                type="button"
                                 onClick={onClose}
                                 className="mt-8 w-full rounded-xl bg-brand-red py-3 font-semibold text-white shadow-lg transition hover:bg-brand-redSoft active:scale-[0.98]"
                             >
