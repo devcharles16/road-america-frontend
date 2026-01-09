@@ -70,6 +70,13 @@ const QuotePage = () => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   }
+  function handleModalClose() {
+    setShowSuccessModal(false);
+    setCreatedQuote(null);
+    setForm(defaultForm);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
   function handleCapitalizeBlur(
     field: keyof QuoteFormState
   ) {
@@ -531,15 +538,16 @@ const QuotePage = () => {
             </p>
             {error && <p className="text-xs text-red-400">{error}</p>}
 
-            {createdQuote && (
-              <QuoteSuccessModal
-                isOpen={showSuccessModal}
-                onClose={() => setShowSuccessModal(false)}
-                quote={createdQuote}
-              />
-            )}
           </div>
         </form>
+
+        {createdQuote && (
+          <QuoteSuccessModal
+            isOpen={showSuccessModal}
+            onClose={handleModalClose}
+            quote={createdQuote}
+          />
+        )}
       </div>
     </section>
   );

@@ -1,6 +1,4 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import Header from "./components/Header";
-import Footer from "./components/Footer";
 
 import HomePage from "./pages/HomePage";
 import QuotePage from "./pages/QuotePage";
@@ -18,6 +16,9 @@ import ClientRegisterPage from "./pages/ClientRegisterPage";
 import MyShipmentsPage from "./pages/MyShipmentsPage";
 
 import AdminLayout from "./layouts/AdminLayout";
+import MainLayout from "./layouts/MainLayout";
+import LandingLayout from "./layouts/LandingLayout";
+
 import AdminDashboardPage from "./pages/AdminDashboardPage";
 import AdminShipmentsPage from "./pages/AdminShipmentsPage";
 import AdminBlogPage from "./pages/AdminBlogPage";
@@ -25,66 +26,68 @@ import AdminUsersPage from "./pages/AdminUsersPage";
 import PostLoginRedirectPage from "./pages/PostLoginRedirectPage";
 import AdminQuotesPage from "./pages/AdminQuotesPage";
 import RequireRoles from "./routes/RequireRoles";
+import LandingPage from "./pages/LandingPage";
 
 function App() {
   return (
-    <div className="min-h-screen bg-brand-dark text-white flex flex-col">
-      <Header />
-      <main className="flex-1">
-        <Routes>
-          {/* Public */}
-          <Route path="/" element={<HomePage />} />
-          <Route path="/quote" element={<QuotePage />} />
-          <Route path="/track" element={<TrackingPage />} />
-          <Route path="/about" element={<AboutPage />} />
+    <Routes>
+      <Route element={<MainLayout />}>
+        {/* Public */}
+        <Route path="/" element={<HomePage />} />
+        <Route path="/quote" element={<QuotePage />} />
+        <Route path="/track" element={<TrackingPage />} />
+        <Route path="/about" element={<AboutPage />} />
 
-          {/* Blog (public) */}
-          <Route path="/blog" element={<BlogListPage />} />
-          <Route path="/blog/:slug" element={<BlogPostPage />} />
+        {/* Blog (public) */}
+        <Route path="/blog" element={<BlogListPage />} />
+        <Route path="/blog/:slug" element={<BlogPostPage />} />
 
-          {/* Auth pages exist, but are NOT public while troubleshooting */}
-          <Route path="/login" element={<ClientLoginPage />} />
+        {/* Auth pages exist, but are NOT public while troubleshooting */}
+        <Route path="/login" element={<ClientLoginPage />} />
 
-          <Route
-            path="/register"
-            element={ <ClientRegisterPage /> }
-          />
-          <Route path="/admin/login" element={<Navigate to="/login" replace />} />
-          {/* Post-login redirect (you can keep this public or gate it too) */}
-          <Route path="/post-login" element={<PostLoginRedirectPage />} />
+        <Route
+          path="/register"
+          element={<ClientRegisterPage />}
+        />
+        <Route path="/admin/login" element={<Navigate to="/login" replace />} />
+        {/* Post-login redirect (you can keep this public or gate it too) */}
+        <Route path="/post-login" element={<PostLoginRedirectPage />} />
 
-          {/* Client-protected */}
-          <Route element={<RequireRoles allowed={["client"]} />}>
-            <Route path="/shipments" element={<MyShipmentsPage />} />
+        {/* Client-protected */}
+        <Route element={<RequireRoles allowed={["client"]} />}>
+          <Route path="/shipments" element={<MyShipmentsPage />} />
+        </Route>
+
+        {/* Footer-only pages */}
+        <Route path="/privacy" element={<PrivacyPage />} />
+        <Route path="/terms" element={<TermsPage />} />
+      </Route>
+
+      {/* Landing Pages */}
+      <Route element={<LandingLayout />}>
+        <Route path="/express-quote" element={<LandingPage />} />
+      </Route>
+
+      {/* Admin + Employee */}
+      <Route
+        element={
+          <RequireRoles allowed={["admin", "employee"]} redirectTo="/login" />
+        }
+      >
+        <Route path="/admin/*" element={<AdminLayout />}>
+          <Route index element={<AdminDashboardPage />} />
+          <Route path="quotes" element={<AdminQuotesPage />} />
+          <Route path="shipments" element={<AdminShipmentsPage />} />
+          <Route path="blog" element={<AdminBlogPage />} />
+
+          {/* Admin-only */}
+          <Route element={<RequireRoles allowed={["admin"]} redirectTo="/login" />}>
+            <Route path="users" element={<AdminUsersPage />} />
           </Route>
+        </Route>
+      </Route>
 
-          {/* Footer-only pages */}
-          <Route path="/privacy" element={<PrivacyPage />} />
-          <Route path="/terms" element={<TermsPage />} />
-
-         {/* Admin + Employee */}
-<Route
-  element={
-    <RequireRoles allowed={["admin", "employee"]} redirectTo="/login" />
-  }
->
-  <Route path="/admin/*" element={<AdminLayout />}>
-    <Route index element={<AdminDashboardPage />} />
-    <Route path="quotes" element={<AdminQuotesPage />} />
-    <Route path="shipments" element={<AdminShipmentsPage />} />
-    <Route path="blog" element={<AdminBlogPage />} />
-
-    {/* Admin-only */}
-    <Route element={<RequireRoles allowed={["admin"]} redirectTo="/login" />}>
-  <Route path="users" element={<AdminUsersPage />} />
-</Route>
-  </Route>
-</Route>
-
-        </Routes>
-      </main>
-      <Footer />
-    </div>
+    </Routes>
   );
 }
 
