@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import {
   trackShipmentByRefAndEmail,
   type TransportRequest,
@@ -96,9 +97,10 @@ function getStepIcon(stepId: TransportStatus) {
 }
 
 const TrackingPage = () => {
+  const [searchParams] = useSearchParams();
   const [form, setForm] = useState<TrackingFormState>({
-    referenceId: "",
-    email: "",
+    referenceId: searchParams.get("referenceId") || "",
+    email: searchParams.get("email") || "",
   });
   const [loading, setLoading] = useState(false);
   const [shipment, setShipment] = useState<TransportRequestWithEta | null>(null);

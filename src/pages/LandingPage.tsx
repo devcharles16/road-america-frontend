@@ -212,7 +212,7 @@ const LandingPage = () => {
         <div className="bg-brand-dark min-h-screen text-white">
 
             {/* HER0 SECTION */}
-            <section className="relative pt-6 pb-20 overflow-hidden">
+            <section className="relative pt-24 pb-12 overflow-hidden">
                 {/* Background Element */}
                 <div className="absolute inset-0 z-0">
                     <div className="absolute inset-0 bg-gradient-to-br from-brand-dark via-[#1a1a1a] to-brand-red/10" />
@@ -220,90 +220,89 @@ const LandingPage = () => {
                     <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
                 </div>
 
-                <div className="relative z-10 mx-auto max-w-7xl px-4 flex flex-col lg:flex-row gap-12 items-start pt-8">
+                <div className="relative z-10 mx-auto max-w-7xl px-4 flex flex-col lg:flex-row gap-8 lg:gap-12 items-start">
                     {/* Left Content */}
-                    <div className="lg:w-1/2 pt-6 lg:pt-16">
-                        <div className="inline-flex items-center gap-2 rounded-full bg-brand-red/10 px-4 py-1.5 text-xs font-bold text-brand-redSoft border border-brand-red/20 mb-8 backdrop-blur-sm">
+                    <div className="lg:w-1/2 pt-2 lg:pt-8">
+                        <div className="inline-flex items-center gap-2 rounded-full bg-brand-red/10 px-4 py-1.5 text-xs font-bold text-brand-redSoft border border-brand-red/20 mb-6 backdrop-blur-sm">
                             <Star className="w-3.5 h-3.5 fill-current" />
                             <span>Rated 4.8/5 by 50,000+ Customers</span>
                         </div>
 
-                        <h1 className="text-4xl md:text-5xl lg:text-7xl font-display font-bold leading-[1.1] mb-6 tracking-tight">
+                        <h1 className="text-3xl md:text-5xl lg:text-6xl font-display font-bold leading-[1.1] mb-4 tracking-tight">
                             America's Most Trusted <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-red to-brand-redSoft">Auto Transport</span>
                         </h1>
 
-                        <p className="text-lg md:text-xl text-white/60 mb-10 max-w-xl leading-relaxed font-light">
-                            Ship your vehicle safely across the United States.
-                            Instant quotes, no hidden fees, and fully insured carriers.
+                        <p className="text-base md:text-lg text-white/80 mb-8 max-w-xl leading-relaxed">
+                            Hand-calculated quotes by ASE Master Techs. Delivered via email. No unsolicited calls.
                         </p>
 
-                        <div className="flex flex-wrap gap-4 mb-12">
-                            <div className="flex items-center gap-3 text-white/90 bg-white/5 px-4 py-2 rounded-lg border border-white/5 backdrop-blur-sm">
-                                <ShieldCheck className="text-brand-redSoft w-5 h-5" />
+                        <div className="flex flex-wrap gap-3 mb-8">
+                            <div className="flex items-center gap-2 text-white/90 bg-white/5 px-3 py-1.5 rounded-lg border border-white/5 backdrop-blur-sm">
+                                <ShieldCheck className="text-brand-redSoft w-4 h-4" />
                                 <span className="text-sm font-medium">Fully Insured</span>
                             </div>
-                            <div className="flex items-center gap-3 text-white/90 bg-white/5 px-4 py-2 rounded-lg border border-white/5 backdrop-blur-sm">
-                                <Truck className="text-brand-redSoft w-5 h-5" />
+                            <div className="flex items-center gap-2 text-white/90 bg-white/5 px-3 py-1.5 rounded-lg border border-white/5 backdrop-blur-sm">
+                                <Truck className="text-brand-redSoft w-4 h-4" />
                                 <span className="text-sm font-medium">Door-to-Door</span>
                             </div>
-                            <div className="flex items-center gap-3 text-white/90 bg-white/5 px-4 py-2 rounded-lg border border-white/5 backdrop-blur-sm">
-                                <CheckCircle2 className="text-brand-redSoft w-5 h-5" />
+                            <div className="flex items-center gap-2 text-white/90 bg-white/5 px-3 py-1.5 rounded-lg border border-white/5 backdrop-blur-sm">
+                                <CheckCircle2 className="text-brand-redSoft w-4 h-4" />
                                 <span className="text-sm font-medium">No Deposit</span>
                             </div>
                         </div>
 
                         {/* Trust Stats - Replaced Badges */}
-                        <div className="grid grid-cols-3 gap-6 max-w-md border-t border-white/10 pt-8 opacity-80">
+                        <div className="grid grid-cols-3 gap-6 max-w-md border-t border-white/10 pt-6 opacity-80">
                             <div>
-                                <div className="text-2xl font-bold font-display text-white">50k+</div>
-                                <div className="text-xs text-white/50 uppercase tracking-wider font-semibold">Customers</div>
+                                <div className="text-xl md:text-2xl font-bold font-display text-white">50k+</div>
+                                <div className="text-[10px] md:text-xs text-white/50 uppercase tracking-wider font-semibold">Customers</div>
                             </div>
                             <div>
-                                <div className="text-2xl font-bold font-display text-white">15+</div>
-                                <div className="text-xs text-white/50 uppercase tracking-wider font-semibold">Years Exp.</div>
+                                <div className="text-xl md:text-2xl font-bold font-display text-white">15+</div>
+                                <div className="text-[10px] md:text-xs text-white/50 uppercase tracking-wider font-semibold">Years Exp.</div>
                             </div>
                             <div>
-                                <div className="text-2xl font-bold font-display text-white">4.8</div>
-                                <div className="text-xs text-white/50 uppercase tracking-wider font-semibold">Avg Rating</div>
+                                <div className="text-xl md:text-2xl font-bold font-display text-white">4.8</div>
+                                <div className="text-[10px] md:text-xs text-white/50 uppercase tracking-wider font-semibold">Avg Rating</div>
                             </div>
                         </div>
                     </div>
 
                     {/* Right Form Card */}
                     <div className="lg:w-1/2 w-full lg:pl-12">
-                        <div className="bg-white text-brand-dark rounded-2xl p-6 md:p-8 shadow-2xl relative shadow-brand-red/5">
+                        <div className="bg-white text-brand-dark rounded-2xl p-5 md:p-6 shadow-2xl relative shadow-brand-red/5">
 
-                            <div className="mb-6">
-                                <div className="flex items-center justify-between mb-2">
-                                    <h2 className="text-2xl font-bold font-display text-gray-900">Get A Free Quote</h2>
-                                    <span className="text-xs font-bold text-brand-red bg-brand-red/10 px-3 py-1 rounded-full uppercase tracking-wide">Step 1 of 1</span>
+                            <div className="mb-4">
+                                <div className="flex items-center justify-between mb-1">
+                                    <h2 className="text-xl font-bold font-display text-gray-900">Get A Free Quote</h2>
+                                    <span className="text-[10px] font-bold text-brand-red bg-brand-red/10 px-2 py-0.5 rounded-full uppercase tracking-wide">Step 1 of 1</span>
                                 </div>
-                                <p className="text-sm text-gray-500">Enter your details below to receive a custom shipping price instantly.</p>
+                                <p className="text-xs text-gray-500">Enter your details below to receive a custom shipping price instantly.</p>
                             </div>
 
-                            <form onSubmit={handleSubmit} className="space-y-5">
+                            <form onSubmit={handleSubmit} className="space-y-3">
                                 {/* Route */}
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-1.5">
-                                        <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Pickup City</label>
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div className="space-y-1">
+                                        <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Pickup City</label>
                                         <input
                                             name="pickupCity"
                                             value={form.pickupCity}
                                             onChange={handleChange}
                                             onBlur={handleCapitalizeBlur("pickupCity")}
                                             placeholder="City"
-                                            className="w-full h-12 bg-gray-50 border border-gray-200 rounded-lg px-4 text-sm focus:bg-white focus:border-brand-red focus:ring-4 focus:ring-brand-red/10 outline-none transition-all font-medium"
+                                            className="w-full h-10 bg-gray-50 border border-gray-200 rounded-lg px-3 text-sm focus:bg-white focus:border-brand-red focus:ring-4 focus:ring-brand-red/10 outline-none transition-all font-medium"
                                             required
                                         />
                                     </div>
-                                    <div className="space-y-1.5">
-                                        <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">State</label>
+                                    <div className="space-y-1">
+                                        <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">State</label>
                                         <div className="relative">
                                             <select
                                                 name="pickupState"
                                                 value={form.pickupState}
                                                 onChange={handleChange}
-                                                className="w-full h-12 appearance-none bg-gray-50 border border-gray-200 rounded-lg px-4 text-sm focus:bg-white focus:border-brand-red focus:ring-4 focus:ring-brand-red/10 outline-none transition-all font-medium"
+                                                className="w-full h-10 appearance-none bg-gray-50 border border-gray-200 rounded-lg px-3 text-sm focus:bg-white focus:border-brand-red focus:ring-4 focus:ring-brand-red/10 outline-none transition-all font-medium"
                                                 required
                                             >
                                                 <option value="">Select</option>
@@ -314,33 +313,33 @@ const LandingPage = () => {
                                                 ))}
                                             </select>
                                             <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
-                                                <ChevronDown className="w-4 h-4" />
+                                                <ChevronDown className="w-3 h-3" />
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-1.5">
-                                        <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Delivery City</label>
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div className="space-y-1">
+                                        <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Delivery City</label>
                                         <input
                                             name="deliveryCity"
                                             value={form.deliveryCity}
                                             onChange={handleChange}
                                             onBlur={handleCapitalizeBlur("deliveryCity")}
                                             placeholder="City"
-                                            className="w-full h-12 bg-gray-50 border border-gray-200 rounded-lg px-4 text-sm focus:bg-white focus:border-brand-red focus:ring-4 focus:ring-brand-red/10 outline-none transition-all font-medium"
+                                            className="w-full h-10 bg-gray-50 border border-gray-200 rounded-lg px-3 text-sm focus:bg-white focus:border-brand-red focus:ring-4 focus:ring-brand-red/10 outline-none transition-all font-medium"
                                             required
                                         />
                                     </div>
-                                    <div className="space-y-1.5">
-                                        <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">State</label>
+                                    <div className="space-y-1">
+                                        <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">State</label>
                                         <div className="relative">
                                             <select
                                                 name="deliveryState"
                                                 value={form.deliveryState}
                                                 onChange={handleChange}
-                                                className="w-full h-12 appearance-none bg-gray-50 border border-gray-200 rounded-lg px-4 text-sm focus:bg-white focus:border-brand-red focus:ring-4 focus:ring-brand-red/10 outline-none transition-all font-medium"
+                                                className="w-full h-10 appearance-none bg-gray-50 border border-gray-200 rounded-lg px-3 text-sm focus:bg-white focus:border-brand-red focus:ring-4 focus:ring-brand-red/10 outline-none transition-all font-medium"
                                                 required
                                             >
                                                 <option value="">Select</option>
@@ -351,90 +350,90 @@ const LandingPage = () => {
                                                 ))}
                                             </select>
                                             <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
-                                                <ChevronDown className="w-4 h-4" />
+                                                <ChevronDown className="w-3 h-3" />
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
                                 {/* Vehicle */}
-                                <div className="space-y-1.5 pt-2">
-                                    <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Vehicle Year, Make, Model</label>
-                                    <div className="grid grid-cols-3 gap-3">
+                                <div className="space-y-1 pt-1">
+                                    <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Vehicle Year, Make, Model</label>
+                                    <div className="grid grid-cols-3 gap-2">
                                         <input
                                             name="vehicleYear" value={form.vehicleYear} onChange={handleChange}
-                                            placeholder="Year" className="col-span-1 h-12 bg-gray-50 border border-gray-200 rounded-lg px-3 text-sm focus:bg-white focus:border-brand-red focus:ring-4 focus:ring-brand-red/10 outline-none transition-all font-medium" required
+                                            placeholder="Year" className="col-span-1 h-10 bg-gray-50 border border-gray-200 rounded-lg px-2 text-sm focus:bg-white focus:border-brand-red focus:ring-4 focus:ring-brand-red/10 outline-none transition-all font-medium" required
                                         />
                                         <input
                                             name="vehicleMake" value={form.vehicleMake} onChange={handleChange} onBlur={handleCapitalizeBlur("vehicleMake")}
-                                            placeholder="Make" className="col-span-1 h-12 bg-gray-50 border border-gray-200 rounded-lg px-3 text-sm focus:bg-white focus:border-brand-red focus:ring-4 focus:ring-brand-red/10 outline-none transition-all font-medium" required
+                                            placeholder="Make" className="col-span-1 h-10 bg-gray-50 border border-gray-200 rounded-lg px-2 text-sm focus:bg-white focus:border-brand-red focus:ring-4 focus:ring-brand-red/10 outline-none transition-all font-medium" required
                                         />
                                         <input
                                             name="vehicleModel" value={form.vehicleModel} onChange={handleChange} onBlur={handleCapitalizeBlur("vehicleModel")}
-                                            placeholder="Model" className="col-span-1 h-12 bg-gray-50 border border-gray-200 rounded-lg px-3 text-sm focus:bg-white focus:border-brand-red focus:ring-4 focus:ring-brand-red/10 outline-none transition-all font-medium" required
+                                            placeholder="Model" className="col-span-1 h-10 bg-gray-50 border border-gray-200 rounded-lg px-2 text-sm focus:bg-white focus:border-brand-red focus:ring-4 focus:ring-brand-red/10 outline-none transition-all font-medium" required
                                         />
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-1.5">
-                                        <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Transport Type</label>
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div className="space-y-1">
+                                        <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Transport Type</label>
                                         <div className="relative">
                                             <select
                                                 name="transportType"
                                                 value={form.transportType}
                                                 onChange={handleChange}
-                                                className="w-full h-12 appearance-none bg-gray-50 border border-gray-200 rounded-lg px-4 text-sm focus:bg-white focus:border-brand-red focus:ring-4 focus:ring-brand-red/10 outline-none transition-all font-medium"
+                                                className="w-full h-10 appearance-none bg-gray-50 border border-gray-200 rounded-lg px-3 text-sm focus:bg-white focus:border-brand-red focus:ring-4 focus:ring-brand-red/10 outline-none transition-all font-medium"
                                             >
                                                 <option value="open">Open (Standard)</option>
                                                 <option value="enclosed">Enclosed (Premium)</option>
                                             </select>
                                             <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
-                                                <ChevronDown className="w-4 h-4" />
+                                                <ChevronDown className="w-3 h-3" />
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="space-y-1.5">
-                                        <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Condition</label>
+                                    <div className="space-y-1">
+                                        <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Condition</label>
                                         <div className="relative">
                                             <select
                                                 name="runningCondition"
                                                 value={form.runningCondition}
                                                 onChange={handleChange}
-                                                className="w-full h-12 appearance-none bg-gray-50 border border-gray-200 rounded-lg px-4 text-sm focus:bg-white focus:border-brand-red focus:ring-4 focus:ring-brand-red/10 outline-none transition-all font-medium"
+                                                className="w-full h-10 appearance-none bg-gray-50 border border-gray-200 rounded-lg px-3 text-sm focus:bg-white focus:border-brand-red focus:ring-4 focus:ring-brand-red/10 outline-none transition-all font-medium"
                                             >
                                                 <option value="running">Running</option>
                                                 <option value="non-running">Inoperable</option>
                                             </select>
                                             <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
-                                                <ChevronDown className="w-4 h-4" />
+                                                <ChevronDown className="w-3 h-3" />
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
                                 {/* Contact */}
-                                <div className="pt-2">
-                                    <div className="space-y-1.5">
-                                        <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Contact Info</label>
-                                        <div className="grid grid-cols-2 gap-3 mb-3">
+                                <div className="pt-1">
+                                    <div className="space-y-1">
+                                        <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Contact Info</label>
+                                        <div className="grid grid-cols-2 gap-2 mb-2">
                                             <input
                                                 name="firstName" value={form.firstName} onChange={handleChange} onBlur={handleCapitalizeBlur("firstName")}
-                                                placeholder="First Name" className="h-12 bg-gray-50 border border-gray-200 rounded-lg px-4 text-sm focus:bg-white focus:border-brand-red focus:ring-4 focus:ring-brand-red/10 outline-none transition-all font-medium" required
+                                                placeholder="First Name" className="h-10 bg-gray-50 border border-gray-200 rounded-lg px-3 text-sm focus:bg-white focus:border-brand-red focus:ring-4 focus:ring-brand-red/10 outline-none transition-all font-medium" required
                                             />
                                             <input
                                                 name="lastName" value={form.lastName} onChange={handleChange} onBlur={handleCapitalizeBlur("lastName")}
-                                                placeholder="Last Name" className="h-12 bg-gray-50 border border-gray-200 rounded-lg px-4 text-sm focus:bg-white focus:border-brand-red focus:ring-4 focus:ring-brand-red/10 outline-none transition-all font-medium" required
+                                                placeholder="Last Name" className="h-10 bg-gray-50 border border-gray-200 rounded-lg px-3 text-sm focus:bg-white focus:border-brand-red focus:ring-4 focus:ring-brand-red/10 outline-none transition-all font-medium" required
                                             />
                                         </div>
-                                        <div className="grid grid-cols-2 gap-3">
+                                        <div className="grid grid-cols-2 gap-2">
                                             <input
                                                 name="email" value={form.email} onChange={handleChange} type="email"
-                                                placeholder="Email Address" className="h-12 bg-gray-50 border border-gray-200 rounded-lg px-4 text-sm focus:bg-white focus:border-brand-red focus:ring-4 focus:ring-brand-red/10 outline-none transition-all font-medium" required
+                                                placeholder="Email Address" className="h-10 bg-gray-50 border border-gray-200 rounded-lg px-3 text-sm focus:bg-white focus:border-brand-red focus:ring-4 focus:ring-brand-red/10 outline-none transition-all font-medium" required
                                             />
                                             <input
                                                 name="phone" value={form.phone} onChange={handleChange} type="tel"
-                                                placeholder="Phone Number" className="h-12 bg-gray-50 border border-gray-200 rounded-lg px-4 text-sm focus:bg-white focus:border-brand-red focus:ring-4 focus:ring-brand-red/10 outline-none transition-all font-medium" required
+                                                placeholder="Phone Number" className="h-10 bg-gray-50 border border-gray-200 rounded-lg px-3 text-sm focus:bg-white focus:border-brand-red focus:ring-4 focus:ring-brand-red/10 outline-none transition-all font-medium" required
                                             />
                                         </div>
                                     </div>
@@ -445,7 +444,7 @@ const LandingPage = () => {
                                 <button
                                     type="submit"
                                     disabled={loading || !isFormValid}
-                                    className={`w-full py-4 rounded-xl font-bold text-lg shadow-lg transform transition-all duration-200 active:scale-[0.98] 
+                                    className={`w-full py-3 rounded-xl font-bold text-base shadow-lg transform transition-all duration-200 active:scale-[0.98] 
                                         ${loading || !isFormValid
                                             ? "bg-gray-100 text-gray-400 cursor-not-allowed"
                                             : "bg-brand-red text-white hover:bg-brand-redSoft shadow-brand-red/30 hover:shadow-brand-red/50"}
@@ -453,15 +452,23 @@ const LandingPage = () => {
                                 >
                                     {loading ? (
                                         <span className="flex items-center justify-center gap-2">
-                                            <Clock className="w-5 h-5 animate-spin" />
+                                            <Clock className="w-4 h-4 animate-spin" />
                                             Calculating...
                                         </span>
                                     ) : "Get My Free Quote"}
                                 </button>
 
-                                <p className="text-[10px] text-gray-400 text-center leading-tight">
+                                <p className="text-[9px] text-gray-400 text-center leading-tight">
                                     No credit card required. By clicking the button, you consent to receive a quote and related emails/texts.
                                 </p>
+
+                                <div className="flex justify-center pt-2">
+                                    <img
+                                        src="/ase-logo.png"
+                                        alt="ASE Master Technician"
+                                        className="h-12 w-auto opacity-90 hover:opacity-100 transition-opacity"
+                                    />
+                                </div>
 
                             </form>
                         </div>

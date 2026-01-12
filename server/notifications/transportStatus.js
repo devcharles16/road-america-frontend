@@ -30,7 +30,7 @@ export async function sendStatusUpdate(customerEmail, customerName, status, orde
           <p style="font-size:15px;margin:0 0 16px;">Hi ${customerName},</p>
           <p style="font-size:14px;margin:0 0 16px;">${message}</p>
 
-          <div style="margin:20px 0;padding:12px 16px;border-radius:10px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);">
+    <div style="margin:20px 0;padding:12px 16px;border-radius:10px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);">
             <p style="margin:0 0 4px;font-size:12px;color:#999;">Order ID</p>
             <p style="margin:0;font-size:14px;font-weight:600;color:#fff;">${orderId}</p>
             <p style="margin:12px 0 0;font-size:12px;color:#bbb;">Current Status:
@@ -38,6 +38,13 @@ export async function sendStatusUpdate(customerEmail, customerName, status, orde
                 ${status}
               </span>
             </p>
+          </div>
+
+          <div style="margin-bottom: 24px; text-align: center;">
+            <a href="${process.env.FRONTEND_URL || "https://www.roadamericatransport.com"}/track?referenceId=${orderId}&email=${encodeURIComponent(customerEmail)}" 
+               style="display: inline-block; background-color: #8C0000; color: #ffffff; padding: 12px 24px; border-radius: 9999px; text-decoration: none; font-weight: 600; font-size: 14px;">
+              Track Your Shipment
+            </a>
           </div>
 
           <p style="font-size:13px;margin:0 0 16px;color:#ccc;">
