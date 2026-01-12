@@ -85,15 +85,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const pendingRef = useRef(0);
 
-  const begin = useCallback((label: string) => {
+  const begin = useCallback((_label: string) => {
     pendingRef.current += 1;
-    // console.log("[Auth begin]", label, "pending =", pendingRef.current);
+    // console.log("[Auth begin]", _label, "pending =", pendingRef.current);
     setLoading(true);
   }, []);
 
-  const end = useCallback((label: string) => {
+  const end = useCallback((_label: string) => {
     pendingRef.current = Math.max(0, pendingRef.current - 1);
-    // console.log("[Auth end]", label, "pending =", pendingRef.current);
+    // console.log("[Auth end]", _label, "pending =", pendingRef.current);
     setLoading(pendingRef.current > 0);
   }, []);
 
@@ -328,12 +328,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     let alive = true;
 
-    const sub = supabase.auth.onAuthStateChange(async (event, session) => {
+    const sub = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (!alive) return;
 
       const reqId = ++reqIdRef.current;
       begin("onAuthStateChange");
-      // console.log("[Auth] event:", event);
+      // console.log("[Auth] event:", _event);
 
       try {
         if (isLoggingOutRef.current) {
