@@ -20,18 +20,12 @@ const ClientLoginPage = () => {
     setError(null);
 
     const trimmedEmail = email.trim();
-    console.log("[ClientLogin] submit", { email: trimmedEmail });
+
 
     try {
       const { data, error: signInError } = await supabase.auth.signInWithPassword({
         email: trimmedEmail,
         password,
-      });
-
-      console.log("[ClientLogin] signInWithPassword result", {
-        hasUser: !!data?.user,
-        hasSession: !!data?.session,
-        error: signInError?.message ?? null,
       });
 
       if (signInError) {

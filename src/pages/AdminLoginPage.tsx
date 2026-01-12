@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
 import { useAuth } from "../context/AuthContext";
 
-console.log("LOGIN PAGE RENDER");
+
 const AdminLoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -13,42 +13,40 @@ const AdminLoginPage = () => {
   const navigate = useNavigate();
   const { refreshAuth } = useAuth();
 
-async function handleSubmit(e: React.FormEvent) {
-  e.preventDefault();
-  setLoading(true);
-  setError(null);
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
 
-  try {
-    console.log("SUBMIT CLICKED (before sign-in)");
-
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: email.trim(),
-      password,
-    });
-
-    if (error) throw error;
-    if (!data.session) throw new Error("No session returned");
-
-    // ✅ CRITICAL: Explicitly refresh auth to ensure session is hydrated
-    // This ensures the auth context recognizes the user and fetches the role
-    // before navigation happens
     try {
-      await refreshAuth();
-    } catch (refreshError) {
-      console.error("[AdminLogin] refreshAuth error:", refreshError);
-      // Continue anyway - onAuthStateChange should still fire
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password,
+      });
+
+      if (error) throw error;
+      if (!data.session) throw new Error("No session returned");
+
+      // ✅ CRITICAL: Explicitly refresh auth to ensure session is hydrated
+      // This ensures the auth context recognizes the user and fetches the role
+      // before navigation happens
+      try {
+        await refreshAuth();
+      } catch (refreshError) {
+        console.error("[AdminLogin] refreshAuth error:", refreshError);
+        // Continue anyway - onAuthStateChange should still fire
+      }
+
+      // Go to admin root; RequireRoles + AuthContext will handle role/redirect
+      navigate("/post-login", { replace: true });
+
+    } catch (err) {
+      console.error(err);
+      setError("Invalid email or password.");
+    } finally {
+      setLoading(false);
     }
-
-    // Go to admin root; RequireRoles + AuthContext will handle role/redirect
-   navigate("/post-login", { replace: true });
-
-  } catch (err) {
-    console.error(err);
-    setError("Invalid email or password.");
-  } finally {
-    setLoading(false);
   }
-}
 
 
   return (

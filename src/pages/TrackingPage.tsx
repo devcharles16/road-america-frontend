@@ -129,7 +129,6 @@ const TrackingPage = () => {
         );
       } else {
         setShipment(result as TransportRequestWithEta);
-        console.log("TRACK RESULT:", result);
       }
     } catch (err) {
       console.error(err);

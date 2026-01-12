@@ -87,13 +87,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const begin = useCallback((label: string) => {
     pendingRef.current += 1;
-    console.log("[Auth begin]", label, "pending =", pendingRef.current);
+    // console.log("[Auth begin]", label, "pending =", pendingRef.current);
     setLoading(true);
   }, []);
 
   const end = useCallback((label: string) => {
     pendingRef.current = Math.max(0, pendingRef.current - 1);
-    console.log("[Auth end]", label, "pending =", pendingRef.current);
+    // console.log("[Auth end]", label, "pending =", pendingRef.current);
     setLoading(pendingRef.current > 0);
   }, []);
 
@@ -309,9 +309,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Extra safety
       const { data } = await supabase.auth.getSession();
       if (data.session) {
-        console.warn(
-          "[Auth] Session still present after logout; forcing local signOut + storage clear."
-        );
+        // console.warn(
+        //   "[Auth] Session still present after logout; forcing local signOut + storage clear."
+        // );
         await supabase.auth.signOut({ scope: "local" });
         clearSupabaseAuthStorage();
         clearAdminKey();
@@ -333,7 +333,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       const reqId = ++reqIdRef.current;
       begin("onAuthStateChange");
-      console.log("[Auth] event:", event);
+      // console.log("[Auth] event:", event);
 
       try {
         if (isLoggingOutRef.current) {

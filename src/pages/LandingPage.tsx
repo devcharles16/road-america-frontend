@@ -459,7 +459,8 @@ const LandingPage = () => {
                                 </button>
 
                                 <p className="text-[9px] text-gray-400 text-center leading-tight">
-                                    No credit card required. By clicking the button, you consent to receive a quote and related emails/texts.
+                                    No credit card required.
+By clicking Get My Free Quote, you’re requesting a quote only. We use your phone number solely to coordinate transport if you choose to move forward. No unsolicited calls. No high-pressure texts. Your quote is delivered to your inbox.
                                 </p>
 
                                 <div className="flex justify-center pt-2">
@@ -519,7 +520,7 @@ const LandingPage = () => {
                     <div className="grid md:grid-cols-2 gap-6">
                         {[
                             { name: "Sarah J.", role: "Moved from CA to TX", text: "I was nervous about shipping my car for the first time, but Road America Auto Transport made it so easy. The driver was professional and my car arrived a day early!", stars: 5 },
-                            { name: "Michael T.", role: "Bought a Car Online", text: "Great price and excellent communication. They kept me updated throughout the whole process. Highly recommend.", stars: 5 }
+                            { name: "Michael T.", role: "Moved a car from GA to FL", text: "Great price and excellent communication. They kept me updated throughout the whole process. Highly recommend.", stars: 5 }
                         ].map((review, i) => (
                             <div key={i} className="bg-white/5 border border-white/10 p-8 rounded-2xl text-left hover:bg-white/10 transition-colors duration-300">
                                 <div className="flex gap-1 mb-4 text-brand-red">

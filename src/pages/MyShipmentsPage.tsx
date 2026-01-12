@@ -65,7 +65,6 @@ const MyShipmentsPage = () => {
       navigate("/login", { replace: true });
       return;
     }
-    console.log("About to load shipments. user =", user);
 
     // Now it is safe to call listMyShipments()
     load();
