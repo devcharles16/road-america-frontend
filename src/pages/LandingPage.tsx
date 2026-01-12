@@ -9,6 +9,8 @@ import {
     type TransportType,
 } from "../services/shipmentsService";
 import { ShieldCheck, Truck, Clock, CheckCircle2, Star, ChevronDown } from "lucide-react";
+import SEO from "../components/SEO";
+import { trackConversion } from "../lib/analytics";
 
 type QuoteFormState = {
     pickupCity: string;
@@ -144,7 +146,11 @@ const LandingPage = () => {
             });
 
             setCreatedQuote(created);
+            setCreatedQuote(created);
             setShowSuccessModal(true);
+
+            // Track Google Ads Conversion
+            trackConversion('AW-857831655/JjC4CNf4z5YaEKe6x5iD');
 
             // 2) Best-effort email notification
             const pickup = `${form.pickupCity}, ${form.pickupState}`;
@@ -210,6 +216,12 @@ const LandingPage = () => {
 
     return (
         <div className="bg-brand-dark min-h-screen text-white">
+            <SEO
+                title="Get a Free Car Shipping Quote"
+                description="Trusted by 50,000+ customers. Get an instant, guaranteed auto transport quote. No hidden fees, fully insured door-to-door delivery."
+                canonical="/express-quote"
+                keywords={['car shipping quote', 'auto transport prices', 'ship my car', 'vehicle transport cost']}
+            />
 
             {/* HER0 SECTION */}
             <section className="relative pt-24 pb-12 overflow-hidden">
@@ -460,7 +472,7 @@ const LandingPage = () => {
 
                                 <p className="text-[9px] text-gray-400 text-center leading-tight">
                                     No credit card required.
-By clicking Get My Free Quote, you’re requesting a quote only. We use your phone number solely to coordinate transport if you choose to move forward. No unsolicited calls. No high-pressure texts. Your quote is delivered to your inbox.
+                                    By clicking Get My Free Quote, you’re requesting a quote only. We use your phone number solely to coordinate transport if you choose to move forward. No unsolicited calls. No high-pressure texts. Your quote is delivered to your inbox.
                                 </p>
 
                                 <div className="flex justify-center pt-2">

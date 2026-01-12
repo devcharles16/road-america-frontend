@@ -1,9 +1,15 @@
 // src/pages/AboutPage.tsx
 import { Link } from "react-router-dom";
+import SEO from "../components/SEO";
 
 const AboutPage = () => {
   return (
     <main className="bg-brand-dark text-white min-h-screen">
+      <SEO
+        title="About Us"
+        description="Learn about Road America Auto Transport's mission to provide reliable, transparent vehicle shipping services nationwide."
+        canonical="/about"
+      />
       {/* Hero */}
       <section className="bg-gradient-to-r from-black via-[#18181C] to-black border-b border-white/5">
         <div className="mx-auto max-w-6xl px-4 py-16 md:py-20">
@@ -208,16 +214,16 @@ const AboutPage = () => {
               <p className="mt-1 text-xs uppercase tracking-[0.2em] text-white/60">
                 Tracking Access
               </p>
-             <p className="mt-2 text-[11px] text-white/60">
-  Check the{" "}
-  <Link
-    to="/track"
-    className="font-semibold text-brand-red hover:text-brand-redSoft underline underline-offset-2"
-  >
-    status
-  </Link>{" "}
-  of your shipment anytime using your reference ID and email.
-</p>
+              <p className="mt-2 text-[11px] text-white/60">
+                Check the{" "}
+                <Link
+                  to="/track"
+                  className="font-semibold text-brand-red hover:text-brand-redSoft underline underline-offset-2"
+                >
+                  status
+                </Link>{" "}
+                of your shipment anytime using your reference ID and email.
+              </p>
 
             </div>
             <div className="rounded-2xl border border-white/10 bg-[#121212]/60 p-5 text-center">
@@ -253,13 +259,13 @@ const AboutPage = () => {
             >
               Get a Quote
             </Link>
-          
-<Link
-  to="/login"
-  className="rounded-full border border-white/30 px-6 py-3 text-xs md:text-sm font-semibold text-white hover:border-brand-redSoft"
->
-  Login
-</Link>
+
+            <Link
+              to="/login"
+              className="rounded-full border border-white/30 px-6 py-3 text-xs md:text-sm font-semibold text-white hover:border-brand-redSoft"
+            >
+              Login
+            </Link>
 
 
           </div>

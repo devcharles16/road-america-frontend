@@ -2,6 +2,7 @@
 import { useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
 import { Car } from "lucide-react";
+import SEO from "../components/SEO";
 
 const services = [
   {
@@ -401,6 +402,11 @@ function CallToActionSection() {
 const HomePage = () => {
   return (
     <>
+      <SEO
+        title="Nationwide Auto Transport Services"
+        description="Reliable, insured, door-to-door auto transport across the USA. GPS tracking, no upfront deposit, and 5-star rated carriers."
+        canonical="/"
+      />
       <HeroSection />
       <ServicesSection />
       <HowItWorksSection />

@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { US_STATES } from "../services/states";
 import QuoteSuccessModal from "../components/QuoteSuccessModal";
+import SEO from "../components/SEO";
 
 import { API_BASE_URL } from "../config/api";
 import {
@@ -217,6 +218,11 @@ const QuotePage = () => {
   );
   return (
     <section className="bg-brand-dark py-12 text-white">
+      <SEO
+        title="Get A Quote"
+        description="Request a free, no-obligation auto transport quote. Accurate pricing for open and enclosed car shipping."
+        canonical="/quote"
+      />
       <div className="mx-auto max-w-4xl px-4">
         <div className="mb-8">
           <p className="text-xs uppercase tracking-[0.2em] text-brand-redSoft">

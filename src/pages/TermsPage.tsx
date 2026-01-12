@@ -1,7 +1,14 @@
 // src/pages/TermsPage.tsx
+import SEO from "../components/SEO";
+
 const TermsPage = () => {
   return (
     <main className="min-h-screen bg-brand-dark px-4 py-12 text-white">
+      <SEO
+        title="Terms & Conditions"
+        description="Road America Auto Transport Terms & Conditions. Read our service agreement, liability limitations, and cancellation policies."
+        canonical="/terms"
+      />
       <div className="mx-auto max-w-4xl">
         <header className="mb-10">
           <h1 className="font-display text-3xl font-bold">Terms &amp; Conditions</h1>
@@ -273,7 +280,9 @@ const TermsPage = () => {
           <h2 className="mb-4 text-2xl font-bold text-white">
             8. Insurance &amp; Liability Disclosure (Mandatory Acknowledgment)
           </h2>
-
+          <p className="text-sm leading-6 text-white/75">
+            All carriers dispatched by Road America Auto Transport are required to maintain active cargo and liability insurance and provide proof of coverage prior to dispatch. Upon request, customers may also obtain a copy of the carrier’s Certificate of Insurance directly from the carrier for their records. Road America does not act as an insurer and does not provide cargo insurance coverage.
+          </p>
           <div className="grid gap-6 lg:grid-cols-2">
             <div className="rounded-2xl border border-white/10 bg-black/30 p-6 shadow-soft-card">
               <h3 className="mb-2 text-lg font-semibold text-white">Customer Acknowledgment</h3>
@@ -297,7 +306,7 @@ const TermsPage = () => {
               <div className="mt-5 rounded-xl border border-white/10 bg-white/5 p-4">
                 <p className="text-xs font-semibold text-white/80">Important</p>
                 <p className="mt-1 text-xs leading-5 text-white/70">
-                  Customers should request a copy of the assigned carrier’s insurance certificate upon dispatch
+                  Customers can request a copy of the assigned carrier’s insurance certificate upon dispatch
                   and review coverage limits, exclusions, and deductible amounts.
                 </p>
               </div>
