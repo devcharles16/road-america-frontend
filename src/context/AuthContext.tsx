@@ -355,31 +355,60 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     });
 
-    // Initial session hydration (no timer, no duplicate loop)
+    // Initial session hydration (with retry)
     (async () => {
       const reqId = ++reqIdRef.current;
       begin("initialSession");
 
       try {
-        const { data, error } = await withTimeout(
-          supabase.auth.getSession(),
-          8000,
-          "getSession(initial)"
-        );
+        let data: { session: any } | null = null;
+        let fetchError: any = null;
+
+        // Try up to 3 times
+        for (let attempt = 1; attempt <= 3; attempt++) {
+          try {
+            const res = await withTimeout(
+              supabase.auth.getSession(),
+              12000, // Increased timeout to 12s
+              `getSession(initial) attempt ${attempt}`
+            );
+            if (res.error) throw res.error;
+            data = res.data;
+            fetchError = null;
+            break; // Success
+          } catch (e) {
+            fetchError = e;
+            if (attempt < 3) {
+              // Wait 1s before retry
+              await new Promise((r) => setTimeout(r, 1000));
+            }
+          }
+        }
 
         if (!alive) return;
         if (reqIdRef.current !== reqId) return;
         if (isLoggingOutRef.current) return;
 
-        if (error || !data.session) {
-          setLoggedOut(error?.message ?? null);
-          return;
+        // If we failed after retries
+        if (fetchError || !data?.session) {
+          // If we already have a user from onAuthStateChange, we might effectively be logged in.
+          // However, if getSession failed repeatedly, something is wrong.
+          // Only log out if we truly have no session data.
+          if (!data?.session) {
+            setLoggedOut(fetchError?.message ?? "Failed to retrieve session.");
+            return;
+          }
         }
 
         await hydrate(data.session);
-      } catch (e) {
-        // Don't force logout on a transient init error; you can still recover on auth events
-        console.error("[Auth] Initial session fetch failed:", e);
+      } catch (e: any) {
+        // If we are already logged in via onAuthStateChange, this logging is less critical.
+        // We use the Ref because 'user' state in this closure is stale (initial null).
+        if (!activeUserIdRef.current) {
+          console.error("[Auth] Initial session fetch failed completely:", e);
+        } else {
+          console.warn("[Auth] Initial session fetch failed, but user is already active:", e);
+        }
       } finally {
         end("initialSession");
       }

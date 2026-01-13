@@ -1,5 +1,6 @@
 // src/pages/AdminShipmentsPage.tsx
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { API_BASE_URL } from "../config/api";
 
 import {
@@ -50,10 +51,13 @@ const STATUS_OPTIONS: TransportStatus[] = [
   "Cancelled",
 ];
 
+
+
 const AdminShipmentsPage = () => {
   const { logout } = useAuth();
+  const [searchParams] = useSearchParams();
 
-  const [tab, setTab] = useState<AdminTab>("shipments");
+  const [tab, setTab] = useState<AdminTab>((searchParams.get("tab") as AdminTab) || "shipments");
 
   // Shipments
   const [shipments, setShipments] = useState<TransportRequest[]>([]);
