@@ -404,6 +404,7 @@ const HomePage = () => {
     <>
       <SEO
         title="Nationwide Auto Transport Services"
+        tabTitle="RA Auto Transport"
         description="Reliable, insured, door-to-door auto transport across the USA. GPS tracking, no upfront deposit, and 5-star rated carriers."
         canonical="/"
       />

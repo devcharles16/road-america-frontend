@@ -7,6 +7,7 @@ interface SEOProps {
     keywords?: string[];
     ogImage?: string;
     ogType?: 'website' | 'article';
+    tabTitle?: string;
 }
 
 const SEO = ({
@@ -15,7 +16,8 @@ const SEO = ({
     canonical,
     keywords = [],
     ogImage = '/logo.png', // Default to logo if no specific image is provided
-    ogType = 'website'
+    ogType = 'website',
+    tabTitle,
 }: SEOProps) => {
     const siteUrl = window.location.origin;
     const fullCanonical = canonical ? (canonical.startsWith('http') ? canonical : `${siteUrl}${canonical}`) : window.location.href;
@@ -24,7 +26,7 @@ const SEO = ({
     return (
         <Helmet>
             {/* Standard Metadata */}
-            <title>{title} | RA Auto Transport</title>
+            <title>{tabTitle || `${title} | RA Auto Transport`}</title>
             <meta name="description" content={description} />
             {keywords.length > 0 && <meta name="keywords" content={keywords.join(', ')} />}
             <link rel="canonical" href={fullCanonical} />
