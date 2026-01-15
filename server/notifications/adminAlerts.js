@@ -1,7 +1,7 @@
 // server/notifications/adminAlerts.js
 import { sendEmail } from "../utils/email.js";
 
-const adminEmail = process.env.ADMIN_ALERT_EMAIL;
+
 function splitVehicle(vehicle = "") {
   if (!vehicle) return { year: "-", make: "-", model: "-" };
 
@@ -46,22 +46,25 @@ function formatVehicleHeightMod(value) {
 
 
 
-export async function sendNewQuoteAlert(payload) {
-  const {
-  firstName,
-  lastName,
-  email,
-  phone,
-  pickup,
-  dropoff,
-  vehicle: vehicleRaw,
-  runningCondition,
-  vehicleHeightMod,
-  transportType,
-  preferredPickupWindow,
 
-  referenceId,
-} = payload;
+export async function sendNewQuoteAlert(payload) {
+  const adminEmail = process.env.ADMIN_ALERT_EMAIL;
+
+  const {
+    firstName,
+    lastName,
+    email,
+    phone,
+    pickup,
+    dropoff,
+    vehicle: vehicleRaw,
+    runningCondition,
+    vehicleHeightMod,
+    transportType,
+    preferredPickupWindow,
+
+    referenceId,
+  } = payload;
 
 
   const { year, make, model } = splitVehicle(vehicleRaw);

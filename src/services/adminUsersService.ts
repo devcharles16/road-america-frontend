@@ -20,8 +20,7 @@ export type CreatedUser = {
 export type AdminUserRow = {
   id: string;
   email: string | null;
-  first_name: string | null;
-  last_name: string | null;
+  full_name: string | null;
   role: string | null;
   created_at: string | null;
 };
@@ -71,13 +70,16 @@ async function handleResponse<T>(res: Response): Promise<T> {
 }
 
 export async function adminListUsers(): Promise<AdminUserRow[]> {
-  const { data, error } = await supabase
-    .from("profiles")
-    .select("id,email,first_name,last_name,role,created_at")
-    .order("created_at", { ascending: false });
+  const token = await getAccessToken();
+  if (!token) throw new Error("Not authenticated");
 
-  if (error) throw new Error(error.message);
-  return (data ?? []) as AdminUserRow[];
+  const res = await fetch(`${API_BASE_URL}/api/admin/users`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return handleResponse<AdminUserRow[]>(res);
 }
 export async function createUser(
   input: CreateUserInput
@@ -98,5 +100,5 @@ export async function createUser(
 
   return handleResponse<CreatedUser>(res);
 
-  
+
 }

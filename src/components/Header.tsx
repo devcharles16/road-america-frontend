@@ -1,12 +1,12 @@
-// src/components/Header.tsx
 import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
+import { User, LogOut } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
 const Header = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  const { user, role, loading, logout } = useAuth();
+  const { user, role, profile, loading, logout } = useAuth();
 
   // Treat auth as "ready" only when hydration is done (prevents UI churn during races)
   const authReady = !loading;
@@ -16,6 +16,7 @@ const Header = () => {
   const isAdminUser = isLoggedIn && (role === "admin" || role === "employee");
 
   const displayName =
+    (profile?.full_name as string | undefined) ||
     (user?.user_metadata?.full_name as string | undefined) ||
     user?.email ||
     "Account";
@@ -106,13 +107,25 @@ const Header = () => {
             </>
           ) : (
             <>
-              <span className="text-xs text-white/50 max-w-[120px] truncate inline-block align-middle">
-                {displayName}
-                {!loading && role ? ` · ${role}` : ""}
-              </span>
-              <button type="button" onClick={handleLogout}>
-                Logout
-              </button>
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2 text-white/80">
+                  <div className="h-8 w-8 rounded-full bg-brand-red/20 flex items-center justify-center text-brand-redSoft border border-brand-red/30">
+                    <User className="w-4 h-4" />
+                  </div>
+                  <span className="text-sm font-medium hidden sm:inline-block">
+                    {displayName}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="flex items-center gap-2 text-xs font-medium text-white/60 hover:text-white transition-colors"
+                  title="Logout"
+                >
+                  <LogOut className="w-4 h-4" />
+                  <span className="hidden lg:inline">Logout</span>
+                </button>
+              </div>
             </>
           )}
         </nav>
@@ -163,7 +176,7 @@ const Header = () => {
             )}
 
             {/* Auth UI (mobile) */}
-            <div className="pt-3 border-t border-white/10 space-y-2">
+            <div className="pt-3 border-t border-white/10 space-y-3">
               {!isLoggedIn ? (
                 <>
                   <Link
@@ -183,16 +196,19 @@ const Header = () => {
                 </>
               ) : (
                 <>
-                  <span className="block text-xs text-white/50">
-                    {displayName}
-                    {!loading && role ? ` · ${role}` : ""}
-                  </span>
+                  <div className="flex items-center gap-2 px-1 text-white/80">
+                    <div className="h-8 w-8 rounded-full bg-brand-red/20 flex items-center justify-center text-brand-redSoft border border-brand-red/30">
+                      <User className="w-4 h-4" />
+                    </div>
+                    <span className="text-sm font-medium">{displayName}</span>
+                  </div>
                   <button
                     type="button"
                     onClick={handleLogout}
-                    className="block text-white/80"
+                    className="flex items-center gap-2 text-white/80 hover:text-white transition-colors px-1"
                   >
-                    Logout
+                    <LogOut className="w-4 h-4" />
+                    <span className="text-sm">Logout</span>
                   </button>
                 </>
               )}

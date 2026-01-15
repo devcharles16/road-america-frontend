@@ -21,6 +21,11 @@ const ClientRegisterPage = () => {
     setError(null);
     setSuccess(null);
 
+    if (!name.trim()) {
+      setError("Please enter your full name.");
+      return;
+    }
+
     if (password !== confirm) {
       setError("Passwords do not match.");
       return;
@@ -28,32 +33,32 @@ const ClientRegisterPage = () => {
 
     setLoading(true);
     try {
-     await registerClient({
-  fullName: name.trim() || undefined,
-  email: email.trim(),
-  password,
-});
-// Save phone into profiles (optional)
-if (phone.trim()) {
-  const { data } = await supabase.auth.getUser();
-  const userId = data.user?.id;
+      await registerClient({
+        fullName: name.trim(),
+        email: email.trim(),
+        password,
+      });
+      // Save phone into profiles (optional)
+      if (phone.trim()) {
+        const { data } = await supabase.auth.getUser();
+        const userId = data.user?.id;
 
-  if (userId) {
-    const { error: phoneError } = await supabase
-      .from("profiles")
-      .update({ phone: phone.trim() })
-      .eq("id", userId);
+        if (userId) {
+          const { error: phoneError } = await supabase
+            .from("profiles")
+            .update({ phone: phone.trim() })
+            .eq("id", userId);
 
-    if (phoneError) {
-      console.error("Failed to save phone to profile:", phoneError);
-      // Don't block registration success just because phone save failed
-    }
-  }
-}
+          if (phoneError) {
+            console.error("Failed to save phone to profile:", phoneError);
+            // Don't block registration success just because phone save failed
+          }
+        }
+      }
 
-setSuccess(
-  `Account created for ${email}. Please check your email to confirm your account before logging in.`
-);
+      setSuccess(
+        `Account created for ${email}. Please check your email to confirm your account before logging in.`
+      );
 
 
       // Optionally auto-redirect after a short delay
@@ -64,7 +69,7 @@ setSuccess(
       console.error(err);
       setError(
         err?.message ||
-          "Something went wrong while creating your account. Please try again."
+        "Something went wrong while creating your account. Please try again."
       );
     } finally {
       setLoading(false);
@@ -91,10 +96,11 @@ setSuccess(
         >
           <div>
             <label className="block text-xs text-white/70 mb-1">
-              Name (optional)
+              Full Name *
             </label>
             <input
               type="text"
+              required
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="First and last name"

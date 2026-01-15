@@ -5,6 +5,8 @@ import { supabase } from "../lib/supabaseClient";
 export const QUOTE_STATUS_CLOSED_NOT_CONVERTED =
   "Closed - Not Converted" as const;
 
+export const QUOTE_STATUS_CONVERTED = "Converted" as const;
+
 export type AdminQuoteRow = {
   id: string;
   reference_id?: string | null;
@@ -69,7 +71,9 @@ export async function adminListQuotes(): Promise<AdminQuoteRow[]> {
 
   // Default behavior: hide quotes that were closed as "not converted".
   return rows.filter(
-    (r) => (r.quote_status ?? "") !== QUOTE_STATUS_CLOSED_NOT_CONVERTED
+    (r) =>
+      (r.quote_status ?? "") !== QUOTE_STATUS_CLOSED_NOT_CONVERTED &&
+      (r.quote_status ?? "") !== QUOTE_STATUS_CONVERTED
   );
 }
 
@@ -124,6 +128,17 @@ export async function adminCloseQuoteNotConverted(quoteId: string): Promise<void
   const { error } = await supabase
     .from("quotes")
     .update({ quote_status: QUOTE_STATUS_CLOSED_NOT_CONVERTED })
+    .eq("id", quoteId);
+
+  if (error) throw error;
+}
+
+export async function adminMarkQuoteAsConverted(quoteId: string): Promise<void> {
+  if (!quoteId) throw new Error("quoteId is required");
+
+  const { error } = await supabase
+    .from("quotes")
+    .update({ quote_status: QUOTE_STATUS_CONVERTED })
     .eq("id", quoteId);
 
   if (error) throw error;

@@ -13,6 +13,7 @@ import {
   adminCloseQuoteNotConverted,
   adminConvertQuoteToShipment,
   adminListQuotes,
+  adminMarkQuoteAsConverted,
   QUOTE_STATUS_CLOSED_NOT_CONVERTED,
 } from "../services/adminQuotesService";
 import { useAuth } from "../context/AuthContext";
@@ -163,13 +164,32 @@ const AdminShipmentsPage = () => {
       setQuotesError(null);
 
       await adminConvertQuoteToShipment(quoteId);
+      // Ensure status is updated in DB
+      await adminMarkQuoteAsConverted(quoteId);
 
       // Refresh both tabs so it "feels" instant
       await Promise.all([loadQuotes(), loadShipments()]);
       setTab("shipments");
+      alert("Quote converted successfully!");
     } catch (err: any) {
       console.error(err);
       setQuotesError(err?.message || "Failed to convert quote to shipment.");
+    } finally {
+      setConvertingId(null);
+    }
+  }
+
+  async function handleMarkConverted(quoteId: string) {
+    if (!confirm("This will hide the quote from this list as 'Converted'. It will NOT create a shipment. Continue?")) return;
+
+    try {
+      setConvertingId(quoteId);
+      setQuotesError(null);
+      await adminMarkQuoteAsConverted(quoteId);
+      setQuotes((prev) => prev.filter((q) => (q.id ?? "") !== quoteId));
+    } catch (err: any) {
+      console.error(err);
+      setQuotesError(err?.message || "Failed to mark as converted.");
     } finally {
       setConvertingId(null);
     }
@@ -446,6 +466,15 @@ const AdminShipmentsPage = () => {
                                 {closingId === q.id
                                   ? "Closing…"
                                   : "Close (Not Converted)"}
+                              </button>
+
+                              <button
+                                onClick={() => handleMarkConverted(q.id)}
+                                disabled={closingId === q.id || convertingId === q.id}
+                                className="mt-1 text-xs text-white/60 hover:text-white underline decoration-white/30 underline-offset-4"
+                                title="Hide from list (mark as Converted) without creating a shipment"
+                              >
+                                Mark as Already Converted
                               </button>
                             </div>
                           </td>

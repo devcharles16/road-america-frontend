@@ -12,9 +12,15 @@ import { clearAdminKey } from "../utils/adminAuth";
 
 export type Role = "admin" | "employee" | "client" | null;
 
+export type Profile = {
+  full_name?: string | null;
+  role?: Role;
+};
+
 type AuthContextValue = {
   user: any | null;
   role: Role | undefined; // undefined = loading role for logged-in user
+  profile: Profile | null;
   roleError: string | null;
   loading: boolean;
   refreshAuth: () => Promise<void>;
@@ -79,6 +85,7 @@ function withTimeout<T>(
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<any | null>(null);
   const [role, setRole] = useState<Role | undefined>(undefined);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [roleError, setRoleError] = useState<string | null>(null);
 
   // Loading is driven by a counter so it can’t get stuck true
@@ -117,6 +124,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     setUser(null);
     setRole(null);
+    setProfile(null);
     setRoleError(err);
 
     activeUserIdRef.current = null;
@@ -157,11 +165,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const { data, error } = await withTimeout(
           supabase
             .from("profiles")
-            .select("role")
+            .select("role, full_name")
             .eq("id", userId)
             .maybeSingle(),
           15000,
-          "profiles(role)"
+          "profiles(role, full_name)"
         );
 
         if (isLoggingOutRef.current) return;
@@ -171,6 +179,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setRoleError(error.message);
           // keep role loading so guards don't misroute; allow retry later
           setRole(undefined);
+          setProfile(null);
           return;
         }
 
@@ -181,17 +190,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           } catch (e: any) {
             setRoleError(e?.message || "Failed to create default profile.");
             setRole(undefined);
+            setProfile(null);
             return;
           }
 
           const { data: retryData, error: retryErr } = await withTimeout(
             supabase
               .from("profiles")
-              .select("role")
+              .select("role, full_name")
               .eq("id", userId)
               .maybeSingle(),
             15000,
-            "profiles(role) retry"
+            "profiles(role, full_name) retry"
           );
 
           if (isLoggingOutRef.current) return;
@@ -200,6 +210,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           if (retryErr) {
             setRoleError(retryErr.message);
             setRole(undefined);
+            setProfile(null);
             return;
           }
 
@@ -207,22 +218,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           if (!retryData) {
             setRoleError(null);
             setRole("client");
+            setProfile(null);
             roleFetchedForUserIdRef.current = userId;
             return;
           }
 
           setRoleError(null);
           setRole(normalizeRole(retryData.role));
+          setProfile({
+            full_name: retryData.full_name,
+            role: normalizeRole(retryData.role),
+          });
           roleFetchedForUserIdRef.current = userId;
           return;
         }
 
         setRoleError(null);
         setRole(normalizeRole(data.role));
+        setProfile({
+          full_name: data.full_name,
+          role: normalizeRole(data.role),
+        });
         roleFetchedForUserIdRef.current = userId;
       } catch (e: any) {
         setRoleError(e?.message || "Failed to load role.");
         setRole(undefined);
+        setProfile(null);
       } finally {
         roleFetchInProgressRef.current = false;
       }
@@ -424,12 +445,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     () => ({
       user,
       role,
+      profile,
       roleError,
       loading,
       refreshAuth,
       logout,
     }),
-    [user, role, roleError, loading, refreshAuth, logout]
+    [user, role, profile, roleError, loading, refreshAuth, logout]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

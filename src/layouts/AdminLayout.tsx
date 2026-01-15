@@ -1,5 +1,6 @@
 // src/layouts/AdminLayout.tsx
 import { NavLink, Outlet } from "react-router-dom";
+import Header from "../components/Header";
 
 const adminNavItems = [
   { label: "Dashboard", to: "/admin" },
@@ -52,15 +53,7 @@ export default function AdminLayout() {
       {/* Mobile top bar + content */}
       <div className="flex-1 flex flex-col">
         {/* Simple mobile header; you can make this fancier later */}
-        <header className="flex items-center justify-between px-4 py-3 border-b border-white/10 md:hidden">
-          <div>
-            <p className="text-[11px] uppercase tracking-[0.2em] text-white/40">
-              Admin
-            </p>
-            <p className="text-sm font-semibold"> Auto Transport</p>
-          </div>
-          {/* Could add a menu button later if you want a mobile drawer */}
-        </header>
+        <Header />
 
         <main className="flex-1 px-4 py-6 md:px-8 md:py-8 bg-gradient-to-br from-black via-brand-dark to-brand-gray">
           <Outlet />

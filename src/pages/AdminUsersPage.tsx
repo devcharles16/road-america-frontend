@@ -95,8 +95,7 @@ export default function AdminUsersPage() {
               </thead>
               <tbody className="divide-y divide-white/10">
                 {users.map((u) => {
-                  const name =
-                    [u.first_name, u.last_name].filter(Boolean).join(" ") || "—";
+                  const name = u.full_name || "—";
                   return (
                     <tr key={u.id} className="hover:bg-white/5">
                       <td className="px-4 py-3">{name}</td>
