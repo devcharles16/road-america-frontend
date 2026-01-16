@@ -237,7 +237,7 @@ const LandingPage = () => {
                     <div className="lg:w-1/2 pt-2 lg:pt-8">
                         <div className="inline-flex items-center gap-2 rounded-full bg-brand-red/10 px-4 py-1.5 text-xs font-bold text-brand-redSoft border border-brand-red/20 mb-6 backdrop-blur-sm">
                             <Star className="w-3.5 h-3.5 fill-current" />
-                            <span>Rated 4.8/5 by 50,000+ Customers</span>
+                            <span>Rated 5/5 by 50,000+ Customers</span>
                         </div>
 
                         <h1 className="text-3xl md:text-5xl lg:text-6xl font-display font-bold leading-[1.1] mb-4 tracking-tight">
@@ -266,7 +266,7 @@ const LandingPage = () => {
                         {/* Trust Stats - Replaced Badges */}
                         <div className="grid grid-cols-3 gap-6 max-w-md border-t border-white/10 pt-6 opacity-80">
                             <div>
-                                <div className="text-xl md:text-2xl font-bold font-display text-white">50k+</div>
+                                <div className="text-xl md:text-2xl font-bold font-display text-white">10k+</div>
                                 <div className="text-[10px] md:text-xs text-white/50 uppercase tracking-wider font-semibold">Customers</div>
                             </div>
                             <div>
@@ -274,7 +274,7 @@ const LandingPage = () => {
                                 <div className="text-[10px] md:text-xs text-white/50 uppercase tracking-wider font-semibold">Years Exp.</div>
                             </div>
                             <div>
-                                <div className="text-xl md:text-2xl font-bold font-display text-white">4.8</div>
+                                <div className="text-xl md:text-2xl font-bold font-display text-white">5</div>
                                 <div className="text-[10px] md:text-xs text-white/50 uppercase tracking-wider font-semibold">Avg Rating</div>
                             </div>
                         </div>

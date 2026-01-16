@@ -2,6 +2,9 @@
 import { useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
 import { Car } from "lucide-react";
+import openTransportImg from "../assets/images/opentransport.jpg";
+import enclosedTransportImg from "../assets/images/enclosedtransport.png";
+import inoperableVehicleImg from "../assets/images/inoperablevehicle.jpg";
 import SEO from "../components/SEO";
 
 const services = [
@@ -10,18 +13,21 @@ const services = [
     description: "Affordable, reliable shipping for most everyday vehicles.",
     href: "/blog/open-vs-enclosed-auto-transport-which-option-is-best-for-your-vehicle",
     ariaLabel: "Learn more about open auto transport",
+    image: openTransportImg,
   },
   {
     title: "Enclosed Transport",
     description: "Extra protection for classics, luxury, and high-value cars.",
     href: "/blog/open-vs-enclosed-auto-transport-which-option-is-best-for-your-vehicle",
     ariaLabel: "Learn more about enclosed auto transport",
+    image: enclosedTransportImg,
   },
   {
     title: "Inoperable Vehicles",
     description: "Transport solutions for non-running vehicles.",
     href: "/blog/how-to-transport-an-inoperable-vehicle-what-you-need-to-know-before-shipping-a-n",
     ariaLabel: "Learn more about inoperable vehicle transport",
+    image: inoperableVehicleImg,
   },
 ];
 
@@ -140,11 +146,11 @@ function HeroSection() {
 
           <div className="mt-6 flex flex-wrap gap-6 text-xs text-white/60">
             <div>
-              <p className="font-semibold text-white">4.8 / 5</p>
+              <p className="font-semibold text-white">5 / 5</p>
               <p>Average customer rating</p>
             </div>
             <div>
-              <p className="font-semibold text-white">50k+</p>
+              <p className="font-semibold text-white">10k+</p>
               <p>Vehicles shipped</p>
             </div>
             <div>
@@ -240,8 +246,12 @@ function ServicesSection() {
               key={service.title}
               className="rounded-2xl border border-gray-100 bg-brand-light/60 p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
             >
-              <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-brand-dark/90 text-brand-redSoft">
-                <span className="text-lg">🚗</span>
+              <div className="mb-4 h-48 w-full overflow-hidden rounded-xl bg-brand-light">
+                <img
+                  src={service.image}
+                  alt={service.title}
+                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                />
               </div>
               <h3 className="font-semibold text-brand-dark">
                 {service.title}
@@ -328,7 +338,13 @@ function BlogPreviewSection() {
               to={post.href}
               className="group flex flex-col rounded-2xl border border-gray-100 bg-white p-4 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
             >
-              <div className="mb-3 h-24 rounded-xl bg-gradient-to-tr from-brand-dark via-brand-gray to-brand-red/70" />
+              <div className="mb-3 h-48 w-full overflow-hidden rounded-xl bg-brand-light">
+                <img
+                  src={openTransportImg}
+                  alt={post.title}
+                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+              </div>
               <span className="text-[11px] font-semibold uppercase tracking-wide text-brand-redSoft">
                 {post.tag}
               </span>
