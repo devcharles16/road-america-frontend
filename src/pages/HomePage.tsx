@@ -52,16 +52,19 @@ const blogPosts = [
     title: "How to Prepare Your Car for Transport",
     tag: "Guides",
     href: "/blog/how-to-prepare-your-car-for-transport",
+    teaser: "Learn the essential steps to get your vehicle ready for a smooth and safe auto transport experience.",
   },
   {
     title: "Open vs. Enclosed Auto Shipping",
     tag: "Education",
     href: "/blog/open-vs-enclosed-auto-transport-which-option-is-best-for-your-vehicle",
+    teaser: "Discover the key differences between open and enclosed shipping to decide which option is best for your vehicle.",
   },
   {
     title: "What to Expect on Pickup Day",
     tag: "Tips",
     href: "/blog/what-to-expect-on-pickup-day",
+    teaser: "A complete guide on what happens when the carrier arrives, including inspections and paperwork.",
   },
 ];
 
@@ -353,8 +356,7 @@ function BlogPreviewSection() {
                 {post.title}
               </h3>
               <p className="mt-1 text-xs text-gray-600">
-                Short teaser copy about the topic. This will link to the full
-                article in your blog.
+                {post.teaser}
               </p>
               <span className="mt-3 text-xs font-semibold text-brand-red group-hover:text-brand-redSoft">
                 Read article →
