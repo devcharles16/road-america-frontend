@@ -2,10 +2,11 @@
 import { useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
 import { Car } from "lucide-react";
-import openTransportImg from "../assets/images/opentransport.jpg";
-import enclosedTransportImg from "../assets/images/enclosedtransport.png";
-import inoperableVehicleImg from "../assets/images/inoperablevehicle.jpg";
 import SEO from "../components/SEO";
+
+const openTransportImg = "https://yjkxjnzfzrrvaftqqxbt.supabase.co/storage/v1/object/public/public-site/blog/opentransport.jpg";
+const enclosedTransportImg = "https://yjkxjnzfzrrvaftqqxbt.supabase.co/storage/v1/object/public/public-site/blog/enclosedtransport.png";
+const inoperableVehicleImg = "https://yjkxjnzfzrrvaftqqxbt.supabase.co/storage/v1/object/public/public-site/blog/inoperablevehicle.jpg";
 
 const services = [
   {
