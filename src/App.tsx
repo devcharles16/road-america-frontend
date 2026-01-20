@@ -10,6 +10,7 @@ import BlogPostPage from "./pages/BlogPostPage";
 
 import PrivacyPage from "./pages/PrivacyPage";
 import TermsPage from "./pages/TermsPage";
+import OptInPage from "./pages/OptInPage";
 
 import ClientLoginPage from "./pages/ClientLoginPage";
 import ClientRegisterPage from "./pages/ClientRegisterPage";
@@ -61,6 +62,7 @@ function App() {
         {/* Footer-only pages */}
         <Route path="/privacy" element={<PrivacyPage />} />
         <Route path="/terms" element={<TermsPage />} />
+        <Route path="/opt-in" element={<OptInPage />} />
       </Route>
 
       {/* Landing Pages */}

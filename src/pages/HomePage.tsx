@@ -7,6 +7,8 @@ import SEO from "../components/SEO";
 const openTransportImg = "https://yjkxjnzfzrrvaftqqxbt.supabase.co/storage/v1/object/public/public-site/blog/opentransport.jpg";
 const enclosedTransportImg = "https://yjkxjnzfzrrvaftqqxbt.supabase.co/storage/v1/object/public/public-site/blog/enclosedtransport.png";
 const inoperableVehicleImg = "https://yjkxjnzfzrrvaftqqxbt.supabase.co/storage/v1/object/public/public-site/blog/inoperablevehicle.jpg";
+const openVsEnclosedImg = "https://yjkxjnzfzrrvaftqqxbt.supabase.co/storage/v1/object/public/public-site/blog/openvsenclosed.png";
+const prepareForTransportImg = "https://yjkxjnzfzrrvaftqqxbt.supabase.co/storage/v1/object/public/public-site/blog/peparefortransport.png";
 
 const services = [
   {
@@ -53,18 +55,21 @@ const blogPosts = [
     tag: "Guides",
     href: "/blog/how-to-prepare-your-car-for-transport",
     teaser: "Learn the essential steps to get your vehicle ready for a smooth and safe auto transport experience.",
+    image: prepareForTransportImg,
   },
   {
     title: "Open vs. Enclosed Auto Shipping",
     tag: "Education",
     href: "/blog/open-vs-enclosed-auto-transport-which-option-is-best-for-your-vehicle",
     teaser: "Discover the key differences between open and enclosed shipping to decide which option is best for your vehicle.",
+    image: openVsEnclosedImg,
   },
   {
     title: "What to Expect on Pickup Day",
     tag: "Tips",
     href: "/blog/what-to-expect-on-pickup-day",
     teaser: "A complete guide on what happens when the carrier arrives, including inspections and paperwork.",
+    image: openTransportImg,
   },
 ];
 
@@ -344,7 +349,7 @@ function BlogPreviewSection() {
             >
               <div className="mb-3 h-48 w-full overflow-hidden rounded-xl bg-brand-light">
                 <img
-                  src={openTransportImg}
+                  src={post.image}
                   alt={post.title}
                   className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />

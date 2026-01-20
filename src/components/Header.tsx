@@ -37,10 +37,10 @@ const Header = () => {
 
   const navItems = [
     { label: "Home", to: "/" },
-    { label: "About", to: "/about" },
     { label: "Get My Transport Quote", to: "/quote" },
     { label: "Track Shipment", to: "/track" },
     { label: "Blog", to: "/blog" },
+    { label: "About", to: "/about" },
   ];
 
   return (

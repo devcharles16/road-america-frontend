@@ -85,6 +85,11 @@ const Footer = () => {
                 Terms &amp; Conditions
               </Link>
             </li>
+            <li>
+              <Link to="/opt-in" className="hover:text-white">
+                Opt In
+              </Link>
+            </li>
 
             <li>
               {/*
