@@ -12,7 +12,7 @@ const Footer = () => {
           <h3 className="text-lg font-semibold">Road America Auto Transport</h3>
           <p className="mt-3 text-sm text-white/60 max-w-xs">
             Premium vehicle transport with clear communication, trusted carriers,
-            and real-time tracking.
+            and shipment status updates.
           </p>
 
           {/* Social Links */}
