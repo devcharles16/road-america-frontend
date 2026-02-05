@@ -29,6 +29,7 @@ import AdminQuotesPage from "./pages/AdminQuotesPage";
 import RequireRoles from "./routes/RequireRoles";
 import LandingPage from "./pages/LandingPage";
 import GlobalBanner from "./components/GlobalBanner";
+import AdminBannerPage from "./pages/AdminBannerPage";
 
 function App() {
   return (
@@ -84,6 +85,7 @@ function App() {
             <Route path="quotes" element={<AdminQuotesPage />} />
             <Route path="shipments" element={<AdminShipmentsPage />} />
             <Route path="blog" element={<AdminBlogPage />} />
+            <Route path="banner" element={<AdminBannerPage />} />
 
             {/* Admin-only */}
             <Route element={<RequireRoles allowed={["admin"]} redirectTo="/login" />}>

@@ -6,6 +6,7 @@ const adminNavItems = [
   { label: "Dashboard", to: "/admin" },
   { label: "Shipments", to: "/admin/shipments" },
   { label: "Blog Articles", to: "/admin/blog" },
+  { label: "Banner", to: "/admin/banner" },
   { label: "Users", to: "/admin/users" },
   // you can add more later, e.g. { label: "Notifications", to: "/admin/notifications" }
 ];
