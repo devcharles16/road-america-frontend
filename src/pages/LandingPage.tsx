@@ -11,6 +11,7 @@ import {
 import { ShieldCheck, Truck, Clock, CheckCircle2, Star, ChevronDown } from "lucide-react";
 import SEO from "../components/SEO";
 import { trackConversion } from "../lib/analytics";
+import VehicleSelector from "../components/VehicleSelector";
 
 type QuoteFormState = {
     pickupCity: string;
@@ -371,20 +372,13 @@ const LandingPage = () => {
                                 {/* Vehicle */}
                                 <div className="space-y-1 pt-1">
                                     <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">Vehicle Year, Make, Model</label>
-                                    <div className="grid grid-cols-3 gap-2">
-                                        <input
-                                            name="vehicleYear" value={form.vehicleYear} onChange={handleChange}
-                                            placeholder="Year" className="col-span-1 h-10 bg-gray-50 border border-gray-200 rounded-lg px-2 text-sm focus:bg-white focus:border-brand-red focus:ring-4 focus:ring-brand-red/10 outline-none transition-all font-medium" required
-                                        />
-                                        <input
-                                            name="vehicleMake" value={form.vehicleMake} onChange={handleChange} onBlur={handleCapitalizeBlur("vehicleMake")}
-                                            placeholder="Make" className="col-span-1 h-10 bg-gray-50 border border-gray-200 rounded-lg px-2 text-sm focus:bg-white focus:border-brand-red focus:ring-4 focus:ring-brand-red/10 outline-none transition-all font-medium" required
-                                        />
-                                        <input
-                                            name="vehicleModel" value={form.vehicleModel} onChange={handleChange} onBlur={handleCapitalizeBlur("vehicleModel")}
-                                            placeholder="Model" className="col-span-1 h-10 bg-gray-50 border border-gray-200 rounded-lg px-2 text-sm focus:bg-white focus:border-brand-red focus:ring-4 focus:ring-brand-red/10 outline-none transition-all font-medium" required
-                                        />
-                                    </div>
+                                    <VehicleSelector
+                                        year={form.vehicleYear}
+                                        make={form.vehicleMake}
+                                        model={form.vehicleModel}
+                                        onChange={(field: "vehicleYear" | "vehicleMake" | "vehicleModel", value: string) => setForm(prev => ({ ...prev, [field]: value }))}
+                                        className="mb-1"
+                                    />
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-3">

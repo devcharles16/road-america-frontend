@@ -3,6 +3,7 @@ import { useState } from "react";
 import { US_STATES } from "../services/states";
 import QuoteSuccessModal from "../components/QuoteSuccessModal";
 import SEO from "../components/SEO";
+import VehicleSelector from "../components/VehicleSelector";
 
 import { API_BASE_URL } from "../config/api";
 import {
@@ -328,42 +329,13 @@ const QuotePage = () => {
             </h2>
 
             <div className="grid gap-4 md:grid-cols-4">
-              <div className="md:col-span-1">
-                <label className="block text-xs text-white/70">Year</label>
-                <input
-                  type="text"
-                  name="vehicleYear"
-                  value={form.vehicleYear}
-                  onChange={handleChange}
-                  className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
-                  required
-                />
-              </div>
-
-              <div className="md:col-span-1">
-                <label className="block text-xs text-white/70">Make</label>
-                <input
-                  type="text"
-                  name="vehicleMake"
-                  value={form.vehicleMake}
-                  onChange={handleChange}
-                  onBlur={handleCapitalizeBlur("vehicleMake")}
-                  className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
-                  required />
-              </div>
-
-              <div className="md:col-span-2">
-                <label className="block text-xs text-white/70">Model</label>
-                <input
-                  type="text"
-                  name="vehicleModel"
-                  value={form.vehicleModel}
-                  onChange={handleChange}
-                  onBlur={handleCapitalizeBlur("vehicleModel")}
-                  className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
-                  required
-                />
-              </div>
+              <VehicleSelector
+                year={form.vehicleYear}
+                make={form.vehicleMake}
+                model={form.vehicleModel}
+                onChange={(field: "vehicleYear" | "vehicleMake" | "vehicleModel", value: string) => setForm(prev => ({ ...prev, [field]: value }))}
+                className="md:col-span-4"
+              />
             </div>
 
             <div className={`mt-4 grid gap-4 ${SHOW_VIN ? "md:grid-cols-2" : "md:grid-cols-1"}`}>
