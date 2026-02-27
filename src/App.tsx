@@ -30,7 +30,15 @@ import RequireRoles from "./routes/RequireRoles";
 import LandingPage from "./pages/LandingPage";
 import GlobalBanner from "./components/GlobalBanner";
 import AdminBannerPage from "./pages/AdminBannerPage";
-
+import OrlandoToMiamiPage from "./pages/OrlandoToMiamiPage";
+import AtlantaToMiamiPage from "./pages/AtlantaToMiamiPage";
+import LosAngelesToHoustonPage from "./pages/LosAngelesToHoustonPage";
+import LosAngelesToMiamiPage from "./pages/LosAngelesToMiamiPage";
+import LosAngelesToAtlantaPage from "./pages/LosAngelesToAtlantaPage";
+import HoustonToMiamiPage from "./pages/HoustonToMiamiPage";
+import NewYorkToMiamiPage from "./pages/NewYorkToMiamiPage";
+import HoustonToLosAngelesPage from "./pages/HoustonToLosAngelesPage";
+import MiamiToCharlottePage from "./pages/MiamiToCharlottePage";
 function App() {
   return (
     <>
@@ -72,6 +80,15 @@ function App() {
         {/* Landing Pages */}
         <Route element={<LandingLayout />}>
           <Route path="/express-quote" element={<LandingPage />} />
+          <Route path="/auto-transport-orlando-to-miami" element={<OrlandoToMiamiPage />} />
+          <Route path="/auto-transport-atlanta-to-miami" element={<AtlantaToMiamiPage />} />
+          <Route path="/auto-transport-los-angeles-to-houston" element={<LosAngelesToHoustonPage />} />
+          <Route path="/auto-transport-los-angeles-to-miami" element={<LosAngelesToMiamiPage />} />
+          <Route path="/auto-transport-los-angeles-to-atlanta" element={<LosAngelesToAtlantaPage />} />
+          <Route path="/auto-transport-houston-to-miami" element={<HoustonToMiamiPage />} />
+          <Route path="/auto-transport-new-york-to-miami" element={<NewYorkToMiamiPage />} />
+          <Route path="/auto-transport-houston-to-los-angeles" element={<HoustonToLosAngelesPage />} />
+          <Route path="/auto-transport-miami-to-charlotte" element={<MiamiToCharlottePage />} />
         </Route>
 
         {/* Admin + Employee */}
