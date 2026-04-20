@@ -28,6 +28,7 @@ const AdminBlogPage = () => {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadingContentImage, setUploadingContentImage] = useState(false);
   const [form, setForm] = useState(emptyForm);
   const [editingId, setEditingId] = useState<string | null>(null);
   //const navigate = useNavigate();
@@ -72,6 +73,54 @@ const AdminBlogPage = () => {
       imageUrl: post.imageUrl || "",
     });
   }
+
+  async function handleContentImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setUploadingContentImage(true);
+      setError(null);
+
+      // Get current session to use user id for folder path
+      const { data } = await supabase.auth.getUser();
+      const userId = data.user?.id || "unknown-admin";
+
+      const ext = file.name.split(".").pop();
+      const fileName = `${userId}/${Date.now()}-content.${ext || "jpg"}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("blog-images")
+        .upload(fileName, file);
+
+      if (uploadError) {
+        console.error(uploadError);
+        setError("Failed to upload content image.");
+        return;
+      }
+
+      const { data: urlData } = supabase.storage
+        .from("blog-images")
+        .getPublicUrl(fileName);
+
+      const publicUrl = urlData?.publicUrl;
+
+      if (!publicUrl) {
+        setError("Could not get image URL after upload.");
+        return;
+      }
+
+      const imageMarkdown = `\n![Image](${publicUrl})\n`;
+      setForm((f) => ({ ...f, content: f.content + imageMarkdown }));
+    } catch (err: any) {
+      console.error(err);
+      setError(err?.message || "Unexpected error uploading image.");
+    } finally {
+      setUploadingContentImage(false);
+      e.target.value = "";
+    }
+  }
+
   async function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -330,23 +379,35 @@ const AdminBlogPage = () => {
                   <label className="block text-[11px] text-white/70">
                     Content (Markdown)
                   </label>
-                  <details className="group relative">
-                    <summary className="list-none cursor-pointer text-[11px] text-brand-redSoft hover:text-brand-red font-semibold">
-                      Formatting Help
-                    </summary>
-                    <div className="absolute right-0 top-6 z-10 w-64 rounded-xl border border-white/10 bg-[#1a1b1e] p-4 shadow-soft-card">
-                      <h4 className="mb-2 text-xs font-semibold text-white">Markdown Cheatsheet</h4>
-                      <ul className="space-y-2 text-[10px] text-white/70">
-                        <li className="flex justify-between"><span>Heading</span> <code className="text-brand-redSoft"># Title</code></li>
-                        <li className="flex justify-between"><span>Sub-heading</span> <code className="text-brand-redSoft">## Title</code></li>
-                        <li className="flex justify-between"><span>Bold</span> <code className="text-brand-redSoft">**bold**</code></li>
-                        <li className="flex justify-between"><span>Italic</span> <code className="text-brand-redSoft">*italic*</code></li>
-                        <li className="flex justify-between"><span>Link</span> <code className="text-brand-redSoft">[text](url)</code></li>
-                        <li className="flex justify-between"><span>List</span> <code className="text-brand-redSoft">- item</code></li>
-                        <li className="flex justify-between"><span>Image</span> <code className="text-brand-redSoft">![alt](url)</code></li>
-                      </ul>
-                    </div>
-                  </details>
+                  <div className="flex items-center gap-4">
+                    <label className="cursor-pointer text-[11px] text-brand-redSoft hover:text-brand-red font-semibold flex items-center gap-1">
+                      {uploadingContentImage ? "Uploading..." : "+ Insert Image"}
+                      <input 
+                        type="file" 
+                        accept="image/*" 
+                        className="hidden" 
+                        onChange={handleContentImageUpload} 
+                        disabled={uploadingContentImage}
+                      />
+                    </label>
+                    <details className="group relative">
+                      <summary className="list-none cursor-pointer text-[11px] text-brand-redSoft hover:text-brand-red font-semibold">
+                        Formatting Help
+                      </summary>
+                      <div className="absolute right-0 top-6 z-10 w-64 rounded-xl border border-white/10 bg-[#1a1b1e] p-4 shadow-soft-card">
+                        <h4 className="mb-2 text-xs font-semibold text-white">Markdown Cheatsheet</h4>
+                        <ul className="space-y-2 text-[10px] text-white/70">
+                          <li className="flex justify-between"><span>Heading</span> <code className="text-brand-redSoft"># Title</code></li>
+                          <li className="flex justify-between"><span>Sub-heading</span> <code className="text-brand-redSoft">## Title</code></li>
+                          <li className="flex justify-between"><span>Bold</span> <code className="text-brand-redSoft">**bold**</code></li>
+                          <li className="flex justify-between"><span>Italic</span> <code className="text-brand-redSoft">*italic*</code></li>
+                          <li className="flex justify-between"><span>Link</span> <code className="text-brand-redSoft">[text](url)</code></li>
+                          <li className="flex justify-between"><span>List</span> <code className="text-brand-redSoft">- item</code></li>
+                          <li className="flex justify-between"><span>Image</span> <code className="text-brand-redSoft">![alt](url)</code></li>
+                        </ul>
+                      </div>
+                    </details>
+                  </div>
                 </div>
                 <textarea
                   value={form.content}
