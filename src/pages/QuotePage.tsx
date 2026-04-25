@@ -218,316 +218,359 @@ const QuotePage = () => {
     (v) => String(v ?? "").trim() !== ""
   );
   return (
-    <section className="bg-brand-dark py-12 text-white">
-      <SEO
-        title="Get A Quote"
-        description="Request a free, no-obligation auto transport quote. Accurate pricing for open and enclosed car shipping."
-        canonical="/quote"
-      />
-      <div className="mx-auto max-w-4xl px-4">
-        <div className="mb-8">
-          <p className="text-xs uppercase tracking-[0.2em] text-brand-redSoft">
-            Request a Quote
-          </p>
-          <h1 className="mt-2 font-display text-3xl font-semibold">
-            Vehicle Transport Quote
+    <>
+      <section className="relative overflow-hidden bg-gradient-to-r from-black via-brand-gray to-brand-red text-white py-10 md:py-14 px-4">
+        <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_top,_#ffffff22,_transparent_60%)]" />
+        <div className="relative max-w-5xl mx-auto text-center">
+          
+          <h1 className="text-2xl md:text-4xl font-semibold tracking-tight mb-3">
+            Car Shipping Made Simple
           </h1>
-          <p className="mt-2 text-sm text-white/70">
-            Share a few details about your vehicle and route. We’ll follow up with
-            pricing by email.
+
+          <p className="text-base md:text-lg text-gray-200 mb-6">
+            We price your shipment to get it picked up — not ignored.
           </p>
+
+          <button
+            type="button"
+            onClick={() => {
+              document.getElementById("quote-form")?.scrollIntoView({ behavior: "smooth" });
+            }}
+            className="bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-md font-medium transition"
+          >
+            Get Your Quote
+          </button>
+
         </div>
+      </section>
 
-        <form
-          onSubmit={handleSubmit}
-          className="space-y-8 rounded-3xl bg-black/40 p-6 shadow-soft-card border border-white/10"
-        >
-          {/* Pickup & Delivery */}
-          <div className="grid gap-6 md:grid-cols-2">
-            <div>
-              <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-white/60">
-                Pickup Location
-              </h2>
-              <div className="space-y-3">
-                <div>
-                  <label className="block text-xs text-white/70">City</label>
-                  <input
-                    type="text"
-                    name="pickupCity"
-                    value={form.pickupCity}
-                    onChange={handleChange}
-                    onBlur={handleCapitalizeBlur("pickupCity")}
-                    className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs text-white/70">State</label>
-                  <select
-                    name="pickupState"
-                    value={form.pickupState}
-                    onChange={handleChange}
-                    className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
-                    required
-                  >
-                    <option value="">Select state</option>
-                    {US_STATES.map((state) => (
-                      <option key={state.code} value={state.code}>
-                        {state.name}
-                      </option>
-                    ))}
-                  </select>
-
-
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-white/60">
-                Delivery Location
-              </h2>
-              <div className="space-y-3">
-                <div>
-                  <label className="block text-xs text-white/70">City</label>
-                  <input
-                    type="text"
-                    name="deliveryCity"
-                    value={form.deliveryCity}
-                    onChange={handleChange}
-                    onBlur={handleCapitalizeBlur("deliveryCity")}
-                    className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs text-white/70">State</label>
-                  <select
-                    name="deliveryState"
-                    value={form.deliveryState}
-                    onChange={handleChange}
-                    className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
-                    required
-                  >
-                    <option value="">Select state</option>
-                    {US_STATES.map((state) => (
-                      <option key={state.code} value={state.code}>
-                        {state.name}
-                      </option>
-                    ))}
-                  </select>
-
-                </div>
-              </div>
-            </div>
+      <section className="bg-brand-dark py-12 text-white">
+        <SEO
+          title="Get A Quote"
+          description="Request a free, no-obligation auto transport quote. Accurate pricing for open and enclosed car shipping."
+          canonical="/quote"
+        />
+        <div className="mx-auto max-w-4xl px-4">
+          <div className="mb-8">
+            <p className="text-xs uppercase tracking-[0.2em] text-brand-redSoft">
+              Request a Quote
+            </p>
+            <h1 className="mt-2 font-display text-3xl font-semibold">
+              Vehicle Transport Quote
+            </h1>
+            <p className="mt-2 text-sm text-white/70">
+              Share a few details about your vehicle and route. We’ll follow up with
+              pricing by email.
+            </p>
           </div>
 
-          {/* Vehicle info */}
-          <div className="border-t border-white/10 pt-6">
-            <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-white/60">
-              Vehicle Details
-            </h2>
-
-            <div className="grid gap-4 md:grid-cols-4">
-              <VehicleSelector
-                year={form.vehicleYear}
-                make={form.vehicleMake}
-                model={form.vehicleModel}
-                onChange={(field: "vehicleYear" | "vehicleMake" | "vehicleModel", value: string) => setForm(prev => ({ ...prev, [field]: value }))}
-                className="md:col-span-4"
-              />
-            </div>
-
-            <div className={`mt-4 grid gap-4 ${SHOW_VIN ? "md:grid-cols-2" : "md:grid-cols-1"}`}>
-              {SHOW_VIN && (
-                <div>
-                  <label className="block text-xs text-white/70">
-                    VIN (optional, helps us auto-verify details later)
-                  </label>
-                  <input
-                    type="text"
-                    name="vin"
-                    value={form.vin}
-                    onChange={handleChange}
-                    className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
-
-                  />
-                </div>
-              )}
-
-              <div className="grid gap-3 md:grid-cols-3">
-                <div>
-                  <label className="block text-xs text-white/70">Running Condition</label>
-                  <select
-                    name="runningCondition"
-                    value={form.runningCondition}
-                    onChange={handleChange}
-                    className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
-                  >
-                    <option value="">Select Running Condition</option>
-                    <option value="running">Running</option>
-                    <option value="non-running">Non-Running</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-xs text-white/70">
-                    Vehicle Height/Modifications
-                  </label>
-                  <select
-                    name="vehicleHeightMod"
-                    value={form.vehicleHeightMod}
-                    onChange={handleChange}
-                    className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
-                    required
-                  >
-                    <option value="">Select Vehicle Height</option>
-                    <option value="stock">Stock (no lift or lowering)</option>
-                    <option value="lifted">Lifted</option>
-                    <option value="lowered">Lowered</option>
-                    <option value="not_sure">Not sure</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-xs text-white/70">Transport Type</label>
-                  <select
-                    name="transportType"
-                    value={form.transportType}
-                    onChange={handleChange}
-                    className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
-                  >
-                    <option value="">Select Transport Type</option>
-                    <option value="open">Open Carrier</option>
-                    <option value="enclosed">Enclosed Carrier</option>
-                  </select>
-                </div>
-              </div>
-            </div>
+          <div className="max-w-3xl mx-auto mt-8 mb-6 text-center px-4">
+            <p className="text-lg font-medium text-white/90">
+              Most low quotes don’t get picked up. We price it right the first time.
+            </p>
           </div>
 
-          {/* Preferred Pickup Window */}
-          <div className="border-t border-white/10 pt-6">
-            <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-white/60">
-              Pickup Timing
-            </h2>
-
-            <div className="grid gap-4 md:grid-cols-2">
+          <form
+            id="quote-form"
+            onSubmit={handleSubmit}
+            className="space-y-8 rounded-3xl bg-black/40 p-6 shadow-soft-card border border-white/10"
+          >
+            {/* Pickup & Delivery */}
+            <div className="grid gap-6 md:grid-cols-2">
               <div>
-                <label className="block text-xs text-white/70">
-                  Preferred Pickup Window
-                </label>
-                <select
-                  name="preferredPickupWindow"
-                  value={form.preferredPickupWindow}
-                  onChange={handleChange}
-                  className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
-                  required
-                >
-                  <option value="">Select Pickup Window</option>
-                  <option value="asap_1_3">ASAP (1-3 days)</option>
-                  <option value="this_week">This week</option>
-                  <option value="next_1_2_weeks">Next 1-2 weeks</option>
-                  <option value="flexible">Flexible / No rush</option>
-                </select>
+                <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-white/60">
+                  Pickup Location
+                </h2>
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-xs text-white/70">City</label>
+                    <input
+                      type="text"
+                      name="pickupCity"
+                      value={form.pickupCity}
+                      onChange={handleChange}
+                      onBlur={handleCapitalizeBlur("pickupCity")}
+                      className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-white/70">State</label>
+                    <select
+                      name="pickupState"
+                      value={form.pickupState}
+                      onChange={handleChange}
+                      className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+                      required
+                    >
+                      <option value="">Select state</option>
+                      {US_STATES.map((state) => (
+                        <option key={state.code} value={state.code}>
+                          {state.name}
+                        </option>
+                      ))}
+                    </select>
+
+
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-white/60">
+                  Delivery Location
+                </h2>
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-xs text-white/70">City</label>
+                    <input
+                      type="text"
+                      name="deliveryCity"
+                      value={form.deliveryCity}
+                      onChange={handleChange}
+                      onBlur={handleCapitalizeBlur("deliveryCity")}
+                      className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs text-white/70">State</label>
+                    <select
+                      name="deliveryState"
+                      value={form.deliveryState}
+                      onChange={handleChange}
+                      className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+                      required
+                    >
+                      <option value="">Select state</option>
+                      {US_STATES.map((state) => (
+                        <option key={state.code} value={state.code}>
+                          {state.name}
+                        </option>
+                      ))}
+                    </select>
+
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Contact info */}
-          <div className="border-t border-white/10 pt-6">
-            <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-white/60">
-              Your Contact Info
-            </h2>
+            {/* Vehicle info */}
+            <div className="border-t border-white/10 pt-6">
+              <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-white/60">
+                Vehicle Details
+              </h2>
 
-            <div className="grid gap-4 md:grid-cols-3">
-              <div className="md:col-span-1">
-                <label className="block text-xs text-white/70">First Name</label>
-                <input
-                  type="text"
-                  name="firstName"
-                  value={form.firstName}
-                  onChange={handleChange}
-                  onBlur={handleCapitalizeBlur("firstName")}
-                  className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
-                  required
+              <div className="grid gap-4 md:grid-cols-4">
+                <VehicleSelector
+                  year={form.vehicleYear}
+                  make={form.vehicleMake}
+                  model={form.vehicleModel}
+                  onChange={(field: "vehicleYear" | "vehicleMake" | "vehicleModel", value: string) => setForm(prev => ({ ...prev, [field]: value }))}
+                  className="md:col-span-4"
                 />
               </div>
 
-              <div className="md:col-span-1">
-                <label className="block text-xs text-white/70">Last Name</label>
-                <input
-                  type="text"
-                  name="lastName"
-                  value={form.lastName}
-                  onChange={handleChange}
-                  onBlur={handleCapitalizeBlur("lastName")}
-                  className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
-                  required
-                />
-              </div>
+              <div className={`mt-4 grid gap-4 ${SHOW_VIN ? "md:grid-cols-2" : "md:grid-cols-1"}`}>
+                {SHOW_VIN && (
+                  <div>
+                    <label className="block text-xs text-white/70">
+                      VIN (optional, helps us auto-verify details later)
+                    </label>
+                    <input
+                      type="text"
+                      name="vin"
+                      value={form.vin}
+                      onChange={handleChange}
+                      className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
 
-              <div className="md:col-span-1">
-                <label className="block text-xs text-white/70">Email</label>
-                <input
-                  type="email"
-                  name="email"
-                  value={form.email}
-                  onChange={handleChange}
-                  className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
-                  required
-                />
-              </div>
+                    />
+                  </div>
+                )}
 
-              <div className="md:col-span-1">
-                <label className="block text-xs text-white/70">Mobile Phone</label>
-                <input
-                  type="tel"
-                  name="phone"
-                  value={form.phone}
-                  onChange={handleChange}
-                  className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
-                  required
-                />
+                <div className="grid gap-3 md:grid-cols-3">
+                  <div>
+                    <label className="block text-xs text-white/70">Running Condition</label>
+                    <select
+                      name="runningCondition"
+                      value={form.runningCondition}
+                      onChange={handleChange}
+                      className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+                    >
+                      <option value="">Select Running Condition</option>
+                      <option value="running">Running</option>
+                      <option value="non-running">Non-Running</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs text-white/70">
+                      Vehicle Height/Modifications
+                    </label>
+                    <select
+                      name="vehicleHeightMod"
+                      value={form.vehicleHeightMod}
+                      onChange={handleChange}
+                      className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+                      required
+                    >
+                      <option value="">Select Vehicle Height</option>
+                      <option value="stock">Stock (no lift or lowering)</option>
+                      <option value="lifted">Lifted</option>
+                      <option value="lowered">Lowered</option>
+                      <option value="not_sure">Not sure</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs text-white/70">Transport Type</label>
+                    <select
+                      name="transportType"
+                      value={form.transportType}
+                      onChange={handleChange}
+                      className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+                    >
+                      <option value="">Select Transport Type</option>
+                      <option value="open">Open Carrier</option>
+                      <option value="enclosed">Enclosed Carrier</option>
+                    </select>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Submit */}
-          <div className="flex flex-col gap-3 border-t border-white/10 pt-6 text-sm">
-            <p className="text-xs text-white/70 italic text-center">
-              *All fields are required
-            </p>
-            <button
-              type="submit"
-              disabled={loading || !isFormValid}
-              className={`inline-flex items-center justify-center rounded-full px-8 py-3 text-sm font-semibold text-white shadow-soft-card transition
+            {/* Preferred Pickup Window */}
+            <div className="border-t border-white/10 pt-6">
+              <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-white/60">
+                Pickup Timing
+              </h2>
+
+              <div className="grid gap-4 md:grid-cols-2">
+                <div>
+                  <label className="block text-xs text-white/70">
+                    Preferred Pickup Window
+                  </label>
+                  <select
+                    name="preferredPickupWindow"
+                    value={form.preferredPickupWindow}
+                    onChange={handleChange}
+                    className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+                    required
+                  >
+                    <option value="">Select Pickup Window</option>
+                    <option value="asap_1_3">ASAP (1-3 days)</option>
+                    <option value="this_week">This week</option>
+                    <option value="next_1_2_weeks">Next 1-2 weeks</option>
+                    <option value="flexible">Flexible / No rush</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            {/* Contact info */}
+            <div className="border-t border-white/10 pt-6">
+              <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-white/60">
+                Your Contact Info
+              </h2>
+
+              <div className="grid gap-4 md:grid-cols-3">
+                <div className="md:col-span-1">
+                  <label className="block text-xs text-white/70">First Name</label>
+                  <input
+                    type="text"
+                    name="firstName"
+                    value={form.firstName}
+                    onChange={handleChange}
+                    onBlur={handleCapitalizeBlur("firstName")}
+                    className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+                    required
+                  />
+                </div>
+
+                <div className="md:col-span-1">
+                  <label className="block text-xs text-white/70">Last Name</label>
+                  <input
+                    type="text"
+                    name="lastName"
+                    value={form.lastName}
+                    onChange={handleChange}
+                    onBlur={handleCapitalizeBlur("lastName")}
+                    className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+                    required
+                  />
+                </div>
+
+                <div className="md:col-span-1">
+                  <label className="block text-xs text-white/70">Email</label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={form.email}
+                    onChange={handleChange}
+                    className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+                    required
+                  />
+                </div>
+
+                <div className="md:col-span-1">
+                  <label className="block text-xs text-white/70">Mobile Phone</label>
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={form.phone}
+                    onChange={handleChange}
+                    className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Submit */}
+            <div className="flex flex-col gap-3 border-t border-white/10 pt-6 text-sm">
+              <p className="text-xs text-white/70 italic text-center">
+                *All fields are required
+              </p>
+              <button
+                type="submit"
+                disabled={loading || !isFormValid}
+                className={`inline-flex items-center justify-center rounded-full px-8 py-3 text-sm font-semibold text-white shadow-soft-card transition
       ${loading || !isFormValid
-                  ? "bg-brand-red/60 cursor-not-allowed"
-                  : "bg-brand-red hover:bg-brand-redSoft"
-                }
+                    ? "bg-brand-red/60 cursor-not-allowed"
+                    : "bg-brand-red hover:bg-brand-redSoft"
+                  }
     `}
-            >
-              {loading ? "Submitting..." : "Get My Transport Quote"}
-            </button>
+              >
+                {loading ? "Submitting..." : "Get My Transport Quote"}
+              </button>
 
-            <p className="text-xs text-white/60 text-center">
-              By submitting, you agree to be contacted about your quote request.
-            </p>
-            {error && <p className="text-xs text-red-400">{error}</p>}
+              <p className="text-xs text-white/60 text-center">
+                By submitting, you agree to be contacted about your quote request.
+              </p>
+              {error && <p className="text-xs text-red-400">{error}</p>}
 
+            </div>
+          </form>
+
+          <div className="max-w-3xl mx-auto mt-6 text-center text-sm text-white/70 px-4">
+            <div className="flex flex-wrap justify-center gap-4">
+              <span>✔️ Licensed & Bonded</span>
+              <span>✔️ Real Carrier Pricing</span>
+              <span>✔️ No Bait-and-Switch</span>
+              <span>✔️ Real Human Support</span>
+            </div>
           </div>
-        </form>
 
-        {createdQuote && (
-          <QuoteSuccessModal
-            isOpen={showSuccessModal}
-            onClose={handleModalClose}
-            quote={createdQuote}
-          />
-        )}
-      </div>
-    </section>
+          {createdQuote && (
+            <QuoteSuccessModal
+              isOpen={showSuccessModal}
+              onClose={handleModalClose}
+              quote={createdQuote}
+            />
+          )}
+        </div>
+      </section>
+    </>
   );
 };
 
