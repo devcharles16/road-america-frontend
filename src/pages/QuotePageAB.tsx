@@ -135,7 +135,7 @@ const QuotePageAB = () => {
         window.grecaptcha!.ready(async () => {
           try {
             const token = await window.grecaptcha!.execute(siteKey, {
-              action: "submit_quote_ab",
+              action: "submit_quote",
             });
             resolve(token);
           } catch (err) {
@@ -198,7 +198,7 @@ const QuotePageAB = () => {
 
   const isStep1Valid = form.pickupCity.trim() !== "" && form.pickupState !== "";
   const isStep2Valid = form.deliveryCity.trim() !== "" && form.deliveryState !== "";
-  const isStep11Valid = form.firstName.trim() !== "" && form.email.trim() !== "" && form.phone.trim() !== "";
+  const isStep11Valid = form.firstName.trim() !== "" && form.email.trim() !== "" && form.phone.replace(/\D/g, "").length >= 10;
 
   const filteredMakes = makes.filter(m => m.toLowerCase().includes(makeSearch.toLowerCase()));
   const filteredModels = models.filter(m => m.toLowerCase().includes(modelSearch.toLowerCase()));
@@ -690,6 +690,7 @@ const QuotePageAB = () => {
                   name="phone"
                   value={form.phone}
                   onChange={handleChange}
+                  placeholder="(555) 555-5555"
                   className="w-full h-14 bg-white/5 border border-white/10 rounded-xl px-4 text-white focus:border-brand-red outline-none transition"
                 />
               </div>
