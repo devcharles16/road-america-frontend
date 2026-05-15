@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 
 import HomePage from "./pages/HomePage";
 import QuotePage from "./pages/QuotePage";
+import QuotePageAB from "./pages/QuotePageAB";
 import TrackingPage from "./pages/TrackingPage";
 import AboutPage from "./pages/AboutPage";
 
@@ -48,6 +49,7 @@ function App() {
           {/* Public */}
           <Route path="/" element={<HomePage />} />
           <Route path="/quote" element={<QuotePage />} />
+          <Route path="/quote-ab" element={<QuotePageAB />} />
           <Route path="/track" element={<TrackingPage />} />
           <Route path="/about" element={<AboutPage />} />
 
