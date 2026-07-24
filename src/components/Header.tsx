@@ -38,6 +38,7 @@ const Header = () => {
   const navItems = [
     { label: "Home", to: "/" },
     { label: "Get My Transport Quote", to: "/quote" },
+    { label: "Business Solutions", to: "/business-auto-transport" },
     { label: "Track Shipment", to: "/track" },
     { label: "Blog", to: "/blog" },
     { label: "About", to: "/about" },

@@ -6,6 +6,7 @@ import QuotePageAB from "./pages/QuotePageAB";
 import TrackingPage from "./pages/TrackingPage";
 import AboutPage from "./pages/AboutPage";
 import TruthAboutAutoTransportPage from "./pages/TruthAboutAutoTransportPage";
+import BusinessAutoTransportPage from "./pages/BusinessAutoTransportPage";
 
 import BlogListPage from "./pages/BlogListPage";
 import BlogPostPage from "./pages/BlogPostPage";
@@ -54,6 +55,7 @@ function App() {
           <Route path="/track" element={<TrackingPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/the-truth-about-auto-transport" element={<TruthAboutAutoTransportPage />} />
+          <Route path="/business-auto-transport" element={<BusinessAutoTransportPage />} />
 
           {/* Blog (public) */}
           <Route path="/blog" element={<BlogListPage />} />
