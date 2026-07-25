@@ -985,7 +985,7 @@ function CommercialFAQSection() {
 function CommercialInquiryFormSection() {
   const [searchParams] = useSearchParams();
 
-  // Form State
+  // Form State - input name attributes preserved for Zapier/HubSpot integration
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -1033,7 +1033,7 @@ function CommercialInquiryFormSection() {
     <section id="business-inquiry" className="py-16 md:py-24 bg-[#0a0b0d] text-white">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid gap-12 lg:grid-cols-12 items-start">
-          {/* Left Column: Heading & CTAs */}
+          {/* Left Column: Heading, CTAs & Desktop Trust Sidebar */}
           <div className="lg:col-span-5 space-y-6">
             <span className="text-xs font-bold uppercase tracking-widest text-brand-redSoft">
               START WITH ONE SHIPMENT
@@ -1045,7 +1045,7 @@ function CommercialInquiryFormSection() {
               Whether you need coverage for one difficult move, additional capacity, recurring transportation support, or a more responsive business relationship, Road America is ready to learn how your operation works.
             </p>
 
-            <div className="space-y-3 pt-4">
+            <div className="space-y-3 pt-2">
               <a
                 href="tel:17546005772"
                 className="flex items-center gap-3 p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition text-sm font-semibold"
@@ -1065,6 +1065,37 @@ function CommercialInquiryFormSection() {
               </a>
             </div>
 
+            {/* Desktop View Sidebar: Trust Shield Info */}
+            <div className="hidden lg:block rounded-2xl border border-white/15 bg-[#14161b] p-6 space-y-4 shadow-xl">
+              <h4 className="text-xs font-bold uppercase tracking-widest text-brand-redSoft flex items-center gap-2 border-b border-white/10 pb-3">
+                <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                Corporate Compliance & Accounting
+              </h4>
+              <ul className="space-y-3.5 text-xs text-white/80">
+                <li className="flex items-start gap-2.5">
+                  <span className="text-base leading-none">🛡️</span>
+                  <div>
+                    <strong className="text-white block font-semibold">Fully Compliant</strong>
+                    <span className="text-white/70">Licensed & Bonded Broker | USDOT #3735540 | MC #1320367.</span>
+                  </div>
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <span className="text-base leading-none">🔒</span>
+                  <div>
+                    <strong className="text-white block font-semibold">Secure Corporate Accounting</strong>
+                    <span className="text-white/70">We never request, process, or store credit card information over the phone or web. All transactions are handled securely via official QuickBooks electronic invoicing.</span>
+                  </div>
+                </li>
+                <li className="flex items-start gap-2.5">
+                  <span className="text-base leading-none">🚛</span>
+                  <div>
+                    <strong className="text-white block font-semibold">Elite Carrier Vetting</strong>
+                    <span className="text-white/70">Every carrier on your route undergoes rigorous safety, authority, and insurance validation before assignment.</span>
+                  </div>
+                </li>
+              </ul>
+            </div>
+
             <p className="text-xs text-white/50 italic border-t border-white/10 pt-4">
               No long-term commitment is required to start a conversation or request an initial shipment review.
             </p>
@@ -1072,9 +1103,47 @@ function CommercialInquiryFormSection() {
 
           {/* Right Column: B2B Commercial Inquiry Form */}
           <div className="lg:col-span-7">
-            <div className="rounded-3xl border border-white/15 bg-[#14161b] p-6 sm:p-10 shadow-2xl">
-              <h3 className="text-xl font-bold text-white mb-2">Request Business Transport Support</h3>
-              <p className="text-xs text-white/60 mb-6">Fill out your details below and a commercial transport coordinator will follow up directly.</p>
+            <div className="rounded-3xl border border-white/15 bg-[#14161b] p-6 sm:p-10 shadow-2xl space-y-6">
+              {/* Form Title & Context Copy */}
+              <div>
+                <h3 className="text-xl sm:text-2xl font-extrabold text-white tracking-wide uppercase font-display">
+                  COMMERCIAL TRANSPORT INQUIRY
+                </h3>
+                <p className="text-xs sm:text-sm text-white/70 mt-1 font-light">
+                  Streamlined logistics for dealerships, fleet managers, and corporate accounts.
+                </p>
+              </div>
+
+              {/* Mobile View: Inline Trust Signals stacked directly above form fields */}
+              <div className="lg:hidden rounded-2xl border border-white/15 bg-white/5 p-4 space-y-3">
+                <h4 className="text-[11px] font-bold uppercase tracking-wider text-brand-redSoft flex items-center gap-1.5 border-b border-white/10 pb-2">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                  Corporate Compliance & Accounting
+                </h4>
+                <ul className="space-y-2.5 text-[11px] text-white/80">
+                  <li className="flex items-start gap-2">
+                    <span className="text-sm leading-none">🛡️</span>
+                    <div>
+                      <strong className="text-white block font-semibold">Fully Compliant</strong>
+                      <span className="text-white/70">Licensed & Bonded Broker | USDOT #3735540 | MC #1320367.</span>
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-sm leading-none">🔒</span>
+                    <div>
+                      <strong className="text-white block font-semibold">Secure Corporate Accounting</strong>
+                      <span className="text-white/70">We never request, process, or store credit card information over the phone or web. All transactions are handled securely via official QuickBooks electronic invoicing.</span>
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-sm leading-none">🚛</span>
+                    <div>
+                      <strong className="text-white block font-semibold">Elite Carrier Vetting</strong>
+                      <span className="text-white/70">Every carrier on your route undergoes rigorous safety, authority, and insurance validation before assignment.</span>
+                    </div>
+                  </li>
+                </ul>
+              </div>
 
               {submitted ? (
                 <div className="p-8 rounded-2xl bg-emerald-950/40 border border-emerald-500/40 text-center space-y-4 animate-fadeIn">
@@ -1116,7 +1185,7 @@ function CommercialInquiryFormSection() {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-white/70 mb-1 font-medium">Business Name *</label>
+                      <label className="block text-white/70 mb-1 font-medium">Business Name / Company Name *</label>
                       <input
                         type="text"
                         name="businessName"
@@ -1124,7 +1193,7 @@ function CommercialInquiryFormSection() {
                         value={formData.businessName}
                         onChange={handleChange}
                         className="w-full rounded-xl bg-black/50 border border-white/15 px-3 py-2.5 text-white focus:border-brand-redSoft outline-none"
-                        placeholder="Apex Auto Group"
+                        placeholder="e.g., Apex Logistics or Auto Group"
                       />
                     </div>
                     <div>
@@ -1260,24 +1329,30 @@ function CommercialInquiryFormSection() {
                   </div>
 
                   <div>
-                    <label className="block text-white/70 mb-1 font-medium">Additional Notes & Requirements</label>
+                    <label className="block text-white/70 mb-1 font-medium">
+                      Describe Your Fleet or Multi-Vehicle Transport Needs (Optional)
+                    </label>
                     <textarea
                       name="additionalDetails"
                       rows={3}
                       value={formData.additionalDetails}
                       onChange={handleChange}
                       className="w-full rounded-xl bg-black/50 border border-white/15 px-3 py-2.5 text-white focus:border-brand-redSoft outline-none"
-                      placeholder="Vehicle types, operable/inoperable, special gate codes or deadlines..."
+                      placeholder="e.g., Moving 5 off-lease vehicles from Orlando to Atlanta, monthly volume, or custom lane requirements..."
                     />
                   </div>
 
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full rounded-full bg-brand-red py-3.5 text-xs font-bold text-white shadow-lg hover:bg-brand-redSoft transition duration-300 disabled:opacity-50"
+                    className="w-full rounded-full bg-brand-red py-4 text-xs font-bold uppercase tracking-wider text-white shadow-lg hover:bg-brand-redSoft transition duration-300 disabled:opacity-50"
                   >
-                    {loading ? "Submitting Inquiry..." : "Request Business Support"}
+                    {loading ? "Submitting Inquiry..." : "REQUEST COMMERCIAL SERVICE PLAN"}
                   </button>
+
+                  <p className="text-[11px] text-white/60 italic leading-relaxed pt-1 text-center sm:text-left">
+                    🔒 <strong>Data Security Promise:</strong> We respect your business environment. Expect one professional email response containing your custom logistics plan. Absolutely no automated robocalls or broker phone spam.
+                  </p>
                 </form>
               )}
             </div>
@@ -1288,7 +1363,7 @@ function CommercialInquiryFormSection() {
         <div className="mt-16 pt-8 border-t border-white/10 text-xs text-white/50 space-y-2 font-light leading-relaxed max-w-5xl mx-auto">
           <p className="font-semibold text-white/70">Legal & Operational Disclaimers:</p>
           <p>
-            • Road America Auto Transport is a licensed and bonded auto transport broker under FMCSA registration. Road America does not own or operate trucks directly, nor are motor carrier drivers employees of Road America.
+            • Road America Auto Transport is a licensed and bonded auto transport broker under FMCSA registration (USDOT #3735540 | MC #1320367). Road America does not own or operate trucks directly, nor are motor carrier drivers employees of Road America.
           </p>
           <p>
             • Primary cargo and vehicle transit coverage is provided directly by the assigned motor carrier’s commercial policy and is subject to that carrier’s terms, conditions, deductibles, and limitations.
