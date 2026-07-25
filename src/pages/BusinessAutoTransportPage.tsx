@@ -567,7 +567,11 @@ function B2BFounderSection() {
             <div className="lg:col-span-4 flex flex-col items-center text-center">
               <div className="relative mb-4">
                 <div className="h-36 w-36 sm:h-44 sm:w-44 rounded-full border-4 border-brand-red/40 bg-white/10 flex items-center justify-center overflow-hidden shadow-2xl">
-                  <UserCheck className="w-20 h-20 text-brand-redSoft" />
+                  <img
+                    src="/amilcar-charles.jpg"
+                    alt="Amilcar Charles - Founder, Road America Auto Transport"
+                    className="w-full h-full object-cover object-top"
+                  />
                 </div>
                 <img
                   src="/ase-logo.png"
