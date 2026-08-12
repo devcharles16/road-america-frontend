@@ -302,3 +302,91 @@ export async function sendQuoteConfirmationEmail(payload) {
   });
 }
 
+export async function sendNewBusinessInquiryAlert(payload) {
+  const adminEmail = process.env.ADMIN_ALERT_EMAIL;
+
+  const {
+    firstName,
+    lastName,
+    businessName,
+    jobTitle,
+    email,
+    phone,
+    businessType,
+    transportNeed,
+    estimatedVolume,
+    pickupCityState,
+    deliveryCityState,
+    additionalDetails,
+  } = payload;
+
+  const subject = "🏢 New Business Transport Inquiry – Road America";
+
+  const html = `
+    <div style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; padding:20px;">
+      <h2 style="margin-top:0;">New Business (B2B) Transport Inquiry</h2>
+      <p>A commercial account submitted the Business Auto Transport inquiry form.</p>
+
+      <table style="border-collapse:collapse;font-size:14px;">
+        <tbody>
+          <tr>
+            <td style="padding:4px 8px;font-weight:600;">Name:</td>
+            <td style="padding:4px 8px;">${firstName || "-"} ${lastName || "-"}</td>
+          </tr>
+          <tr>
+            <td style="padding:4px 8px;font-weight:600;">Business:</td>
+            <td style="padding:4px 8px;">${businessName || "-"}</td>
+          </tr>
+          <tr>
+            <td style="padding:4px 8px;font-weight:600;">Job Title:</td>
+            <td style="padding:4px 8px;">${jobTitle || "-"}</td>
+          </tr>
+          <tr>
+            <td style="padding:4px 8px;font-weight:600;">Email:</td>
+            <td style="padding:4px 8px;">${email || "-"}</td>
+          </tr>
+          <tr>
+            <td style="padding:4px 8px;font-weight:600;">Phone:</td>
+            <td style="padding:4px 8px;">${phone || "-"}</td>
+          </tr>
+          <tr>
+            <td style="padding:4px 8px;font-weight:600;">Business Type:</td>
+            <td style="padding:4px 8px;">${businessType || "-"}</td>
+          </tr>
+          <tr>
+            <td style="padding:4px 8px;font-weight:600;">Transport Need:</td>
+            <td style="padding:4px 8px;">${transportNeed || "-"}</td>
+          </tr>
+          <tr>
+            <td style="padding:4px 8px;font-weight:600;">Estimated Volume:</td>
+            <td style="padding:4px 8px;">${estimatedVolume || "-"}</td>
+          </tr>
+          <tr>
+            <td style="padding:4px 8px;font-weight:600;">Pickup:</td>
+            <td style="padding:4px 8px;">${pickupCityState || "-"}</td>
+          </tr>
+          <tr>
+            <td style="padding:4px 8px;font-weight:600;">Delivery:</td>
+            <td style="padding:4px 8px;">${deliveryCityState || "-"}</td>
+          </tr>
+          <tr>
+            <td style="padding:4px 8px;font-weight:600;">Details:</td>
+            <td style="padding:4px 8px;">${additionalDetails || "-"}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  `;
+
+  if (!adminEmail) {
+    console.error("ADMIN_ALERT_EMAIL is not set.");
+    return { success: false, error: "ADMIN_ALERT_EMAIL not configured" };
+  }
+
+  return await sendEmail({
+    to: adminEmail,
+    subject,
+    html,
+  });
+}
+

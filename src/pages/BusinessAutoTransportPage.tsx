@@ -28,6 +28,7 @@ import {
   HeartHandshake
 } from "lucide-react";
 import SEO from "../components/SEO";
+import { createBusinessInquiry } from "../services/businessInquiriesService";
 
 // Section 1: Hero Section
 function HeroSection() {
@@ -997,16 +998,11 @@ function CommercialInquiryFormSection() {
     jobTitle: "",
     email: "",
     phone: "",
-    contactMethod: "Email",
     businessType: "Franchise dealership",
     transportNeed: "One immediate shipment",
     estimatedVolume: "1–4 vehicles per month",
     pickupCityState: "",
     deliveryCityState: "",
-    vehicleCount: "1",
-    vehicleTypes: "",
-    operableStatus: "Operable",
-    timeframe: "Within 1 week",
     additionalDetails: "",
     // UTM parameters captured from URL
     utmSource: searchParams.get("utm_source") || "",
@@ -1017,20 +1013,44 @@ function CommercialInquiryFormSection() {
 
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setError(null);
 
-    // Simulate form submission / HubSpot API integration
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      const siteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY as string | undefined;
+      if (!siteKey) throw new Error("Missing VITE_RECAPTCHA_SITE_KEY");
+      if (!window.grecaptcha) throw new Error("Captcha not ready. Please refresh and try again.");
+
+      const captchaToken: string = await new Promise((resolve, reject) => {
+        window.grecaptcha!.ready(async () => {
+          try {
+            const token = await window.grecaptcha!.execute(siteKey, {
+              action: "submit_business_inquiry",
+            });
+            resolve(token);
+          } catch (err) {
+            reject(err);
+          }
+        });
+      });
+
+      await createBusinessInquiry({ ...formData, captchaToken });
+
       setSubmitted(true);
-    }, 1000);
+    } catch (err) {
+      console.error("Business inquiry submission failed:", err);
+      setError("Something went wrong submitting your inquiry. Please try again or call us directly.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -1345,6 +1365,12 @@ function CommercialInquiryFormSection() {
                       placeholder="e.g., Moving 5 off-lease vehicles from Orlando to Atlanta, monthly volume, or custom lane requirements..."
                     />
                   </div>
+
+                  {error && (
+                    <p className="text-xs text-red-400 font-medium text-center sm:text-left">
+                      {error}
+                    </p>
+                  )}
 
                   <button
                     type="submit"

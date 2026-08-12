@@ -1,6 +1,7 @@
 import express from "express";
 import { requireAuth, requireRole, requireOneOf, requireClient } from "../middleware/auth.js";
 import supabase from "../supabaseClient.js";
+import { sendNewBusinessInquiryAlert } from "../notifications/adminAlerts.js";
 
 
 const router = express.Router();
@@ -12,6 +13,43 @@ const ALLOWED_STATUSES = [
   "Delivered",
   "Cancelled",
 ];
+
+/**
+ * Verifies a reCAPTCHA v3 token against Google's siteverify endpoint.
+ * Returns { ok: true } or { ok: false, status, message } for the caller to relay.
+ */
+async function verifyRecaptcha(captchaToken, expectedAction) {
+  if (!captchaToken) {
+    return { ok: false, status: 400, message: "Captcha required" };
+  }
+
+  const secret = process.env.RECAPTCHA_SECRET_KEY;
+  if (!secret) {
+    console.error("Missing RECAPTCHA_SECRET_KEY");
+    return { ok: false, status: 500, message: "Captcha not configured" };
+  }
+
+  const verifyRes = await fetch("https://www.google.com/recaptcha/api/siteverify", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({ secret, response: captchaToken }),
+  });
+
+  const captcha = await verifyRes.json();
+  const score = typeof captcha.score === "number" ? captcha.score : 0;
+  const action = typeof captcha.action === "string" ? captcha.action : "";
+
+  if (!captcha.success || action !== expectedAction || score < 0.5) {
+    return {
+      ok: false,
+      status: 403,
+      message: "Captcha failed",
+      details: { success: captcha.success, score, action, errors: captcha["error-codes"] },
+    };
+  }
+
+  return { ok: true };
+}
 
 
 /* =========================================================
@@ -107,6 +145,113 @@ router.post("/quotes", async (req, res) => {
     return res.status(500).json({ message: "Server error creating quote" });
   }
 });
+
+/* =========================================================
+   BUSINESS (B2B) INQUIRIES (PUBLIC + ADMIN)
+   ========================================================= */
+
+/**
+ * PUBLIC: Create a business/commercial transport inquiry
+ * POST /api/business-inquiries
+ */
+router.post("/business-inquiries", async (req, res) => {
+  try {
+    const input = req.body || {};
+
+    const captchaCheck = await verifyRecaptcha(input.captchaToken, "submit_business_inquiry");
+    if (!captchaCheck.ok) {
+      return res.status(captchaCheck.status).json({
+        message: captchaCheck.message,
+        details: captchaCheck.details,
+      });
+    }
+
+    if (!input.firstName || !input.lastName || !input.businessName || !input.email || !input.phone) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    const payload = {
+      first_name: input.firstName,
+      last_name: input.lastName,
+      business_name: input.businessName,
+      job_title: input.jobTitle || null,
+      email: input.email,
+      phone: input.phone,
+
+      business_type: input.businessType || null,
+      transport_need: input.transportNeed || null,
+      estimated_volume: input.estimatedVolume || null,
+
+      pickup_city_state: input.pickupCityState || null,
+      delivery_city_state: input.deliveryCityState || null,
+      additional_details: input.additionalDetails || null,
+
+      utm_source: input.utmSource || null,
+      utm_medium: input.utmMedium || null,
+      utm_campaign: input.utmCampaign || null,
+      qr_campaign: input.qrCampaign || null,
+
+      status: "New",
+    };
+
+    const { data, error } = await supabase
+      .from("business_inquiries")
+      .insert(payload)
+      .select("*")
+      .single();
+
+    if (error) throw error;
+
+    const alertResult = await sendNewBusinessInquiryAlert({
+      firstName: input.firstName,
+      lastName: input.lastName,
+      businessName: input.businessName,
+      jobTitle: input.jobTitle,
+      email: input.email,
+      phone: input.phone,
+      businessType: input.businessType,
+      transportNeed: input.transportNeed,
+      estimatedVolume: input.estimatedVolume,
+      pickupCityState: input.pickupCityState,
+      deliveryCityState: input.deliveryCityState,
+      additionalDetails: input.additionalDetails,
+    });
+
+    if (alertResult?.success === false) {
+      console.error("Business inquiry admin alert failed:", alertResult.error || alertResult.err);
+    }
+
+    return res.status(201).json({ id: data.id });
+  } catch (err) {
+    console.error("Business inquiry creation error:", err);
+    return res.status(500).json({ message: "Server error creating business inquiry" });
+  }
+});
+
+/**
+ * ADMIN/EMPLOYEE: List business inquiries
+ * GET /api/business-inquiries
+ */
+router.get(
+  "/business-inquiries",
+  requireAuth,
+  requireOneOf(["admin", "employee"]),
+  async (_req, res) => {
+    try {
+      const { data, error } = await supabase
+        .from("business_inquiries")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+
+      return res.json(data ?? []);
+    } catch (err) {
+      console.error("List business inquiries error:", err);
+      return res.status(500).json({ message: "Server error listing business inquiries" });
+    }
+  }
+);
 
 /**
  * ADMIN/EMPLOYEE: Convert a quote into a shipment
