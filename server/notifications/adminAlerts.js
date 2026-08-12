@@ -72,84 +72,88 @@ export async function sendNewQuoteAlert(payload) {
   const subject = "🚗 New Transport Quote Request – Road America";
 
   const html = `
-    <div style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; padding:20px;">
-      <h2 style="margin-top:0;">New Quote Request</h2>
-      <p>You just received a new quote request from the website.</p>
+    <!doctype html>
+    <html>
+      <head>
+        <meta charset="utf-8" />
+        <meta name="color-scheme" content="light" />
+        <meta name="supported-color-schemes" content="light" />
+      </head>
+      <body style="margin:0; padding:0; background-color:#f4f4f5;">
+        <div style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background-color:#f4f4f5; padding:20px;">
+          <div style="max-width:600px; margin:0 auto; background-color:#ffffff; border:1px solid #e5e7eb; border-radius:8px; padding:20px;">
+            <h2 style="margin-top:0; color:#111827;">New Quote Request</h2>
+            <p style="color:#374151;">You just received a new quote request from the website.</p>
 
-      <table style="border-collapse:collapse;font-size:14px;">
-        <tbody>
-          ${referenceId ? `
-          <tr>
-            <td style="padding:4px 8px;font-weight:600;">Ref ID:</td>
-            <td style="padding:4px 8px;">${referenceId}</td>
-          </tr>` : ""}
-          <tr>
-  <td style="padding:4px 8px;font-weight:600;">First Name:</td>
-  <td style="padding:4px 8px;">${firstName || "-"}</td>
-</tr>
-<tr>
-  <td style="padding:4px 8px;font-weight:600;">Last Name:</td>
-  <td style="padding:4px 8px;">${lastName || "-"}</td>
-</tr>
+            <table style="border-collapse:collapse; font-size:14px; width:100%; background-color:#ffffff;">
+              <tbody>
+                ${referenceId ? `
+                <tr>
+                  <td style="padding:4px 8px; font-weight:600; color:#374151; background-color:#ffffff;">Ref ID:</td>
+                  <td style="padding:4px 8px; color:#111827; background-color:#ffffff;">${referenceId}</td>
+                </tr>` : ""}
+                <tr>
+                  <td style="padding:4px 8px; font-weight:600; color:#374151; background-color:#ffffff;">First Name:</td>
+                  <td style="padding:4px 8px; color:#111827; background-color:#ffffff;">${firstName || "-"}</td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 8px; font-weight:600; color:#374151; background-color:#ffffff;">Last Name:</td>
+                  <td style="padding:4px 8px; color:#111827; background-color:#ffffff;">${lastName || "-"}</td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 8px; font-weight:600; color:#374151; background-color:#ffffff;">Email:</td>
+                  <td style="padding:4px 8px; color:#111827; background-color:#ffffff;">${email || "-"}</td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 8px; font-weight:600; color:#374151; background-color:#ffffff;">Phone:</td>
+                  <td style="padding:4px 8px; color:#111827; background-color:#ffffff;">${phone || "-"}</td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 8px; font-weight:600; color:#374151; background-color:#ffffff;">Pickup:</td>
+                  <td style="padding:4px 8px; color:#111827; background-color:#ffffff;">${pickup || "-"}</td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 8px; font-weight:600; color:#374151; background-color:#ffffff;">Dropoff:</td>
+                  <td style="padding:4px 8px; color:#111827; background-color:#ffffff;">${dropoff || "-"}</td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 8px; font-weight:600; color:#374151; background-color:#ffffff;">Preferred Pickup Window:</td>
+                  <td style="padding:4px 8px; color:#111827; background-color:#ffffff;">${formatPickupWindow(preferredPickupWindow)}</td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 8px; font-weight:600; color:#374151; background-color:#ffffff;">Vehicle Year:</td>
+                  <td style="padding:4px 8px; color:#111827; background-color:#ffffff;">${year}</td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 8px; font-weight:600; color:#374151; background-color:#ffffff;">Make:</td>
+                  <td style="padding:4px 8px; color:#111827; background-color:#ffffff;">${make}</td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 8px; font-weight:600; color:#374151; background-color:#ffffff;">Model:</td>
+                  <td style="padding:4px 8px; color:#111827; background-color:#ffffff;">${model}</td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 8px; font-weight:600; color:#374151; background-color:#ffffff;">Running Condition:</td>
+                  <td style="padding:4px 8px; color:#111827; background-color:#ffffff;">${runningCondition || "-"}</td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 8px; font-weight:600; color:#374151; background-color:#ffffff;">Vehicle Height / Mods:</td>
+                  <td style="padding:4px 8px; color:#111827; background-color:#ffffff;">${formatVehicleHeightMod(vehicleHeightMod)}</td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 8px; font-weight:600; color:#374151; background-color:#ffffff;">Transport Type:</td>
+                  <td style="padding:4px 8px; color:#111827; background-color:#ffffff;">${transportType || "-"}</td>
+                </tr>
+              </tbody>
+            </table>
 
-          <tr>
-            <td style="padding:4px 8px;font-weight:600;">Email:</td>
-            <td style="padding:4px 8px;">${email || "-"}</td>
-          </tr>
-          <tr>
-            <td style="padding:4px 8px;font-weight:600;">Phone:</td>
-            <td style="padding:4px 8px;">${phone || "-"}</td>
-          </tr>
-          <tr>
-            <td style="padding:4px 8px;font-weight:600;">Pickup:</td>
-            <td style="padding:4px 8px;">${pickup || "-"}</td>
-          </tr>
-          <tr>
-            <td style="padding:4px 8px;font-weight:600;">Dropoff:</td>
-            <td style="padding:4px 8px;">${dropoff || "-"}</td>
-          </tr>
-          <tr>
-  <td style="padding:4px 8px;font-weight:600;">
-    Preferred Pickup Window:
-  </td>
-  <td style="padding:4px 8px;">
-    ${formatPickupWindow(preferredPickupWindow)}
-  </td>
-</tr>
-
-
-          <tr>
-            <td style="padding:4px 8px;font-weight:600;">Vehicle Year:</td>
-            <td style="padding:4px 8px;">${year}</td>
-          </tr>
-          <tr>
-            <td style="padding:4px 8px;font-weight:600;">Make:</td>
-            <td style="padding:4px 8px;">${make}</td>
-          </tr>
-          <tr>
-            <td style="padding:4px 8px;font-weight:600;">Model:</td>
-            <td style="padding:4px 8px;">${model}</td>
-          </tr>
-          <tr>
-  <td style="padding:4px 8px;font-weight:600;">Running Condition:</td>
-  <td style="padding:4px 8px;">${runningCondition || "-"}</td>
-</tr>
-<tr>
-  <td style="padding:4px 8px;font-weight:600;">Vehicle Height / Mods:</td>
-  <td style="padding:4px 8px;">${formatVehicleHeightMod(vehicleHeightMod)}</td>
-</tr>
-
-          <tr>
-            <td style="padding:4px 8px;font-weight:600;">Transport Type:</td>
-            <td style="padding:4px 8px;">${transportType || "-"}</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <p style="font-size:12px;color:#666;margin-top:16px;">
-        Work this email from your HubSpot Ticket
-      </p>
-    </div>
+            <p style="font-size:12px; color:#6b7280; margin-top:16px;">
+              Work this email from your HubSpot Ticket
+            </p>
+          </div>
+        </div>
+      </body>
+    </html>
   `;
 
   if (!adminEmail) {
@@ -323,59 +327,71 @@ export async function sendNewBusinessInquiryAlert(payload) {
   const subject = "🏢 New Business Transport Inquiry – Road America";
 
   const html = `
-    <div style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; padding:20px;">
-      <h2 style="margin-top:0;">New Business (B2B) Transport Inquiry</h2>
-      <p>A commercial account submitted the Business Auto Transport inquiry form.</p>
+    <!doctype html>
+    <html>
+      <head>
+        <meta charset="utf-8" />
+        <meta name="color-scheme" content="light" />
+        <meta name="supported-color-schemes" content="light" />
+      </head>
+      <body style="margin:0; padding:0; background-color:#f4f4f5;">
+        <div style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background-color:#f4f4f5; padding:20px;">
+          <div style="max-width:600px; margin:0 auto; background-color:#ffffff; border:1px solid #e5e7eb; border-radius:8px; padding:20px;">
+            <h2 style="margin-top:0; color:#111827;">New Business (B2B) Transport Inquiry</h2>
+            <p style="color:#374151;">A commercial account submitted the Business Auto Transport inquiry form.</p>
 
-      <table style="border-collapse:collapse;font-size:14px;">
-        <tbody>
-          <tr>
-            <td style="padding:4px 8px;font-weight:600;">Name:</td>
-            <td style="padding:4px 8px;">${firstName || "-"} ${lastName || "-"}</td>
-          </tr>
-          <tr>
-            <td style="padding:4px 8px;font-weight:600;">Business:</td>
-            <td style="padding:4px 8px;">${businessName || "-"}</td>
-          </tr>
-          <tr>
-            <td style="padding:4px 8px;font-weight:600;">Job Title:</td>
-            <td style="padding:4px 8px;">${jobTitle || "-"}</td>
-          </tr>
-          <tr>
-            <td style="padding:4px 8px;font-weight:600;">Email:</td>
-            <td style="padding:4px 8px;">${email || "-"}</td>
-          </tr>
-          <tr>
-            <td style="padding:4px 8px;font-weight:600;">Phone:</td>
-            <td style="padding:4px 8px;">${phone || "-"}</td>
-          </tr>
-          <tr>
-            <td style="padding:4px 8px;font-weight:600;">Business Type:</td>
-            <td style="padding:4px 8px;">${businessType || "-"}</td>
-          </tr>
-          <tr>
-            <td style="padding:4px 8px;font-weight:600;">Transport Need:</td>
-            <td style="padding:4px 8px;">${transportNeed || "-"}</td>
-          </tr>
-          <tr>
-            <td style="padding:4px 8px;font-weight:600;">Estimated Volume:</td>
-            <td style="padding:4px 8px;">${estimatedVolume || "-"}</td>
-          </tr>
-          <tr>
-            <td style="padding:4px 8px;font-weight:600;">Pickup:</td>
-            <td style="padding:4px 8px;">${pickupCityState || "-"}</td>
-          </tr>
-          <tr>
-            <td style="padding:4px 8px;font-weight:600;">Delivery:</td>
-            <td style="padding:4px 8px;">${deliveryCityState || "-"}</td>
-          </tr>
-          <tr>
-            <td style="padding:4px 8px;font-weight:600;">Details:</td>
-            <td style="padding:4px 8px;">${additionalDetails || "-"}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+            <table style="border-collapse:collapse; font-size:14px; width:100%; background-color:#ffffff;">
+              <tbody>
+                <tr>
+                  <td style="padding:4px 8px; font-weight:600; color:#374151; background-color:#ffffff;">Name:</td>
+                  <td style="padding:4px 8px; color:#111827; background-color:#ffffff;">${firstName || "-"} ${lastName || "-"}</td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 8px; font-weight:600; color:#374151; background-color:#ffffff;">Business:</td>
+                  <td style="padding:4px 8px; color:#111827; background-color:#ffffff;">${businessName || "-"}</td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 8px; font-weight:600; color:#374151; background-color:#ffffff;">Job Title:</td>
+                  <td style="padding:4px 8px; color:#111827; background-color:#ffffff;">${jobTitle || "-"}</td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 8px; font-weight:600; color:#374151; background-color:#ffffff;">Email:</td>
+                  <td style="padding:4px 8px; color:#111827; background-color:#ffffff;">${email || "-"}</td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 8px; font-weight:600; color:#374151; background-color:#ffffff;">Phone:</td>
+                  <td style="padding:4px 8px; color:#111827; background-color:#ffffff;">${phone || "-"}</td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 8px; font-weight:600; color:#374151; background-color:#ffffff;">Business Type:</td>
+                  <td style="padding:4px 8px; color:#111827; background-color:#ffffff;">${businessType || "-"}</td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 8px; font-weight:600; color:#374151; background-color:#ffffff;">Transport Need:</td>
+                  <td style="padding:4px 8px; color:#111827; background-color:#ffffff;">${transportNeed || "-"}</td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 8px; font-weight:600; color:#374151; background-color:#ffffff;">Estimated Volume:</td>
+                  <td style="padding:4px 8px; color:#111827; background-color:#ffffff;">${estimatedVolume || "-"}</td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 8px; font-weight:600; color:#374151; background-color:#ffffff;">Pickup:</td>
+                  <td style="padding:4px 8px; color:#111827; background-color:#ffffff;">${pickupCityState || "-"}</td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 8px; font-weight:600; color:#374151; background-color:#ffffff;">Delivery:</td>
+                  <td style="padding:4px 8px; color:#111827; background-color:#ffffff;">${deliveryCityState || "-"}</td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 8px; font-weight:600; color:#374151; background-color:#ffffff;">Details:</td>
+                  <td style="padding:4px 8px; color:#111827; background-color:#ffffff;">${additionalDetails || "-"}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </body>
+    </html>
   `;
 
   if (!adminEmail) {
