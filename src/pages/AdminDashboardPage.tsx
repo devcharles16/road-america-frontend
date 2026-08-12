@@ -132,7 +132,7 @@ export default function AdminDashboardPage() {
           <Link
             key={stat.label}
             to={stat.href}
-            className="block rounded-2xl border border-white/10 bg-black/50 px-4 py-3 transition-colors hover:border-brand-redSoft/50 hover:bg-white/5"
+            className="block rounded-2xl border border-white/10 bg-black/25 px-4 py-3 transition-colors hover:border-brand-redSoft/50 hover:bg-white/5"
           >
             <p className="text-[11px] uppercase tracking-wide text-white/50">
               {stat.label}
@@ -145,7 +145,7 @@ export default function AdminDashboardPage() {
       {/* Charts row */}
       <section className="grid gap-4 md:grid-cols-2">
         {/* Shipments by status (bar chart) */}
-        <div className="rounded-2xl border border-white/10 bg-black/50 p-4">
+        <div className="rounded-2xl border border-white/10 bg-black/25 p-4">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-semibold">Shipments by Status</h2>
             <span className="text-[11px] text-white/40">
@@ -174,7 +174,7 @@ export default function AdminDashboardPage() {
                 />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: "#050509",
+                    backgroundColor: "#252529",
                     border: "1px solid rgba(255,255,255,0.12)",
                     borderRadius: "0.75rem",
                     padding: "0.5rem 0.75rem",
@@ -194,7 +194,7 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* Quotes per day (area chart) */}
-        <div className="rounded-2xl border border-white/10 bg-black/50 p-4">
+        <div className="rounded-2xl border border-white/10 bg-black/25 p-4">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-semibold">Quotes This Week</h2>
             <span className="text-[11px] text-white/40">
@@ -229,7 +229,7 @@ export default function AdminDashboardPage() {
                 />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: "#050509",
+                    backgroundColor: "#252529",
                     border: "1px solid rgba(255,255,255,0.12)",
                     borderRadius: "0.75rem",
                     padding: "0.5rem 0.75rem",
@@ -258,7 +258,7 @@ export default function AdminDashboardPage() {
         <LiveShipmentsCard />
 
         {/* Right: Quick Actions */}
-        <div className="rounded-2xl border border-white/10 bg-black/50 p-4">
+        <div className="rounded-2xl border border-white/10 bg-black/25 p-4">
           <h2 className="text-sm font-semibold">Quick Actions</h2>
           <ul className="mt-3 space-y-2 text-sm text-white/70">
             <li>• Review new transport quote requests</li>

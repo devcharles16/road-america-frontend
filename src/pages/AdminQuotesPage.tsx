@@ -131,7 +131,7 @@ export default function AdminQuotesPage() {
           </button>
         </div>
 
-        <div className="mt-6 rounded-2xl border border-white/10 bg-black/30 shadow-soft-card overflow-hidden">
+        <div className="mt-6 rounded-2xl border border-white/10 bg-black/15 shadow-soft-card overflow-hidden">
           {loading ? (
             <LoadingState message="Loading quotes..." />
           ) : err ? (

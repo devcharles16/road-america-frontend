@@ -45,7 +45,7 @@ const Header = () => {
   ];
 
   return (
-    <header className="bg-[#121212]/40 backdrop-blur-md border-b border-white/10 sticky top-0 z-50">
+    <header className="bg-[#323232]/40 backdrop-blur-md border-b border-white/10 sticky top-0 z-50">
       <div className="mx-auto max-w-7xl px-4 py-4 flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-3">
@@ -143,7 +143,7 @@ const Header = () => {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="md:hidden bg-black/95 border-t border-white/10">
+        <div className="md:hidden bg-black/45 border-t border-white/10">
           <div className="px-4 py-4 space-y-3 text-sm">
             {navItems.map((item) => (
               <Link

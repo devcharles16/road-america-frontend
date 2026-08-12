@@ -92,7 +92,7 @@ const ClientRegisterPage = () => {
 
         <form
           onSubmit={handleSubmit}
-          className="mt-6 space-y-4 rounded-2xl bg-black/40 p-5 shadow-soft-card border border-white/10"
+          className="mt-6 space-y-4 rounded-2xl bg-black/20 p-5 shadow-soft-card border border-white/10"
         >
           <div>
             <label className="block text-xs text-white/70 mb-1">
@@ -104,7 +104,7 @@ const ClientRegisterPage = () => {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="First and last name"
-              className="w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+              className="w-full rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
             />
           </div>
 
@@ -118,7 +118,7 @@ const ClientRegisterPage = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
-              className="w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+              className="w-full rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
             />
           </div>
 
@@ -131,7 +131,7 @@ const ClientRegisterPage = () => {
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder="(555) 555-5555"
-              className="w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+              className="w-full rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
             />
           </div>
 
@@ -145,7 +145,7 @@ const ClientRegisterPage = () => {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+                className="w-full rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
               />
             </div>
             <div>
@@ -157,7 +157,7 @@ const ClientRegisterPage = () => {
                 required
                 value={confirm}
                 onChange={(e) => setConfirm(e.target.value)}
-                className="w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+                className="w-full rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
               />
             </div>
           </div>

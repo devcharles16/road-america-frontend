@@ -69,7 +69,7 @@ export default function AdminBannerPage() {
                 <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
                     <form onSubmit={handleSave} className="space-y-6">
                         {/* Toggle Visibility */}
-                        <div className="flex items-center justify-between p-4 bg-black/20 rounded-xl border border-white/5">
+                        <div className="flex items-center justify-between p-4 bg-black/10 rounded-xl border border-white/5">
                             <div>
                                 <h3 className="text-lg font-medium text-white">Banner Visibility</h3>
                                 <p className="text-sm text-white/50">
@@ -97,7 +97,7 @@ export default function AdminBannerPage() {
                             <textarea
                                 required
                                 rows={3}
-                                className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-brand-redSoft/50"
+                                className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-brand-redSoft/50"
                                 placeholder="e.g., Winter Storm Alert: Expect delays..."
                                 value={settings.message}
                                 onChange={(e) =>
@@ -123,7 +123,7 @@ export default function AdminBannerPage() {
                                         }
                                         className={`cursor-pointer border rounded-xl p-3 flex items-center gap-2 transition ${settings.type === type
                                             ? "bg-white/10 border-brand-redSoft text-white"
-                                            : "bg-black/20 border-white/5 text-white/60 hover:bg-white/5"
+                                            : "bg-black/10 border-white/5 text-white/60 hover:bg-white/5"
                                             }`}
                                     >
                                         <div

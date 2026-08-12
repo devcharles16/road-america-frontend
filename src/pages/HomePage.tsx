@@ -124,7 +124,7 @@ function HeroSection() {
       <div className="relative mx-auto flex max-w-6xl flex-col gap-10 px-4 md:flex-row md:items-center">
         {/* Left: text */}
         <div className="md:w-1/2">
-          <p className="mb-3 inline-block rounded-full border border-white/20 bg-black/30 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-brand-redSoft">
+          <p className="mb-3 inline-block rounded-full border border-white/20 bg-black/15 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-brand-redSoft">
             Road America Auto Transport
           </p>
           <h1 className="font-display text-4xl font-semibold leading-tight md:text-5xl">
@@ -179,7 +179,7 @@ function HeroSection() {
               <span>{`RA-10234`}</span>
             </div>
 
-            <div className="rounded-2xl bg-black/40 p-4 transition-all duration-500">
+            <div className="rounded-2xl bg-black/20 p-4 transition-all duration-500">
               <div className="flex items-center justify-between text-xs text-white/80">
                 <div>
                   <p className="text-[11px] uppercase tracking-wide text-white/50">

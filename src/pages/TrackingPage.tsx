@@ -166,7 +166,7 @@ const TrackingPage = () => {
           {/* Left: form */}
           <form
             onSubmit={handleSubmit}
-            className="space-y-4 rounded-2xl bg-black/40 p-5 shadow-soft-card border border-white/10"
+            className="space-y-4 rounded-2xl bg-black/20 p-5 shadow-soft-card border border-white/10"
           >
             <div>
               <label className="block text-xs text-white/70 mb-1">
@@ -178,7 +178,7 @@ const TrackingPage = () => {
                 value={form.referenceId}
                 onChange={handleChange}
                 placeholder="e.g. RA-10234"
-                className="w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+                className="w-full rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
                 required
               />
             </div>
@@ -191,7 +191,7 @@ const TrackingPage = () => {
                 value={form.email}
                 onChange={handleChange}
                 placeholder="Email used with your quote request"
-                className="w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+                className="w-full rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
                 required
               />
             </div>
@@ -213,7 +213,7 @@ const TrackingPage = () => {
           </form>
 
           {/* Right: timeline */}
-          <div className="rounded-2xl bg-black/40 p-5 shadow-soft-card border border-white/10">
+          <div className="rounded-2xl bg-black/20 p-5 shadow-soft-card border border-white/10">
             <h2 className="text-sm font-semibold mb-4">Shipment Status</h2>
 
             {!shipment && !loading && !error && (

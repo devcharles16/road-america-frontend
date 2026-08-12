@@ -10,8 +10,8 @@
   }
 
   body {
-    /* 🔽 updated to Smoky Graphite */
-    background-color: #121212;
+    /* 🔽 lightened Smoky Graphite */
+    background-color: #323232;
     @apply text-white font-sans;
   }
 }

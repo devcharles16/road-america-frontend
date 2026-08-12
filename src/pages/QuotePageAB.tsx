@@ -243,7 +243,7 @@ const QuotePageAB = () => {
               <p className="text-white/70 text-lg">We price your shipment to get it picked up — not ignored.</p>
             </div>
 
-            <div className="bg-black/40 border border-white/10 rounded-3xl p-6 md:p-8 space-y-6 shadow-xl">
+            <div className="bg-black/20 border border-white/10 rounded-3xl p-6 md:p-8 space-y-6 shadow-xl">
               <h2 className="text-xl font-medium mb-2">Pickup Location</h2>
               
               <div className="space-y-4">
@@ -298,7 +298,7 @@ const QuotePageAB = () => {
               <Loader2 className="w-4 h-4 animate-spin" /> Checking active carrier routes...
             </p>
 
-            <div className="bg-black/40 border border-white/10 rounded-3xl p-6 md:p-8 space-y-6 shadow-xl">
+            <div className="bg-black/20 border border-white/10 rounded-3xl p-6 md:p-8 space-y-6 shadow-xl">
               <h2 className="text-2xl font-medium mb-2">Delivery Location</h2>
               
               <div className="space-y-4">
@@ -645,7 +645,7 @@ const QuotePageAB = () => {
             <h2 className="text-3xl font-semibold mb-2">Where should we send your quote?</h2>
             <p className="text-white/60 mb-8">Your quote is ready. We just need to know where to send it.</p>
 
-            <div className="bg-black/40 border border-white/10 rounded-3xl p-6 md:p-8 space-y-5 shadow-xl">
+            <div className="bg-black/20 border border-white/10 rounded-3xl p-6 md:p-8 space-y-5 shadow-xl">
               
               <div className="grid grid-cols-2 gap-4">
                 <div>

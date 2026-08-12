@@ -33,7 +33,7 @@ import { createBusinessInquiry } from "../services/businessInquiriesService";
 // Section 1: Hero Section
 function HeroSection() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-[#16181d] via-brand-dark to-[#0e0f12] py-16 md:py-24 border-b border-white/10">
+    <section className="relative overflow-hidden bg-gradient-to-b from-[#36383d] via-brand-dark to-[#2e2f32] py-16 md:py-24 border-b border-white/10">
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[500px] opacity-25 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-brand-redSoft via-brand-red/20 to-transparent pointer-events-none" />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -94,7 +94,7 @@ function HeroSection() {
 
           {/* Right Column: Commercial Dashboard Visual */}
           <div className="lg:col-span-5">
-            <div className="rounded-3xl border border-white/15 bg-[#14161b]/95 p-6 shadow-2xl backdrop-blur-xl relative overflow-hidden">
+            <div className="rounded-3xl border border-white/15 bg-[#34363b]/95 p-6 shadow-2xl backdrop-blur-xl relative overflow-hidden">
               <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-4">
                 <div className="flex items-center gap-2">
                   <div className="h-3 w-3 rounded-full bg-emerald-400 animate-pulse" />
@@ -108,7 +108,7 @@ function HeroSection() {
               {/* Visual Card Content */}
               <div className="space-y-4 text-xs">
                 {/* Active Shipment Snapshot */}
-                <div className="p-4 rounded-2xl bg-black/40 border border-white/10 space-y-3">
+                <div className="p-4 rounded-2xl bg-black/20 border border-white/10 space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-white/60 font-semibold uppercase tracking-wider text-[10px]">
                       Dealership Batch Dispatch • Ref #RA-COMM-884
@@ -177,7 +177,7 @@ function OperationalImpactSection() {
   ];
 
   return (
-    <section className="py-16 md:py-24 bg-[#111317] border-b border-white/10">
+    <section className="py-16 md:py-24 bg-[#313337] border-b border-white/10">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <span className="text-xs font-bold uppercase tracking-widest text-brand-redSoft">
@@ -266,7 +266,7 @@ function AlreadyHaveBrokerSection() {
           </div>
 
           <div className="lg:col-span-6">
-            <div className="rounded-3xl border border-white/10 bg-[#16181e] p-6 sm:p-8 shadow-2xl">
+            <div className="rounded-3xl border border-white/10 bg-[#36383e] p-6 sm:p-8 shadow-2xl">
               <h3 className="text-xs font-bold uppercase tracking-wider text-white/60 mb-6 flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                 When Commercial Accounts Call Road America:
@@ -291,9 +291,9 @@ function AlreadyHaveBrokerSection() {
 // Section 4: High-Impact Scenario Section
 function ScenarioSection() {
   return (
-    <section className="py-16 md:py-24 bg-[#0d0e11] border-b border-white/10">
+    <section className="py-16 md:py-24 bg-[#2d2e31] border-b border-white/10">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="rounded-3xl border border-red-500/30 bg-gradient-to-b from-[#1a1c22] to-black p-8 sm:p-12 shadow-2xl relative overflow-hidden">
+        <div className="rounded-3xl border border-red-500/30 bg-gradient-to-b from-[#3a3c42] to-black p-8 sm:p-12 shadow-2xl relative overflow-hidden">
           <div className="grid gap-8 lg:grid-cols-12 items-center">
             {/* Left: The Scenario */}
             <div className="lg:col-span-6 space-y-4 border-b lg:border-b-0 lg:border-r border-white/10 pb-8 lg:pb-0 lg:pr-8">
@@ -373,7 +373,7 @@ function CommercialSolutionsSection() {
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {solutions.map((item, idx) => (
-            <div key={idx} className="rounded-2xl border border-white/10 bg-[#16181e] p-6 hover:border-brand-red/40 transition group flex flex-col justify-between">
+            <div key={idx} className="rounded-2xl border border-white/10 bg-[#36383e] p-6 hover:border-brand-red/40 transition group flex flex-col justify-between">
               <div>
                 <div className="h-10 w-10 rounded-xl bg-brand-red/20 flex items-center justify-center text-brand-redSoft mb-4 group-hover:scale-110 transition-transform">
                   <item.icon className="w-5 h-5" />
@@ -403,7 +403,7 @@ function CommercialWorkflowSection() {
   ];
 
   return (
-    <section className="py-16 md:py-24 bg-[#111317] border-b border-white/10">
+    <section className="py-16 md:py-24 bg-[#313337] border-b border-white/10">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <span className="text-xs font-bold uppercase tracking-widest text-brand-redSoft">
@@ -462,7 +462,7 @@ function CommercialComparisonSection() {
           </h2>
         </div>
 
-        <div className="hidden md:block overflow-hidden rounded-3xl border border-white/10 bg-[#16181e] shadow-2xl">
+        <div className="hidden md:block overflow-hidden rounded-3xl border border-white/10 bg-[#36383e] shadow-2xl">
           <table className="w-full text-left text-sm text-white">
             <thead className="border-b border-white/10 bg-white/5 text-xs uppercase tracking-wider text-white/60">
               <tr>
@@ -488,7 +488,7 @@ function CommercialComparisonSection() {
         {/* Mobile View */}
         <div className="md:hidden space-y-4">
           {items.map((row, i) => (
-            <div key={i} className="rounded-2xl border border-white/10 bg-[#16181e] p-5 space-y-2 text-xs">
+            <div key={i} className="rounded-2xl border border-white/10 bg-[#36383e] p-5 space-y-2 text-xs">
               <div className="font-bold text-white border-b border-white/10 pb-2">{row.topic}</div>
               <div className="text-red-300"><span className="font-bold text-red-400">Transactional:</span> {row.typical}</div>
               <div className="text-emerald-300 font-medium"><span className="font-bold text-emerald-400">Road America:</span> ✓ {row.ra}</div>
@@ -516,7 +516,7 @@ function ServiceLevelSection() {
   ];
 
   return (
-    <section className="py-16 md:py-24 bg-[#111317] border-b border-white/10">
+    <section className="py-16 md:py-24 bg-[#313337] border-b border-white/10">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <span className="text-xs font-bold uppercase tracking-widest text-brand-redSoft">
@@ -562,7 +562,7 @@ function B2BFounderSection() {
   return (
     <section className="py-16 md:py-24 bg-brand-dark border-b border-white/10">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-[#181a20] via-black to-[#121418] p-8 sm:p-12 shadow-2xl relative overflow-hidden">
+        <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-[#383a40] via-black to-[#323438] p-8 sm:p-12 shadow-2xl relative overflow-hidden">
           <div className="grid gap-8 lg:grid-cols-12 items-center">
             {/* Left Column */}
             <div className="lg:col-span-4 flex flex-col items-center text-center">
@@ -641,7 +641,7 @@ function OperationalMindsetSection() {
   ];
 
   return (
-    <section className="py-16 md:py-24 bg-[#111317] border-b border-white/10">
+    <section className="py-16 md:py-24 bg-[#313337] border-b border-white/10">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <span className="text-xs font-bold uppercase tracking-widest text-brand-redSoft">
@@ -706,7 +706,7 @@ function BusinessUseCasesSection() {
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {cases.map((c, idx) => (
-            <div key={idx} className="rounded-2xl border border-white/10 bg-[#16181e] p-6 flex flex-col justify-between hover:border-brand-red/40 transition">
+            <div key={idx} className="rounded-2xl border border-white/10 bg-[#36383e] p-6 flex flex-col justify-between hover:border-brand-red/40 transition">
               <div>
                 <h3 className="text-sm font-bold text-white mb-2">{c.title}</h3>
                 <p className="text-xs text-white/60 leading-relaxed mb-4">{c.scenario}</p>
@@ -725,9 +725,9 @@ function BusinessUseCasesSection() {
 // Section 12: Test-Shipment Offer Section
 function TestShipmentSection() {
   return (
-    <section id="test-shipment" className="py-16 md:py-24 bg-[#0e1014] border-b border-white/10">
+    <section id="test-shipment" className="py-16 md:py-24 bg-[#2e3034] border-b border-white/10">
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-        <div className="rounded-3xl border-2 border-brand-red/40 bg-gradient-to-b from-[#181a20] to-[#0c0d10] p-8 sm:p-14 text-center shadow-2xl">
+        <div className="rounded-3xl border-2 border-brand-red/40 bg-gradient-to-b from-[#383a40] to-[#2c2d30] p-8 sm:p-14 text-center shadow-2xl">
           <span className="text-xs font-bold uppercase tracking-widest text-brand-redSoft bg-brand-red/10 px-4 py-1.5 rounded-full border border-brand-red/20 inline-block mb-6">
             LOW-RISK PILOT OFFER
           </span>
@@ -769,7 +769,7 @@ function TestShipmentSection() {
 // Section 13: "Are We a Good Fit?" Section
 function GoodFitSection() {
   return (
-    <section className="py-16 md:py-24 bg-[#111317] border-b border-white/10">
+    <section className="py-16 md:py-24 bg-[#313337] border-b border-white/10">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <span className="text-xs font-bold uppercase tracking-widest text-brand-redSoft">
@@ -838,7 +838,7 @@ function ComplianceTrustSection() {
         </div>
 
         <div className="grid gap-6 md:grid-cols-3">
-          <div className="rounded-2xl border border-white/10 bg-[#16181e] p-6">
+          <div className="rounded-2xl border border-white/10 bg-[#36383e] p-6">
             <ShieldCheck className="w-6 h-6 text-brand-redSoft mb-3" />
             <h3 className="text-base font-bold text-white mb-2">Licensed Broker</h3>
             <p className="text-xs text-white/60 leading-relaxed">
@@ -846,7 +846,7 @@ function ComplianceTrustSection() {
             </p>
           </div>
 
-          <div className="rounded-2xl border border-white/10 bg-[#16181e] p-6">
+          <div className="rounded-2xl border border-white/10 bg-[#36383e] p-6">
             <FileCheck className="w-6 h-6 text-brand-redSoft mb-3" />
             <h3 className="text-base font-bold text-white mb-2">Carrier & Insurance Verification</h3>
             <p className="text-xs text-white/60 leading-relaxed">
@@ -854,7 +854,7 @@ function ComplianceTrustSection() {
             </p>
           </div>
 
-          <div className="rounded-2xl border border-white/10 bg-[#16181e] p-6">
+          <div className="rounded-2xl border border-white/10 bg-[#36383e] p-6">
             <Lock className="w-6 h-6 text-brand-redSoft mb-3" />
             <h3 className="text-base font-bold text-white mb-2">Privacy & Transparency</h3>
             <p className="text-xs text-white/60 leading-relaxed">
@@ -891,7 +891,7 @@ function B2BCaseStudyCard({ title, clientType, challenge, solution, outcome }: {
 
 function B2BTestimonialsSection() {
   return (
-    <section className="py-16 md:py-24 bg-[#111317] border-b border-white/10">
+    <section className="py-16 md:py-24 bg-[#313337] border-b border-white/10">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-12">
           <span className="text-xs font-bold uppercase tracking-widest text-brand-redSoft">
@@ -962,7 +962,7 @@ function CommercialFAQSection() {
             return (
               <div
                 key={idx}
-                className="rounded-2xl border border-white/10 bg-[#16181e] overflow-hidden transition"
+                className="rounded-2xl border border-white/10 bg-[#36383e] overflow-hidden transition"
               >
                 <button
                   type="button"
@@ -1054,7 +1054,7 @@ function CommercialInquiryFormSection() {
   };
 
   return (
-    <section id="business-inquiry" className="py-16 md:py-24 bg-[#0a0b0d] text-white">
+    <section id="business-inquiry" className="py-16 md:py-24 bg-[#2a2b2d] text-white">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid gap-12 lg:grid-cols-12 items-start">
           {/* Left Column: Heading, CTAs & Desktop Trust Sidebar */}
@@ -1090,7 +1090,7 @@ function CommercialInquiryFormSection() {
             </div>
 
             {/* Desktop View Sidebar: Trust Shield Info */}
-            <div className="hidden lg:block rounded-2xl border border-white/15 bg-[#14161b] p-6 space-y-4 shadow-xl">
+            <div className="hidden lg:block rounded-2xl border border-white/15 bg-[#34363b] p-6 space-y-4 shadow-xl">
               <h4 className="text-xs font-bold uppercase tracking-widest text-brand-redSoft flex items-center gap-2 border-b border-white/10 pb-3">
                 <ShieldCheck className="w-4 h-4 text-emerald-400" />
                 Corporate Compliance & Accounting
@@ -1127,7 +1127,7 @@ function CommercialInquiryFormSection() {
 
           {/* Right Column: B2B Commercial Inquiry Form */}
           <div className="lg:col-span-7">
-            <div className="rounded-3xl border border-white/15 bg-[#14161b] p-6 sm:p-10 shadow-2xl space-y-6">
+            <div className="rounded-3xl border border-white/15 bg-[#34363b] p-6 sm:p-10 shadow-2xl space-y-6">
               {/* Form Title & Context Copy */}
               <div>
                 <h3 className="text-xl sm:text-2xl font-extrabold text-white tracking-wide uppercase font-display">
@@ -1189,7 +1189,7 @@ function CommercialInquiryFormSection() {
                         required
                         value={formData.firstName}
                         onChange={handleChange}
-                        className="w-full rounded-xl bg-black/50 border border-white/15 px-3 py-2.5 text-white focus:border-brand-redSoft outline-none"
+                        className="w-full rounded-xl bg-black/25 border border-white/15 px-3 py-2.5 text-white focus:border-brand-redSoft outline-none"
                         placeholder="John"
                       />
                     </div>
@@ -1201,7 +1201,7 @@ function CommercialInquiryFormSection() {
                         required
                         value={formData.lastName}
                         onChange={handleChange}
-                        className="w-full rounded-xl bg-black/50 border border-white/15 px-3 py-2.5 text-white focus:border-brand-redSoft outline-none"
+                        className="w-full rounded-xl bg-black/25 border border-white/15 px-3 py-2.5 text-white focus:border-brand-redSoft outline-none"
                         placeholder="Doe"
                       />
                     </div>
@@ -1216,7 +1216,7 @@ function CommercialInquiryFormSection() {
                         required
                         value={formData.businessName}
                         onChange={handleChange}
-                        className="w-full rounded-xl bg-black/50 border border-white/15 px-3 py-2.5 text-white focus:border-brand-redSoft outline-none"
+                        className="w-full rounded-xl bg-black/25 border border-white/15 px-3 py-2.5 text-white focus:border-brand-redSoft outline-none"
                         placeholder="e.g., Apex Logistics or Auto Group"
                       />
                     </div>
@@ -1227,7 +1227,7 @@ function CommercialInquiryFormSection() {
                         name="jobTitle"
                         value={formData.jobTitle}
                         onChange={handleChange}
-                        className="w-full rounded-xl bg-black/50 border border-white/15 px-3 py-2.5 text-white focus:border-brand-redSoft outline-none"
+                        className="w-full rounded-xl bg-black/25 border border-white/15 px-3 py-2.5 text-white focus:border-brand-redSoft outline-none"
                         placeholder="Inventory Manager"
                       />
                     </div>
@@ -1242,7 +1242,7 @@ function CommercialInquiryFormSection() {
                         required
                         value={formData.email}
                         onChange={handleChange}
-                        className="w-full rounded-xl bg-black/50 border border-white/15 px-3 py-2.5 text-white focus:border-brand-redSoft outline-none"
+                        className="w-full rounded-xl bg-black/25 border border-white/15 px-3 py-2.5 text-white focus:border-brand-redSoft outline-none"
                         placeholder="john@apexauto.com"
                       />
                     </div>
@@ -1254,7 +1254,7 @@ function CommercialInquiryFormSection() {
                         required
                         value={formData.phone}
                         onChange={handleChange}
-                        className="w-full rounded-xl bg-black/50 border border-white/15 px-3 py-2.5 text-white focus:border-brand-redSoft outline-none"
+                        className="w-full rounded-xl bg-black/25 border border-white/15 px-3 py-2.5 text-white focus:border-brand-redSoft outline-none"
                         placeholder="(555) 000-0000"
                       />
                     </div>
@@ -1268,7 +1268,7 @@ function CommercialInquiryFormSection() {
                         name="businessType"
                         value={formData.businessType}
                         onChange={handleChange}
-                        className="w-full rounded-xl bg-black/50 border border-white/15 px-3 py-2.5 text-white focus:border-brand-redSoft outline-none"
+                        className="w-full rounded-xl bg-black/25 border border-white/15 px-3 py-2.5 text-white focus:border-brand-redSoft outline-none"
                       >
                         <option value="Franchise dealership">Franchise dealership</option>
                         <option value="Independent dealership">Independent dealership</option>
@@ -1290,7 +1290,7 @@ function CommercialInquiryFormSection() {
                         name="transportNeed"
                         value={formData.transportNeed}
                         onChange={handleChange}
-                        className="w-full rounded-xl bg-black/50 border border-white/15 px-3 py-2.5 text-white focus:border-brand-redSoft outline-none"
+                        className="w-full rounded-xl bg-black/25 border border-white/15 px-3 py-2.5 text-white focus:border-brand-redSoft outline-none"
                       >
                         <option value="One immediate shipment">One immediate shipment</option>
                         <option value="Recurring shipments">Recurring shipments</option>
@@ -1313,7 +1313,7 @@ function CommercialInquiryFormSection() {
                       name="estimatedVolume"
                       value={formData.estimatedVolume}
                       onChange={handleChange}
-                      className="w-full rounded-xl bg-black/50 border border-white/15 px-3 py-2.5 text-white focus:border-brand-redSoft outline-none"
+                      className="w-full rounded-xl bg-black/25 border border-white/15 px-3 py-2.5 text-white focus:border-brand-redSoft outline-none"
                     >
                       <option value="One-time shipment">One-time shipment</option>
                       <option value="1–4 vehicles per month">1–4 vehicles per month</option>
@@ -1335,7 +1335,7 @@ function CommercialInquiryFormSection() {
                         name="pickupCityState"
                         value={formData.pickupCityState}
                         onChange={handleChange}
-                        className="w-full rounded-xl bg-black/50 border border-white/15 px-3 py-2.5 text-white focus:border-brand-redSoft outline-none"
+                        className="w-full rounded-xl bg-black/25 border border-white/15 px-3 py-2.5 text-white focus:border-brand-redSoft outline-none"
                         placeholder="Orlando, FL"
                       />
                     </div>
@@ -1346,7 +1346,7 @@ function CommercialInquiryFormSection() {
                         name="deliveryCityState"
                         value={formData.deliveryCityState}
                         onChange={handleChange}
-                        className="w-full rounded-xl bg-black/50 border border-white/15 px-3 py-2.5 text-white focus:border-brand-redSoft outline-none"
+                        className="w-full rounded-xl bg-black/25 border border-white/15 px-3 py-2.5 text-white focus:border-brand-redSoft outline-none"
                         placeholder="Atlanta, GA"
                       />
                     </div>
@@ -1361,7 +1361,7 @@ function CommercialInquiryFormSection() {
                       rows={3}
                       value={formData.additionalDetails}
                       onChange={handleChange}
-                      className="w-full rounded-xl bg-black/50 border border-white/15 px-3 py-2.5 text-white focus:border-brand-redSoft outline-none"
+                      className="w-full rounded-xl bg-black/25 border border-white/15 px-3 py-2.5 text-white focus:border-brand-redSoft outline-none"
                       placeholder="e.g., Moving 5 off-lease vehicles from Orlando to Atlanta, monthly volume, or custom lane requirements..."
                     />
                   </div>

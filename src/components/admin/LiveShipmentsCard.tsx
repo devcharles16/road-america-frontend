@@ -115,7 +115,7 @@ export default function LiveShipmentsCard() {
   }, []);
 
   return (
-    <div className="rounded-2xl border border-white/10 bg-black/50 p-4">
+    <div className="rounded-2xl border border-white/10 bg-black/25 p-4">
       <div className="mb-3">
         <h2 className="text-sm font-semibold">Live Shipments</h2>
         <p className="mt-1 text-[11px] text-white/50">
@@ -157,7 +157,7 @@ export default function LiveShipmentsCard() {
             return (
               <div
                 key={shipment.id}
-                className="rounded-xl bg-black/40 p-3 text-xs text-white/80"
+                className="rounded-xl bg-black/20 p-3 text-xs text-white/80"
               >
                 <div className="flex items-center justify-between gap-3">
                   <div className="min-w-0">

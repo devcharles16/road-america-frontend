@@ -15,7 +15,7 @@ export default function AdminLayout() {
   return (
     <div className="min-h-screen bg-brand-dark text-white flex">
       {/* Sidebar */}
-      <aside className="hidden md:flex w-64 flex-col border-r border-white/10 bg-black/70">
+      <aside className="hidden md:flex w-64 flex-col border-r border-white/10 bg-black/35">
         <div className="px-6 py-5 border-b border-white/10">
           <p className="text-[11px] uppercase tracking-[0.2em] text-white/40">
             Road America Auto Transport

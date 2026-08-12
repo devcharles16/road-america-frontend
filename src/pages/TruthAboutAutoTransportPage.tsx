@@ -37,7 +37,7 @@ function HeroSection() {
   const [activeTab, setActiveTab] = useState<"industry" | "roadamerica">("roadamerica");
 
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-[#16181d] via-brand-dark to-[#0e0f12] py-16 md:py-24 border-b border-white/10">
+    <section className="relative overflow-hidden bg-gradient-to-b from-[#36383d] via-brand-dark to-[#2e2f32] py-16 md:py-24 border-b border-white/10">
       {/* Background Decorative Lighting */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[500px] opacity-25 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-brand-redSoft via-brand-red/20 to-transparent pointer-events-none" />
 
@@ -95,12 +95,12 @@ function HeroSection() {
 
           {/* Right Column: Visual Interactive Side-by-Side Comparison */}
           <div className="lg:col-span-5">
-            <div className="rounded-3xl border border-white/15 bg-[#14161b]/90 p-6 shadow-2xl backdrop-blur-xl relative overflow-hidden">
+            <div className="rounded-3xl border border-white/15 bg-[#34363b]/90 p-6 shadow-2xl backdrop-blur-xl relative overflow-hidden">
               <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-5">
                 <span className="text-xs font-semibold uppercase tracking-wider text-white/60">
                   Visual Comparison
                 </span>
-                <div className="flex rounded-full bg-black/50 p-1 border border-white/10 text-xs">
+                <div className="flex rounded-full bg-black/25 p-1 border border-white/10 text-xs">
                   <button
                     type="button"
                     onClick={() => setActiveTab("industry")}
@@ -135,7 +135,7 @@ function HeroSection() {
                       <p className="text-xs text-red-300/80">Quoted $500 below market to lock in booking</p>
                     </div>
                   </div>
-                  <div className="p-4 rounded-2xl bg-black/40 border border-white/5 space-y-2">
+                  <div className="p-4 rounded-2xl bg-black/20 border border-white/5 space-y-2">
                     <div className="flex items-center justify-between text-xs text-white/60">
                       <span>Phone Spam Notification</span>
                       <span className="text-red-400 font-mono">18 Missed Calls</span>
@@ -144,7 +144,7 @@ function HeroSection() {
                       "Data sold to 15 different brokers simultaneously..."
                     </p>
                   </div>
-                  <div className="p-3 rounded-2xl bg-black/40 border border-white/5 flex items-center justify-between text-xs">
+                  <div className="p-3 rounded-2xl bg-black/20 border border-white/5 flex items-center justify-between text-xs">
                     <span className="text-white/70">Carrier Status</span>
                     <span className="px-2.5 py-1 rounded-full bg-red-500/20 text-red-300 font-medium">
                       No Driver Assigned
@@ -163,7 +163,7 @@ function HeroSection() {
                       <p className="text-xs text-emerald-300/80">Calculated based on real driver route economics</p>
                     </div>
                   </div>
-                  <div className="p-4 rounded-2xl bg-black/40 border border-white/5 space-y-2">
+                  <div className="p-4 rounded-2xl bg-black/20 border border-white/5 space-y-2">
                     <div className="flex items-center justify-between text-xs text-white/60">
                       <span>Privacy Shield</span>
                       <span className="text-emerald-400 font-semibold">1-on-1 Contact Only</span>
@@ -172,7 +172,7 @@ function HeroSection() {
                       Direct line with a dedicated transport coordinator. Zero spam.
                     </p>
                   </div>
-                  <div className="p-3 rounded-2xl bg-black/40 border border-white/5 flex items-center justify-between text-xs">
+                  <div className="p-3 rounded-2xl bg-black/20 border border-white/5 flex items-center justify-between text-xs">
                     <span className="text-white/70">Vetted Carrier Status</span>
                     <span className="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 font-medium flex items-center gap-1">
                       <Check className="w-3 h-3" /> Assigned & Insured
@@ -195,7 +195,7 @@ function HeroSection() {
 // Section 2: Introductory Trust Section Component
 function TrustSection() {
   return (
-    <section id="industry-truth" className="py-16 md:py-24 bg-[#111317] border-b border-white/10">
+    <section id="industry-truth" className="py-16 md:py-24 bg-[#313337] border-b border-white/10">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <span className="text-xs font-bold uppercase tracking-widest text-brand-redSoft">
@@ -248,7 +248,7 @@ function TrustSection() {
         </div>
 
         {/* Suggested Diagram: Step Flowchart */}
-        <div className="rounded-3xl border border-white/10 bg-gradient-to-r from-black/80 via-[#181a20] to-black/80 p-6 md:p-10 shadow-2xl">
+        <div className="rounded-3xl border border-white/10 bg-gradient-to-r from-black/40 via-[#383a40] to-black/40 p-6 md:p-10 shadow-2xl">
           <h3 className="text-center text-xs uppercase tracking-widest font-bold text-white/50 mb-8">
             How Road America Connects You To Your Carrier
           </h3>
@@ -335,7 +335,7 @@ function QuoteProcessSection() {
           {steps.map((step) => (
             <div
               key={step.num}
-              className="relative rounded-2xl border border-white/10 bg-[#16181e] p-6 transition-all duration-300 hover:border-brand-red/40 hover:-translate-y-1 group"
+              className="relative rounded-2xl border border-white/10 bg-[#36383e] p-6 transition-all duration-300 hover:border-brand-red/40 hover:-translate-y-1 group"
             >
               <div className="flex items-center justify-between mb-4">
                 <span className="font-mono text-2xl font-bold text-brand-redSoft group-hover:text-red-400 transition-colors">
@@ -368,7 +368,7 @@ function CarrierRouteSection() {
   ];
 
   return (
-    <section className="py-16 md:py-24 bg-[#111317] border-b border-white/10">
+    <section className="py-16 md:py-24 bg-[#313337] border-b border-white/10">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid gap-12 lg:grid-cols-12 items-center">
           <div className="lg:col-span-6 space-y-6">
@@ -397,7 +397,7 @@ function CarrierRouteSection() {
 
           {/* Route Map Graphic */}
           <div className="lg:col-span-6">
-            <div className="rounded-3xl border border-white/15 bg-gradient-to-br from-[#181a20] to-black p-6 sm:p-8 shadow-2xl">
+            <div className="rounded-3xl border border-white/15 bg-gradient-to-br from-[#383a40] to-black p-6 sm:p-8 shadow-2xl">
               <h3 className="text-xs font-bold uppercase tracking-wider text-white/60 mb-6 flex items-center gap-2">
                 <Truck className="w-4 h-4 text-brand-redSoft" />
                 Sample Interstate Carrier Corridor
@@ -494,7 +494,7 @@ function LowQuoteFailsSection() {
 // Section 6: Lead-Selling and Privacy Section
 function PrivacySection() {
   return (
-    <section className="py-16 md:py-24 bg-[#111317] border-b border-white/10">
+    <section className="py-16 md:py-24 bg-[#313337] border-b border-white/10">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid gap-12 lg:grid-cols-12 items-center">
           <div className="lg:col-span-6 space-y-6">
@@ -581,7 +581,7 @@ function ComparisonSection() {
           </h2>
         </div>
 
-        <div className="hidden md:block overflow-hidden rounded-3xl border border-white/10 bg-[#16181e] shadow-2xl">
+        <div className="hidden md:block overflow-hidden rounded-3xl border border-white/10 bg-[#36383e] shadow-2xl">
           <table className="w-full text-left text-sm text-white">
             <thead className="border-b border-white/10 bg-white/5 text-xs uppercase tracking-wider text-white/60">
               <tr>
@@ -607,7 +607,7 @@ function ComparisonSection() {
         {/* Mobile View Cards */}
         <div className="md:hidden space-y-4">
           {comparisonItems.map((item, i) => (
-            <div key={i} className="rounded-2xl border border-white/10 bg-[#16181e] p-5 space-y-3">
+            <div key={i} className="rounded-2xl border border-white/10 bg-[#36383e] p-5 space-y-3">
               <h3 className="text-sm font-bold text-white border-b border-white/10 pb-2">{item.feature}</h3>
               <div className="text-xs text-red-300">
                 <span className="font-semibold block text-red-400">Typical:</span> {item.typical}
@@ -636,7 +636,7 @@ function ServiceStandardSection() {
   ];
 
   return (
-    <section className="py-16 md:py-24 bg-[#111317] border-b border-white/10">
+    <section className="py-16 md:py-24 bg-[#313337] border-b border-white/10">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <span className="text-xs font-bold uppercase tracking-widest text-brand-redSoft">
@@ -682,7 +682,7 @@ function WhatYouPayForSection() {
 
         <div className="grid gap-8 lg:grid-cols-2">
           {/* Carrier Portion */}
-          <div className="rounded-3xl border border-white/10 bg-[#16181e] p-6 sm:p-8">
+          <div className="rounded-3xl border border-white/10 bg-[#36383e] p-6 sm:p-8">
             <div className="flex items-center gap-3 mb-6">
               <div className="h-10 w-10 rounded-xl bg-brand-red/20 flex items-center justify-center text-brand-redSoft font-bold">
                 <Truck className="w-5 h-5" />
@@ -712,7 +712,7 @@ function WhatYouPayForSection() {
           </div>
 
           {/* Broker Portion */}
-          <div className="rounded-3xl border border-white/10 bg-[#16181e] p-6 sm:p-8">
+          <div className="rounded-3xl border border-white/10 bg-[#36383e] p-6 sm:p-8">
             <div className="flex items-center gap-3 mb-6">
               <div className="h-10 w-10 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-400 font-bold">
                 <ShieldCheck className="w-5 h-5" />
@@ -750,9 +750,9 @@ function WhatYouPayForSection() {
 // Section 10: Founder Story Component
 function FounderStorySection() {
   return (
-    <section className="py-16 md:py-24 bg-[#111317] border-b border-white/10">
+    <section className="py-16 md:py-24 bg-[#313337] border-b border-white/10">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-[#181a20] via-black to-[#121418] p-8 sm:p-12 shadow-2xl relative overflow-hidden">
+        <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-[#383a40] via-black to-[#323438] p-8 sm:p-12 shadow-2xl relative overflow-hidden">
           <div className="grid gap-8 lg:grid-cols-12 items-center">
             {/* Left: Profile Card & ASE Badge */}
             <div className="lg:col-span-4 flex flex-col items-center text-center">
@@ -840,7 +840,7 @@ function ShipmentStorySection() {
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {stories.map((s, i) => (
-            <div key={i} className="rounded-2xl border border-white/10 bg-[#16181e] p-6 hover:border-brand-red/40 transition">
+            <div key={i} className="rounded-2xl border border-white/10 bg-[#36383e] p-6 hover:border-brand-red/40 transition">
               <div className="h-8 w-8 rounded-lg bg-brand-red/20 text-brand-redSoft flex items-center justify-center mb-3">
                 <Car className="w-4 h-4" />
               </div>
@@ -867,9 +867,9 @@ function BusinessServicesSection() {
   ];
 
   return (
-    <section className="py-16 md:py-24 bg-[#111317] border-b border-white/10">
+    <section className="py-16 md:py-24 bg-[#313337] border-b border-white/10">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="rounded-3xl border border-white/10 bg-gradient-to-r from-[#14161b] via-[#1c1e24] to-[#14161b] p-8 sm:p-12">
+        <div className="rounded-3xl border border-white/10 bg-gradient-to-r from-[#34363b] via-[#3c3e44] to-[#34363b] p-8 sm:p-12">
           <div className="grid gap-8 lg:grid-cols-12 items-center">
             <div className="lg:col-span-7 space-y-6">
               <span className="text-xs font-bold uppercase tracking-widest text-brand-redSoft">
@@ -892,7 +892,7 @@ function BusinessServicesSection() {
               </div>
             </div>
 
-            <div className="lg:col-span-5 text-center p-6 rounded-2xl bg-black/40 border border-white/10 space-y-4">
+            <div className="lg:col-span-5 text-center p-6 rounded-2xl bg-black/20 border border-white/10 space-y-4">
               <Building2 className="w-10 h-10 text-brand-redSoft mx-auto" />
               <h3 className="text-lg font-bold text-white">Need a Commercial Partner?</h3>
               <p className="text-xs text-white/60">
@@ -926,7 +926,7 @@ function PromiseSection() {
   return (
     <section className="py-16 md:py-24 bg-brand-dark border-b border-white/10">
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-        <div className="rounded-3xl border-2 border-brand-red/40 bg-gradient-to-b from-[#181a20] to-[#0f1013] p-8 sm:p-14 text-center shadow-2xl relative">
+        <div className="rounded-3xl border-2 border-brand-red/40 bg-gradient-to-b from-[#383a40] to-[#2f3033] p-8 sm:p-14 text-center shadow-2xl relative">
           <div className="inline-flex items-center gap-2 rounded-full border border-brand-red/40 bg-brand-red/10 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-brand-redSoft mb-6">
             <Award className="w-4 h-4" />
             Official Pledge
@@ -958,7 +958,7 @@ function PromiseSection() {
 // Section 14: Final Call to Action & Legal Disclaimers
 function FinalCTASection() {
   return (
-    <section className="py-16 md:py-24 bg-[#0e0f12] text-white">
+    <section className="py-16 md:py-24 bg-[#2e2f32] text-white">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-12 space-y-6">
           <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-extrabold text-white">

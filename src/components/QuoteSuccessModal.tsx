@@ -24,7 +24,7 @@ export default function QuoteSuccessModal({
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={onClose}
-                        className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+                        className="absolute inset-0 bg-black/40 backdrop-blur-sm"
                     />
 
                     {/* Modal Content */}
@@ -32,7 +32,7 @@ export default function QuoteSuccessModal({
                         initial={{ opacity: 0, scale: 0.9, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                        className="relative w-full max-w-lg overflow-hidden rounded-3xl border border-white/10 bg-[#1A1A1A] text-center shadow-2xl"
+                        className="relative w-full max-w-lg overflow-hidden rounded-3xl border border-white/10 bg-[#3a3a3a] text-center shadow-2xl"
                     >
                         {/* Header / Icon */}
                         <div className="bg-brand-red/10 py-8">

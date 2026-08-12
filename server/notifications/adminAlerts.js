@@ -192,8 +192,8 @@ export async function sendQuoteConfirmationEmail(payload) {
   const subject = "We’ve Received Your Transport Quote Request";
 
   const html = `
-    <div style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background:#0b0b0b; padding:24px; color:#f5f5f5;">
-      <div style="max-width:600px;margin:0 auto;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);background:linear-gradient(135deg,#101010,#181818);">
+    <div style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background:#2b2b2b; padding:24px; color:#f5f5f5;">
+      <div style="max-width:600px;margin:0 auto;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);background:linear-gradient(135deg,#303030,#383838);">
 
         <div style="padding:20px 24px;border-bottom:1px solid rgba(255,255,255,0.08);background:linear-gradient(to right,#8C0000,#2b0000);">
           <h1 style="margin:0;font-size:20px;letter-spacing:0.08em;text-transform:uppercase;color:#ffffff;">
@@ -411,8 +411,8 @@ export async function sendBusinessInquiryConfirmationEmail(payload) {
   const subject = "We've Received Your Business Transport Inquiry";
 
   const html = `
-    <div style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background:#0b0b0b; padding:24px; color:#f5f5f5;">
-      <div style="max-width:600px;margin:0 auto;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);background:linear-gradient(135deg,#101010,#181818);">
+    <div style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background:#2b2b2b; padding:24px; color:#f5f5f5;">
+      <div style="max-width:600px;margin:0 auto;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);background:linear-gradient(135deg,#303030,#383838);">
 
         <div style="padding:20px 24px;border-bottom:1px solid rgba(255,255,255,0.08);background:linear-gradient(to right,#8C0000,#2b0000);">
           <h1 style="margin:0;font-size:20px;letter-spacing:0.08em;text-transform:uppercase;color:#ffffff;">

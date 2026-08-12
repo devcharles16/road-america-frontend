@@ -276,7 +276,7 @@ const AdminShipmentsPage = () => {
                 transports, they will appear here.
               </p>
             ) : (
-              <div className="overflow-x-auto rounded-2xl border border-white/10 bg-black/40 shadow-soft-card">
+              <div className="overflow-x-auto rounded-2xl border border-white/10 bg-black/20 shadow-soft-card">
                 <table className="min-w-full text-xs">
                   <thead className="bg-white/5 text-white/70">
                     <tr>
@@ -336,7 +336,7 @@ const AdminShipmentsPage = () => {
                               const next = e.target.value as TransportStatus;
                               handleStatusChange(s.id, next);
                             }}
-                            className="rounded-full border border-white/20 bg-[#121212]/60 px-2 py-1 text-[11px] outline-none focus:border-brand-redSoft"
+                            className="rounded-full border border-white/20 bg-[#323232]/60 px-2 py-1 text-[11px] outline-none focus:border-brand-redSoft"
                           >
                             {/* Allows value="" when status is null/undefined */}
                             <option value="" disabled>
@@ -385,7 +385,7 @@ const AdminShipmentsPage = () => {
             ) : quotes.length === 0 ? (
               <p className="text-xs text-white/60">No quotes found.</p>
             ) : (
-              <div className="overflow-x-auto rounded-2xl border border-white/10 bg-black/40 shadow-soft-card">
+              <div className="overflow-x-auto rounded-2xl border border-white/10 bg-black/20 shadow-soft-card">
                 <table className="min-w-full text-xs">
                   <thead className="bg-white/5 text-white/70">
                     <tr>

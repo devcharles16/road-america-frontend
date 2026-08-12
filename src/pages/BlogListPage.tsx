@@ -52,7 +52,7 @@ const BlogListPage = () => {
               <Link
                 key={post.id}
                 to={`/blog/${post.slug}`}
-                className="block rounded-2xl border border-white/10 bg-black/50 overflow-hidden hover:border-brand-redSoft hover:bg-black/70 transition"
+                className="block rounded-2xl border border-white/10 bg-black/25 overflow-hidden hover:border-brand-redSoft hover:bg-black/35 transition"
               >
                 {post.imageUrl && (
                   <div className="h-40 w-full overflow-hidden">

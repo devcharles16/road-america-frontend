@@ -55,7 +55,7 @@ export default function AdminUsersPage() {
         </div>
 
         {loading && (
-          <div className="rounded-xl border border-white/10 bg-black/20 p-6">
+          <div className="rounded-xl border border-white/10 bg-black/10 p-6">
             <p className="text-white/80">Loading users…</p>
           </div>
         )}
@@ -72,7 +72,7 @@ export default function AdminUsersPage() {
         )}
 
         {!loading && !error && users.length === 0 && (
-          <div className="rounded-xl border border-white/10 bg-black/20 p-8 text-center">
+          <div className="rounded-xl border border-white/10 bg-black/10 p-8 text-center">
             <p className="text-lg font-semibold">No users found</p>
             <p className="text-white/70 mt-2">
               If you see users under Authentication → Users, but none here, then

@@ -273,7 +273,7 @@ const QuotePage = () => {
           <form
             id="quote-form"
             onSubmit={handleSubmit}
-            className="space-y-8 rounded-3xl bg-black/40 p-6 shadow-soft-card border border-white/10"
+            className="space-y-8 rounded-3xl bg-black/20 p-6 shadow-soft-card border border-white/10"
           >
             {/* Pickup & Delivery */}
             <div className="grid gap-6 md:grid-cols-2">
@@ -290,7 +290,7 @@ const QuotePage = () => {
                       value={form.pickupCity}
                       onChange={handleChange}
                       onBlur={handleCapitalizeBlur("pickupCity")}
-                      className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+                      className="mt-1 w-full rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
                       required
                     />
                   </div>
@@ -300,7 +300,7 @@ const QuotePage = () => {
                       name="pickupState"
                       value={form.pickupState}
                       onChange={handleChange}
-                      className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+                      className="mt-1 w-full rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
                       required
                     >
                       <option value="">Select state</option>
@@ -329,7 +329,7 @@ const QuotePage = () => {
                       value={form.deliveryCity}
                       onChange={handleChange}
                       onBlur={handleCapitalizeBlur("deliveryCity")}
-                      className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+                      className="mt-1 w-full rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
                       required
                     />
                   </div>
@@ -339,7 +339,7 @@ const QuotePage = () => {
                       name="deliveryState"
                       value={form.deliveryState}
                       onChange={handleChange}
-                      className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+                      className="mt-1 w-full rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
                       required
                     >
                       <option value="">Select state</option>
@@ -382,7 +382,7 @@ const QuotePage = () => {
                       name="vin"
                       value={form.vin}
                       onChange={handleChange}
-                      className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+                      className="mt-1 w-full rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
 
                     />
                   </div>
@@ -395,7 +395,7 @@ const QuotePage = () => {
                       name="runningCondition"
                       value={form.runningCondition}
                       onChange={handleChange}
-                      className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+                      className="mt-1 w-full rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
                     >
                       <option value="">Select Running Condition</option>
                       <option value="running">Running</option>
@@ -411,7 +411,7 @@ const QuotePage = () => {
                       name="vehicleHeightMod"
                       value={form.vehicleHeightMod}
                       onChange={handleChange}
-                      className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+                      className="mt-1 w-full rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
                       required
                     >
                       <option value="">Select Vehicle Height</option>
@@ -428,7 +428,7 @@ const QuotePage = () => {
                       name="transportType"
                       value={form.transportType}
                       onChange={handleChange}
-                      className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+                      className="mt-1 w-full rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
                     >
                       <option value="">Select Transport Type</option>
                       <option value="open">Open Carrier</option>
@@ -454,7 +454,7 @@ const QuotePage = () => {
                     name="preferredPickupWindow"
                     value={form.preferredPickupWindow}
                     onChange={handleChange}
-                    className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+                    className="mt-1 w-full rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
                     required
                   >
                     <option value="">Select Pickup Window</option>
@@ -482,7 +482,7 @@ const QuotePage = () => {
                     value={form.firstName}
                     onChange={handleChange}
                     onBlur={handleCapitalizeBlur("firstName")}
-                    className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+                    className="mt-1 w-full rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
                     required
                   />
                 </div>
@@ -495,7 +495,7 @@ const QuotePage = () => {
                     value={form.lastName}
                     onChange={handleChange}
                     onBlur={handleCapitalizeBlur("lastName")}
-                    className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+                    className="mt-1 w-full rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
                     required
                   />
                 </div>
@@ -507,7 +507,7 @@ const QuotePage = () => {
                     name="email"
                     value={form.email}
                     onChange={handleChange}
-                    className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+                    className="mt-1 w-full rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
                     required
                   />
                 </div>
@@ -519,7 +519,7 @@ const QuotePage = () => {
                     name="phone"
                     value={form.phone}
                     onChange={handleChange}
-                    className="mt-1 w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+                    className="mt-1 w-full rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
                     required
                   />
                 </div>

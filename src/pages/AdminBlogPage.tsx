@@ -246,7 +246,7 @@ const AdminBlogPage = () => {
 
         <div className="grid gap-6 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
           {/* Post list */}
-          <div className="rounded-2xl border border-white/10 bg-black/40 p-4 shadow-soft-card">
+          <div className="rounded-2xl border border-white/10 bg-black/20 p-4 shadow-soft-card">
             <h2 className="text-sm font-semibold mb-3">Posts</h2>
             {loading ? (
               <p className="text-xs text-white/60">Loading posts…</p>
@@ -260,7 +260,7 @@ const AdminBlogPage = () => {
                 {posts.map((post) => (
                   <li
                     key={post.id}
-                    className={`flex items-center justify-between gap-3 rounded-xl border border-white/10 px-3 py-2 ${editingId === post.id ? "bg-white/10" : "bg-black/40"
+                    className={`flex items-center justify-between gap-3 rounded-xl border border-white/10 px-3 py-2 ${editingId === post.id ? "bg-white/10" : "bg-black/20"
                       }`}
                   >
                     <div className="min-w-0 flex-1">
@@ -294,7 +294,7 @@ const AdminBlogPage = () => {
           {/* Editor */}
           <form
             onSubmit={handleSave}
-            className="rounded-2xl border border-white/10 bg-black/40 p-4 shadow-soft-card space-y-3"
+            className="rounded-2xl border border-white/10 bg-black/20 p-4 shadow-soft-card space-y-3"
           >
             <h2 className="text-sm font-semibold mb-1">
               {editingId ? "Edit Post" : "New Post"}
@@ -311,7 +311,7 @@ const AdminBlogPage = () => {
                   setForm((f) => ({ ...f, title: e.target.value }))
                 }
                 required
-                className="w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-xs text-white outline-none focus:border-brand-redSoft"
+                className="w-full rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-xs text-white outline-none focus:border-brand-redSoft"
               />
             </div>
             <div>
@@ -354,7 +354,7 @@ const AdminBlogPage = () => {
                   setForm((f) => ({ ...f, slug: e.target.value }))
                 }
                 placeholder="auto-generated-from-title if left blank"
-                className="w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-xs text-white outline-none focus:border-brand-redSoft"
+                className="w-full rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-xs text-white outline-none focus:border-brand-redSoft"
               />
             </div>
 
@@ -368,7 +368,7 @@ const AdminBlogPage = () => {
                   setForm((f) => ({ ...f, excerpt: e.target.value }))
                 }
                 rows={2}
-                className="w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-xs text-white outline-none focus:border-brand-redSoft"
+                className="w-full rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-xs text-white outline-none focus:border-brand-redSoft"
               />
             </div>
 
@@ -394,7 +394,7 @@ const AdminBlogPage = () => {
                       <summary className="list-none cursor-pointer text-[11px] text-brand-redSoft hover:text-brand-red font-semibold">
                         Formatting Help
                       </summary>
-                      <div className="absolute right-0 top-6 z-10 w-64 rounded-xl border border-white/10 bg-[#1a1b1e] p-4 shadow-soft-card">
+                      <div className="absolute right-0 top-6 z-10 w-64 rounded-xl border border-white/10 bg-[#3a3b3e] p-4 shadow-soft-card">
                         <h4 className="mb-2 text-xs font-semibold text-white">Markdown Cheatsheet</h4>
                         <ul className="space-y-2 text-[10px] text-white/70">
                           <li className="flex justify-between"><span>Heading</span> <code className="text-brand-redSoft"># Title</code></li>
@@ -415,7 +415,7 @@ const AdminBlogPage = () => {
                     setForm((f) => ({ ...f, content: e.target.value }))
                   }
                   rows={20}
-                  className="w-full h-[600px] rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-xs text-white outline-none focus:border-brand-redSoft font-mono"
+                  className="w-full h-[600px] rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-xs text-white outline-none focus:border-brand-redSoft font-mono"
                   placeholder="# Write your post here..."
                 />
               </div>
@@ -425,7 +425,7 @@ const AdminBlogPage = () => {
                 <label className="block text-[11px] text-white/70 mb-1">
                   Live Preview
                 </label>
-                <div className="h-[600px] overflow-y-auto rounded-xl border border-white/15 bg-black/40 px-4 py-4">
+                <div className="h-[600px] overflow-y-auto rounded-xl border border-white/15 bg-black/20 px-4 py-4">
                   <article className="prose prose-invert prose-sm max-w-none prose-headings:font-display prose-a:text-brand-redSoft prose-img:rounded-xl">
                     <ReactMarkdown>{form.content || "*Nothing to preview yet...*"}</ReactMarkdown>
                   </article>
@@ -446,7 +446,7 @@ const AdminBlogPage = () => {
                       status: e.target.value as BlogStatus,
                     }))
                   }
-                  className="rounded-full border border-white/20 bg-[#121212]/60 px-3 py-1 text-[11px] outline-none focus:border-brand-redSoft"
+                  className="rounded-full border border-white/20 bg-[#323232]/60 px-3 py-1 text-[11px] outline-none focus:border-brand-redSoft"
                 >
                   <option value="draft">Draft</option>
                   <option value="published">Published</option>

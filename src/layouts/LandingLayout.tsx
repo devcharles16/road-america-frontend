@@ -4,7 +4,7 @@ const LandingLayout = () => {
     return (
         <div className="min-h-screen bg-brand-dark text-white flex flex-col">
             {/* Simplified Header */}
-            <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-[#121212]/80 backdrop-blur-md border-b border-white/5 supports-[backdrop-filter]:bg-[#121212]/60">
+            <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-[#323232]/80 backdrop-blur-md border-b border-white/5 supports-[backdrop-filter]:bg-[#323232]/60">
                 <div className="mx-auto max-w-7xl px-4 h-16 flex items-center justify-between">
                     <Link to="/" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="flex items-center gap-3 group">
                         <img
@@ -31,7 +31,7 @@ const LandingLayout = () => {
             </main>
 
             {/* Simplified Footer */}
-            <footer className="bg-[#121212] border-t border-white/10 text-white py-8">
+            <footer className="bg-[#323232] border-t border-white/10 text-white py-8">
                 <div className="mx-auto max-w-7xl px-4 flex flex-col md:flex-row justify-between items-center gap-4">
                     <p className="text-xs text-white/50">
                         © {new Date().getFullYear()} Road America Auto Transport. All rights reserved.

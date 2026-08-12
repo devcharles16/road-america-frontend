@@ -39,7 +39,7 @@ const TermsPage = () => {
             registered with the Federal Motor Carrier Safety Administration (FMCSA).
           </p>
 
-          <div className="rounded-2xl border border-white/10 bg-black/30 p-6 shadow-soft-card">
+          <div className="rounded-2xl border border-white/10 bg-black/15 p-6 shadow-soft-card">
             <p className="text-sm font-semibold text-white">Road America Auto Transport does not:</p>
             <ul className="mt-3 list-disc space-y-2 pl-5 text-sm text-white/75">
               <li>Transport vehicles</li>
@@ -78,7 +78,7 @@ const TermsPage = () => {
 
           <div className="grid gap-6 md:grid-cols-2">
             {/* GOLD */}
-            <div className="rounded-2xl border border-yellow-400/30 bg-black/40 p-6 shadow-soft-card">
+            <div className="rounded-2xl border border-yellow-400/30 bg-black/20 p-6 shadow-soft-card">
               <h3 className="mb-4 text-lg font-semibold text-yellow-400">
                 Gold Package
               </h3>
@@ -96,7 +96,7 @@ const TermsPage = () => {
             </div>
 
             {/* SILVER */}
-            <div className="rounded-2xl border border-white/15 bg-black/30 p-6 shadow-soft-card">
+            <div className="rounded-2xl border border-white/15 bg-black/15 p-6 shadow-soft-card">
               <h3 className="mb-4 text-lg font-semibold text-white">
                 Silver Package
               </h3>
@@ -118,7 +118,7 @@ const TermsPage = () => {
 
           {/* 3.5 / 3.6 (recommended protections) */}
           <div className="mt-6 grid gap-4 md:grid-cols-2">
-            <div className="rounded-2xl border border-white/10 bg-black/30 p-6 shadow-soft-card">
+            <div className="rounded-2xl border border-white/10 bg-black/15 p-6 shadow-soft-card">
               <h3 className="text-lg font-semibold text-white">3.5 Pricing &amp; Quote Accuracy</h3>
               <p className="mt-2 text-sm leading-6 text-white/75">
                 All price quotes provided by Road America Auto Transport are estimates based on the
@@ -131,7 +131,7 @@ const TermsPage = () => {
               </p>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-black/30 p-6 shadow-soft-card">
+            <div className="rounded-2xl border border-white/10 bg-black/15 p-6 shadow-soft-card">
               <h3 className="text-lg font-semibold text-white">3.6 Inaccurate or Incomplete Information</h3>
               <p className="mt-2 text-sm leading-6 text-white/75">
                 If the Customer provides inaccurate or incomplete vehicle information
@@ -152,7 +152,7 @@ const TermsPage = () => {
 
           <div className="grid gap-6 lg:grid-cols-2">
             {/* Dispatch */}
-            <div className="rounded-2xl border border-white/10 bg-black/30 p-6 shadow-soft-card">
+            <div className="rounded-2xl border border-white/10 bg-black/15 p-6 shadow-soft-card">
               <h3 className="mb-3 text-lg font-semibold text-white">Dispatch Defined</h3>
 
               <p className="text-sm leading-6 text-white/75">
@@ -172,7 +172,7 @@ const TermsPage = () => {
             </div>
 
             {/* Refund */}
-            <div className="rounded-2xl border border-white/10 bg-black/30 p-6 shadow-soft-card">
+            <div className="rounded-2xl border border-white/10 bg-black/15 p-6 shadow-soft-card">
               <h3 className="mb-3 text-lg font-semibold text-white">Refund Policy</h3>
 
               <div className="space-y-4 text-sm text-white/75">
@@ -215,7 +215,7 @@ const TermsPage = () => {
         <section className="mt-10 space-y-4">
           <h2 className="text-xl font-bold text-white">5. Pickup &amp; Delivery Terms</h2>
 
-          <div className="rounded-2xl border border-white/10 bg-black/30 p-6 shadow-soft-card">
+          <div className="rounded-2xl border border-white/10 bg-black/15 p-6 shadow-soft-card">
             <ul className="list-disc space-y-2 pl-5 text-sm text-white/75">
               <li>
                 Pickup and delivery dates are <span className="font-semibold text-white">estimates only</span> and are not guaranteed.
@@ -235,7 +235,7 @@ const TermsPage = () => {
         <section className="mt-10 space-y-4">
           <h2 className="text-xl font-bold text-white">6. Vehicle Condition &amp; Preparation</h2>
 
-          <div className="rounded-2xl border border-white/10 bg-black/30 p-6 shadow-soft-card">
+          <div className="rounded-2xl border border-white/10 bg-black/15 p-6 shadow-soft-card">
             <p className="text-sm font-semibold text-white">Customer represents and warrants that:</p>
             <ul className="mt-3 list-disc space-y-2 pl-5 text-sm text-white/75">
               <li>Vehicle is accurately described (operable or inoperable)</li>
@@ -265,7 +265,7 @@ const TermsPage = () => {
         <section className="mt-10 space-y-4">
           <h2 className="text-xl font-bold text-white">7. Personal Property Disclaimer</h2>
 
-          <div className="rounded-2xl border border-white/10 bg-black/30 p-6 shadow-soft-card">
+          <div className="rounded-2xl border border-white/10 bg-black/15 p-6 shadow-soft-card">
             <p className="text-sm leading-6 text-white/75">
               Personal items are <span className="font-semibold text-white">not permitted</span> inside vehicles unless expressly
               authorized by the carrier. Road America Auto Transport and carriers assume{" "}
@@ -284,7 +284,7 @@ const TermsPage = () => {
             All carriers dispatched by Road America Auto Transport are required to maintain active cargo and liability insurance and provide proof of coverage prior to dispatch. Upon request, customers may also obtain a copy of the carrier’s Certificate of Insurance directly from the carrier for their records. Road America does not act as an insurer and does not provide cargo insurance coverage.
           </p>
           <div className="grid gap-6 lg:grid-cols-2">
-            <div className="rounded-2xl border border-white/10 bg-black/30 p-6 shadow-soft-card">
+            <div className="rounded-2xl border border-white/10 bg-black/15 p-6 shadow-soft-card">
               <h3 className="mb-2 text-lg font-semibold text-white">Customer Acknowledgment</h3>
 
               <p className="text-sm leading-6 text-white/75">
@@ -327,7 +327,7 @@ const TermsPage = () => {
                 <li>• Broker liability (if any) is limited to fees paid to Road America Auto Transport</li>
               </ul>
 
-              <div className="mt-5 rounded-xl border border-white/10 bg-black/20 p-4">
+              <div className="mt-5 rounded-xl border border-white/10 bg-black/10 p-4">
                 <p className="text-xs font-semibold text-white/80">Reminder</p>
                 <p className="mt-1 text-xs leading-5 text-white/70">
                   Inspect the vehicle at pickup and delivery, and ensure all new damage is documented on the
@@ -343,7 +343,7 @@ const TermsPage = () => {
           <h2 className="mb-4 text-2xl font-bold text-white">9. Damage Claims Procedure</h2>
 
           <div className="grid gap-6 lg:grid-cols-2">
-            <div className="rounded-2xl border border-white/10 bg-black/30 p-6 shadow-soft-card">
+            <div className="rounded-2xl border border-white/10 bg-black/15 p-6 shadow-soft-card">
               <h3 className="mb-2 text-lg font-semibold text-white">Strict Requirements</h3>
               <p className="text-sm leading-6 text-white/75">
                 To be valid, all damage claims must meet all requirements below.
@@ -422,7 +422,7 @@ const TermsPage = () => {
                 <li>• Claims not noted on the Bill of Lading at delivery are invalid</li>
               </ul>
 
-              <div className="mt-5 rounded-xl border border-white/10 bg-black/20 p-4">
+              <div className="mt-5 rounded-xl border border-white/10 bg-black/10 p-4">
                 <p className="text-xs leading-5 text-white/70">
                   Tip: Before signing the Bill of Lading, inspect your vehicle carefully in good lighting
                   and take photos from all angles.
@@ -436,7 +436,7 @@ const TermsPage = () => {
         <section className="mt-10 space-y-4">
           <h2 className="text-xl font-bold text-white">10. Limitation of Broker Liability</h2>
 
-          <div className="rounded-2xl border border-white/10 bg-black/30 p-6 shadow-soft-card">
+          <div className="rounded-2xl border border-white/10 bg-black/15 p-6 shadow-soft-card">
             <p className="text-sm leading-6 text-white/75">Road America Auto Transport shall not be liable for:</p>
             <ul className="mt-3 list-disc space-y-2 pl-5 text-sm text-white/75">
               <li>Carrier delays</li>
@@ -456,7 +456,7 @@ const TermsPage = () => {
         <section className="mt-10 space-y-4">
           <h2 className="text-xl font-bold text-white">11. Indemnification</h2>
 
-          <div className="rounded-2xl border border-white/10 bg-black/30 p-6 shadow-soft-card">
+          <div className="rounded-2xl border border-white/10 bg-black/15 p-6 shadow-soft-card">
             <p className="text-sm leading-6 text-white/75">
               Customer agrees to indemnify and hold harmless Road America from any claims,
               damages, fines, penalties, or expenses arising from:
@@ -475,7 +475,7 @@ const TermsPage = () => {
           <h2 className="mb-4 text-2xl font-bold text-white">12. Dispute Resolution</h2>
 
           <div className="grid gap-6 lg:grid-cols-2">
-            <div className="rounded-2xl border border-white/10 bg-black/30 p-6 shadow-soft-card">
+            <div className="rounded-2xl border border-white/10 bg-black/15 p-6 shadow-soft-card">
               <h3 className="mb-2 text-lg font-semibold text-white">Step 1: Mediation First</h3>
               <p className="text-sm leading-6 text-white/75">
                 Any dispute arising out of or relating to these Terms shall first be submitted
@@ -491,7 +491,7 @@ const TermsPage = () => {
               </div>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-black/30 p-6 shadow-soft-card">
+            <div className="rounded-2xl border border-white/10 bg-black/15 p-6 shadow-soft-card">
               <h3 className="mb-2 text-lg font-semibold text-white">Step 2: Binding Arbitration</h3>
 
               <p className="text-sm leading-6 text-white/75">
@@ -521,7 +521,7 @@ const TermsPage = () => {
         <section className="mt-12 space-y-4">
           <h2 className="text-2xl font-bold text-white">13. Governing Law &amp; Venue</h2>
 
-          <div className="rounded-2xl border border-white/10 bg-black/30 p-6 shadow-soft-card">
+          <div className="rounded-2xl border border-white/10 bg-black/15 p-6 shadow-soft-card">
             <p className="text-sm leading-6 text-white/75">
               These Terms are governed by the laws of the{" "}
               <span className="font-semibold text-white">State of Florida</span>, without regard to conflict-of-law principles.
@@ -541,7 +541,7 @@ const TermsPage = () => {
         <section className="mt-12 space-y-4">
           <h2 className="text-2xl font-bold text-white">14. Severability</h2>
 
-          <div className="rounded-2xl border border-white/10 bg-black/30 p-6 shadow-soft-card">
+          <div className="rounded-2xl border border-white/10 bg-black/15 p-6 shadow-soft-card">
             <p className="text-sm leading-6 text-white/75">
               If any provision of these Terms is found unenforceable, the remaining provisions shall remain
               in full force and effect.
@@ -553,7 +553,7 @@ const TermsPage = () => {
         <section className="mt-12 space-y-4">
           <h2 className="text-2xl font-bold text-white">15. Entire Agreement &amp; Modifications</h2>
 
-          <div className="rounded-2xl border border-white/10 bg-black/30 p-6 shadow-soft-card">
+          <div className="rounded-2xl border border-white/10 bg-black/15 p-6 shadow-soft-card">
             <p className="text-sm leading-6 text-white/75">
               These Terms constitute the entire agreement between the parties regarding the services offered
               by Road America Auto Transport.
@@ -581,7 +581,7 @@ const TermsPage = () => {
         <section className="mt-10 space-y-4">
           <h2 className="text-xl font-bold text-white">16. Contact Information</h2>
 
-          <div className="rounded-2xl border border-white/10 bg-black/30 p-6 shadow-soft-card">
+          <div className="rounded-2xl border border-white/10 bg-black/15 p-6 shadow-soft-card">
             <p className="text-sm leading-6 text-white/75">
               Customer communications should be directed through official Road America Auto Transport communication channels.
               Damage claims are accepted <span className="font-semibold text-white">by email only</span> as stated above.
@@ -593,7 +593,7 @@ const TermsPage = () => {
         <section className="mt-10 space-y-4 pb-6">
           <h2 className="text-xl font-bold text-white">17. Electronic &amp; SMS Communications</h2>
 
-          <div className="rounded-2xl border border-white/10 bg-black/30 p-6 shadow-soft-card">
+          <div className="rounded-2xl border border-white/10 bg-black/15 p-6 shadow-soft-card">
             <p className="text-sm leading-6 text-white/75">
               By providing a phone number, email address, or submitting a request through our website,
               Customer consents to receive communications from Road America Auto Transport via phone, email, and SMS for purposes

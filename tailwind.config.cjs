@@ -11,9 +11,9 @@ module.exports = {
         brand: {
           red: "#b91c1c",
           redSoft: "#ef4444",
-          // 🔽 updated to a slightly lighter Smoky Graphite
-          dark: "#1c1e23",
-          gray: "#2c3945",
+          // 🔽 lightened Smoky Graphite
+          dark: "#3c3e43",
+          gray: "#4c5965",
           light: "#f3f4f6",
         },
       },

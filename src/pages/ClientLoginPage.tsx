@@ -72,7 +72,7 @@ const ClientLoginPage = () => {
 
         <form
           onSubmit={handleSubmit}
-          className="mt-6 space-y-4 rounded-2xl bg-black/40 p-5 shadow-soft-card border border-white/10"
+          className="mt-6 space-y-4 rounded-2xl bg-black/20 p-5 shadow-soft-card border border-white/10"
         >
           <div>
             <label className="block text-xs text-white/70 mb-1">Email</label>
@@ -80,7 +80,7 @@ const ClientLoginPage = () => {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+              className="w-full rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
               required
               autoComplete="email"
             />
@@ -92,7 +92,7 @@ const ClientLoginPage = () => {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-xl border border-white/15 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+              className="w-full rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
               required
               autoComplete="current-password"
             />

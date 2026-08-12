@@ -19,8 +19,8 @@ const AboutPage = () => {
             alt="Auto Transport on the road"
             className="h-full w-full object-cover opacity-50"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0e0e0e] via-[#0e0e0e]/80 to-transparent" />
-          <div className="absolute inset-0 bg-black/40" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#2e2e2e] via-[#2e2e2e]/80 to-transparent" />
+          <div className="absolute inset-0 bg-black/20" />
         </div>
 
         <div className="relative z-10 mx-auto max-w-6xl px-4 py-8 w-full">
@@ -53,7 +53,7 @@ const AboutPage = () => {
       </section>
 
       {/* About Content */}
-      <section className="border-b border-white/5 bg-[#121212]/40">
+      <section className="border-b border-white/5 bg-[#323232]/40">
         <div className="mx-auto max-w-4xl px-4 py-16">
           <div className="space-y-12">
             <div>
@@ -114,7 +114,7 @@ const AboutPage = () => {
       </section>
 
       {/* CTA */}
-      <section className="bg-black">
+      <section className="bg-[#2a2b2d]">
         <div className="mx-auto max-w-6xl px-4 py-12 md:py-14 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
           <div>
             <h2 className="font-display text-xl md:text-2xl font-semibold">

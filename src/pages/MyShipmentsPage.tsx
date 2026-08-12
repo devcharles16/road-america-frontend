@@ -109,7 +109,7 @@ const MyShipmentsPage = () => {
             </Link>
           </div>
         ) : (
-          <div className="overflow-x-auto rounded-2xl border border-white/10 bg-black/40 shadow-soft-card">
+          <div className="overflow-x-auto rounded-2xl border border-white/10 bg-black/20 shadow-soft-card">
             <table className="min-w-full text-xs">
               <thead className="bg-white/5 text-white/70">
                 <tr>
@@ -142,7 +142,7 @@ const MyShipmentsPage = () => {
                       </span>
                     </td>
                     <td className="px-3 py-2">
-                      <span className="rounded-full border border-white/20 bg-[#121212]/60 px-3 py-1 text-[10px] uppercase tracking-wide">
+                      <span className="rounded-full border border-white/20 bg-[#323232]/60 px-3 py-1 text-[10px] uppercase tracking-wide">
                         {s.status}
                       </span>
                     </td>

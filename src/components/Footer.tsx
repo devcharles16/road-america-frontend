@@ -4,7 +4,7 @@ import { Facebook, Instagram, MessageCircle } from "lucide-react";
 
 const Footer = () => {
   return (
-    <footer className="bg-[#121212] border-t border-white/10 text-white">
+    <footer className="bg-[#323232] border-t border-white/10 text-white">
       <div className="mx-auto max-w-7xl px-4 py-10 grid gap-10 md:grid-cols-4">
 
         {/* Brand */}
