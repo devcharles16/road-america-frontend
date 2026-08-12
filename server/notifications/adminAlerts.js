@@ -390,3 +390,100 @@ export async function sendNewBusinessInquiryAlert(payload) {
   });
 }
 
+
+// Customer-facing confirmation for the B2B business inquiry form
+export async function sendBusinessInquiryConfirmationEmail(payload) {
+  const {
+    firstName,
+    businessName,
+    email,
+    businessType,
+    transportNeed,
+    estimatedVolume,
+    pickupCityState,
+    deliveryCityState,
+  } = payload;
+
+  if (!email) {
+    return { success: false, error: "No customer email provided" };
+  }
+
+  const subject = "We've Received Your Business Transport Inquiry";
+
+  const html = `
+    <div style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background:#0b0b0b; padding:24px; color:#f5f5f5;">
+      <div style="max-width:600px;margin:0 auto;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);background:linear-gradient(135deg,#101010,#181818);">
+
+        <div style="padding:20px 24px;border-bottom:1px solid rgba(255,255,255,0.08);background:linear-gradient(to right,#8C0000,#2b0000);">
+          <h1 style="margin:0;font-size:20px;letter-spacing:0.08em;text-transform:uppercase;color:#ffffff;">
+            Road America Auto Transport
+          </h1>
+          <p style="margin:4px 0 0;font-size:12px;color:rgba(255,255,255,0.75);">
+            Commercial &amp; Fleet Vehicle Logistics
+          </p>
+        </div>
+
+        <div style="padding:24px;">
+          <p style="font-size:15px;margin:0 0 16px;">Hi ${firstName || "there"},</p>
+
+          <p style="font-size:14px;margin:0 0 14px;">
+            Thank you for reaching out to <strong style="color:#ffffff;">Road America Auto Transport</strong>
+            on behalf of <strong style="color:#ffffff;">${businessName || "your business"}</strong>.
+          </p>
+
+          <p style="font-size:14px;margin:0 0 18px;">
+            A member of our commercial team is reviewing your request and will follow up with a custom logistics plan.
+          </p>
+
+          <div style="margin:18px 0;padding:14px 16px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);">
+            <table style="border-collapse:collapse;font-size:13px;width:100%;color:#e5e5e5;">
+              <tbody>
+                <tr>
+                  <td style="padding:4px 0;width:34%;color:#aaaaaa;">Business Type:</td>
+                  <td style="padding:4px 0;">${businessType || "-"}</td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 0;width:34%;color:#aaaaaa;">Transport Need:</td>
+                  <td style="padding:4px 0;">${transportNeed || "-"}</td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 0;width:34%;color:#aaaaaa;">Estimated Volume:</td>
+                  <td style="padding:4px 0;">${estimatedVolume || "-"}</td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 0;width:34%;color:#aaaaaa;">Pickup:</td>
+                  <td style="padding:4px 0;">${pickupCityState || "-"}</td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 0;width:34%;color:#aaaaaa;">Delivery:</td>
+                  <td style="padding:4px 0;">${deliveryCityState || "-"}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p style="font-size:13px;margin:0 0 14px;color:#d4d4d4;">
+            If you need to update any details, just reply to this email and our team will be happy to assist.
+          </p>
+
+          <p style="font-size:13px;margin:0;color:#d4d4d4;">
+            Warm regards,<br/>
+            <span style="color:#ffffff;font-weight:600;">Road America Auto Transport</span>
+          </p>
+        </div>
+
+        <div style="padding:14px 24px;border-top:1px solid rgba(255,255,255,0.08);font-size:11px;color:#8a8a8a;">
+          <p style="margin:0;">
+            This message was sent regarding your recent business transport inquiry with Road America Auto Transport.
+          </p>
+        </div>
+      </div>
+    </div>
+  `;
+
+  return await sendEmail({
+    to: email,
+    subject,
+    html,
+  });
+}

@@ -1,7 +1,10 @@
 import express from "express";
 import { requireAuth, requireRole, requireOneOf, requireClient } from "../middleware/auth.js";
 import supabase from "../supabaseClient.js";
-import { sendNewBusinessInquiryAlert } from "../notifications/adminAlerts.js";
+import {
+  sendNewBusinessInquiryAlert,
+  sendBusinessInquiryConfirmationEmail,
+} from "../notifications/adminAlerts.js";
 
 
 const router = express.Router();
@@ -219,6 +222,24 @@ router.post("/business-inquiries", async (req, res) => {
 
     if (alertResult?.success === false) {
       console.error("Business inquiry admin alert failed:", alertResult.error || alertResult.err);
+    }
+
+    const confirmationResult = await sendBusinessInquiryConfirmationEmail({
+      firstName: input.firstName,
+      businessName: input.businessName,
+      email: input.email,
+      businessType: input.businessType,
+      transportNeed: input.transportNeed,
+      estimatedVolume: input.estimatedVolume,
+      pickupCityState: input.pickupCityState,
+      deliveryCityState: input.deliveryCityState,
+    });
+
+    if (confirmationResult?.success === false) {
+      console.error(
+        "Business inquiry customer confirmation failed:",
+        confirmationResult.error || confirmationResult.err
+      );
     }
 
     return res.status(201).json({ id: data.id });
