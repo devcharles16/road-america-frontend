@@ -4,6 +4,7 @@ export async function registerClient(input: {
   email: string;
   password: string;
   fullName: string;
+  captchaToken?: string;
 }) {
   const { data, error } = await supabase.auth.signUp({
     email: input.email.trim(),
@@ -11,6 +12,7 @@ export async function registerClient(input: {
     options: {
       emailRedirectTo: `${window.location.origin}/login`,
       data: { full_name: input.fullName || "" },
+      ...(input.captchaToken ? { captchaToken: input.captchaToken } : {}),
     },
   });
 

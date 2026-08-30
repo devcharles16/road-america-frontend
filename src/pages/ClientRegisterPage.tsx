@@ -33,10 +33,29 @@ const ClientRegisterPage = () => {
 
     setLoading(true);
     try {
+      // Execute reCAPTCHA v3
+      let captchaToken: string | undefined;
+      const siteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY as string | undefined;
+      if (siteKey && window.grecaptcha) {
+        captchaToken = await new Promise<string>((resolve, reject) => {
+          window.grecaptcha!.ready(async () => {
+            try {
+              const token = await window.grecaptcha!.execute(siteKey, {
+                action: "client_register",
+              });
+              resolve(token);
+            } catch (err) {
+              reject(err);
+            }
+          });
+        });
+      }
+
       await registerClient({
         fullName: name.trim(),
         email: email.trim(),
         password,
+        captchaToken,
       });
       // Save phone into profiles (optional)
       if (phone.trim()) {
@@ -170,10 +189,14 @@ const ClientRegisterPage = () => {
           <button
             type="submit"
             disabled={loading}
-            className="inline-flex items-center justify-center rounded-full bg-brand-red px-6 py-3 text-sm font-semibold text-white shadow-soft-card hover:bg-brand-redSoft disabled:opacity-60"
+            className="w-full inline-flex items-center justify-center rounded-full bg-brand-red px-6 py-3 text-sm font-semibold text-white shadow-soft-card hover:bg-brand-redSoft disabled:opacity-60"
           >
             {loading ? "Creating account..." : "Create Account"}
           </button>
+
+          <p className="text-[10px] text-white/40 text-center mt-2">
+            Protected by reCAPTCHA security.
+          </p>
 
           <p className="text-[11px] text-white/60 mt-3">
             Already have an account?{" "}
