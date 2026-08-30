@@ -45,11 +45,15 @@ type QuoteRow = {
 };
 
 const STATUS_OPTIONS: TransportStatus[] = [
-  "Submitted",
-  "Driver Assigned",
+  "Request Submitted",
+  "Quoted",
+  "Pending Booking",
+  "Preparing for Carrier Assignment",
+  "Carrier Assigned",
   "In Transit",
   "Delivered",
-  "Cancelled",
+  "Canceled",
+  "Expired",
 ];
 
 

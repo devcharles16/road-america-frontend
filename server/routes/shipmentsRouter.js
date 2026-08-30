@@ -10,10 +10,17 @@ import {
 const router = express.Router();
 
 const ALLOWED_STATUSES = [
-  "Submitted",
-  "Driver Assigned",
+  "Request Submitted",
+  "Quoted",
+  "Pending Booking",
+  "Preparing for Carrier Assignment",
+  "Carrier Assigned",
   "In Transit",
   "Delivered",
+  "Canceled",
+  "Expired",
+  "Submitted",
+  "Driver Assigned",
   "Cancelled",
 ];
 

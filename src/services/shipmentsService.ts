@@ -16,10 +16,17 @@ import { supabase } from "../lib/supabaseClient"; // ✅ customer session token 
 import { getAccessTokenOrThrow } from "./apiClient"; // ✅ keep for admin/employee routes only
 
 export type TransportStatus =
-  | "Submitted"
-  | "Driver Assigned"
+  | "Request Submitted"
+  | "Quoted"
+  | "Pending Booking"
+  | "Preparing for Carrier Assignment"
+  | "Carrier Assigned"
   | "In Transit"
   | "Delivered"
+  | "Canceled"
+  | "Expired"
+  | "Submitted"
+  | "Driver Assigned"
   | "Cancelled";
 
 export type RunningCondition = "running" | "non-running";

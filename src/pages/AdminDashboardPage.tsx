@@ -37,9 +37,18 @@ export default function AdminDashboardPage() {
           adminListQuotes(),
         ]);
 
-        // Active Shipments: Submitted, Driver Assigned, In Transit
+        // Active Shipments: Request Submitted, Quoted, Pending Booking, Preparing for Carrier Assignment, Carrier Assigned, In Transit
         const activeShipmentsCount = shipments.filter((s) =>
-          ["Submitted", "Driver Assigned", "In Transit"].includes(s.status || "")
+          [
+            "Request Submitted",
+            "Submitted",
+            "Quoted",
+            "Pending Booking",
+            "Preparing for Carrier Assignment",
+            "Carrier Assigned",
+            "Driver Assigned",
+            "In Transit",
+          ].includes(s.status || "")
         ).length;
 
         // Quotes Today
@@ -94,11 +103,15 @@ export default function AdminDashboardPage() {
   ];
 
   const shipmentsByStatus = [
-    { status: "Submitted", count: 8 },
-    { status: "Driver Assigned", count: 6 },
+    { status: "Req Submitted", count: 8 },
+    { status: "Quoted", count: 4 },
+    { status: "Pending Bk", count: 3 },
+    { status: "Prep Carrier", count: 5 },
+    { status: "Carrier Assg", count: 6 },
     { status: "In Transit", count: 7 },
     { status: "Delivered", count: 20 },
-    { status: "Cancelled", count: 2 },
+    { status: "Canceled", count: 2 },
+    { status: "Expired", count: 1 },
   ];
 
   const quotesPerDay = [

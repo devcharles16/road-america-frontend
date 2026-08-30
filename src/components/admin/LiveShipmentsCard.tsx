@@ -11,10 +11,17 @@ import {
 } from "lucide-react";
 
 type ShipmentStatus =
-  | "Submitted"
-  | "Driver Assigned"
+  | "Request Submitted"
+  | "Quoted"
+  | "Pending Booking"
+  | "Preparing for Carrier Assignment"
+  | "Carrier Assigned"
   | "In Transit"
   | "Delivered"
+  | "Canceled"
+  | "Expired"
+  | "Submitted"
+  | "Driver Assigned"
   | "Cancelled"
   | string;
 
@@ -36,23 +43,30 @@ type Shipment = {
 
 function getStatusBadgeClasses(status: ShipmentStatus) {
   if (status === "In Transit") return "bg-brand-red/20 text-brand-redSoft";
-  if (status === "Driver Assigned") return "bg-emerald-500/15 text-emerald-300";
-  if (status === "Submitted") return "bg-amber-500/15 text-amber-300";
+  if (status === "Carrier Assigned" || status === "Driver Assigned") return "bg-emerald-500/15 text-emerald-300";
+  if (status === "Request Submitted" || status === "Submitted") return "bg-blue-500/15 text-blue-300";
+  if (status === "Quoted") return "bg-amber-500/15 text-amber-300";
+  if (status === "Pending Booking") return "bg-cyan-500/15 text-cyan-300";
+  if (status === "Preparing for Carrier Assignment") return "bg-teal-500/15 text-teal-300";
   if (status === "Delivered") return "bg-sky-500/15 text-sky-300";
-  if (status === "Cancelled") return "bg-rose-500/15 text-rose-300";
+  if (status === "Canceled" || status === "Cancelled") return "bg-purple-500/15 text-purple-300";
+  if (status === "Expired") return "bg-rose-500/15 text-rose-300";
   return "bg-white/10 text-white/80";
 }
 
 function getStatusIcon(status: ShipmentStatus) {
   switch (status) {
+    case "Request Submitted":
     case "Submitted":
       return FileText;
+    case "Carrier Assigned":
     case "Driver Assigned":
       return UserCheck;
     case "In Transit":
       return Truck;
     case "Delivered":
       return CheckCircle2;
+    case "Canceled":
     case "Cancelled":
       return XCircle;
     default:
@@ -91,7 +105,16 @@ export default function LiveShipmentsCard() {
             created_at
           `
         )
-        .in("status", ["Submitted", "Driver Assigned", "In Transit"])
+        .in("status", [
+          "Request Submitted",
+          "Submitted",
+          "Quoted",
+          "Pending Booking",
+          "Preparing for Carrier Assignment",
+          "Carrier Assigned",
+          "Driver Assigned",
+          "In Transit",
+        ])
         .order("updated_at", { ascending: false, nullsFirst: false })
         .limit(5);
       

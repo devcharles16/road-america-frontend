@@ -9,9 +9,14 @@ import {
 import { Check } from "lucide-react";
 import {
   FileText,
+  Tag,
+  Clock,
+  Package,
   UserCheck,
   Truck,
   CheckCircle2,
+  XCircle,
+  AlertCircle,
   HelpCircle,
 } from "lucide-react";
 import LoadingState from "../components/LoadingState";
@@ -34,22 +39,41 @@ type TransportRequestWithEta = TransportRequest & {
 };
 
 const STATUS_OPTIONS: TransportStatus[] = [
-  "Submitted",
-  "Driver Assigned",
+  "Request Submitted",
+  "Quoted",
+  "Pending Booking",
+  "Preparing for Carrier Assignment",
+  "Carrier Assigned",
   "In Transit",
   "Delivered",
-  "Cancelled",
+  "Canceled",
+  "Expired",
 ];
 
 const STATUS_STEPS: TrackingStep[] = [
   {
-    id: "Submitted",
-    label: "Submitted",
+    id: "Request Submitted",
+    label: "Request Submitted",
     description: "We received your transport request.",
   },
   {
-    id: "Driver Assigned",
-    label: "Driver Assigned",
+    id: "Quoted",
+    label: "Quoted",
+    description: "Your transport quote has been prepared.",
+  },
+  {
+    id: "Pending Booking",
+    label: "Pending Booking",
+    description: "Awaiting booking confirmation and dispatch details.",
+  },
+  {
+    id: "Preparing for Carrier Assignment",
+    label: "Preparing for Carrier Assignment",
+    description: "Preparing your shipment details for carrier assignment.",
+  },
+  {
+    id: "Carrier Assigned",
+    label: "Carrier Assigned",
     description: "A vetted carrier has been assigned to your vehicle.",
   },
   {
@@ -60,20 +84,28 @@ const STATUS_STEPS: TrackingStep[] = [
   {
     id: "Delivered",
     label: "Delivered",
-    description: "Your vehicle has been delivered.",
+    description: "Your vehicle has been successfully delivered.",
   },
-  // Optional: if you want Cancelled to appear on the timeline, uncomment this
-  // {
-  //   id: "Cancelled",
-  //   label: "Cancelled",
-  //   description: "This shipment was cancelled.",
-  // },
+  {
+    id: "Canceled",
+    label: "Canceled",
+    description: "This shipment was canceled.",
+  },
+  {
+    id: "Expired",
+    label: "Expired",
+    description: "This quote or request has expired.",
+  },
 ];
 
 function normalizeStatus(s: string | null | undefined): TransportStatus {
+  if (!s) return "Request Submitted";
+  if (s === "Submitted") return "Request Submitted";
+  if (s === "Driver Assigned") return "Carrier Assigned";
+  if (s === "Cancelled") return "Canceled";
   return STATUS_OPTIONS.includes(s as TransportStatus)
     ? (s as TransportStatus)
-    : "Submitted";
+    : "Request Submitted";
 }
 
 function getStepIndexForStatus(status: TransportStatus): number {
@@ -83,14 +115,27 @@ function getStepIndexForStatus(status: TransportStatus): number {
 
 function getStepIcon(stepId: TransportStatus) {
   switch (stepId) {
+    case "Request Submitted":
     case "Submitted":
       return FileText;
+    case "Quoted":
+      return Tag;
+    case "Pending Booking":
+      return Clock;
+    case "Preparing for Carrier Assignment":
+      return Package;
+    case "Carrier Assigned":
     case "Driver Assigned":
       return UserCheck;
     case "In Transit":
       return Truck;
     case "Delivered":
       return CheckCircle2;
+    case "Canceled":
+    case "Cancelled":
+      return XCircle;
+    case "Expired":
+      return AlertCircle;
     default:
       return HelpCircle;
   }
@@ -143,7 +188,7 @@ const TrackingPage = () => {
       ? getStepIndexForStatus(normalizeStatus(shipment.status))
       : 0;
 
-  const currentStatus = shipment ? normalizeStatus(shipment.status) : "Submitted";
+  const currentStatus = shipment ? normalizeStatus(shipment.status) : "Request Submitted";
 
   return (
     <section className="bg-brand-dark py-12 text-white">

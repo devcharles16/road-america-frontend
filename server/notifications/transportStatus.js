@@ -1,11 +1,18 @@
 import { sendEmail } from "../utils/email.js";
 
 const STATUS_MESSAGES = {
+  "Request Submitted": "Your transport request has been received and is now in our system.",
   Submitted: "Your transport request has been received and is now in our system.",
+  Quoted: "Your transport quote is ready for review.",
+  "Pending Booking": "Your shipment booking is pending confirmation.",
+  "Preparing for Carrier Assignment": "We are preparing your vehicle shipment for carrier assignment.",
+  "Carrier Assigned": "A professional carrier has been assigned to your vehicle.",
   "Driver Assigned": "A professional driver has been assigned to your vehicle.",
   "In Transit": "Your vehicle is currently in transit to its destination.",
   Delivered: "Your vehicle has been successfully delivered.",
+  Canceled: "Your transport request has been canceled.",
   Cancelled: "Your transport request has been cancelled.",
+  Expired: "Your transport request or quote has expired.",
 };
 
 export async function sendStatusUpdate(customerEmail, customerName, status, orderId) {
