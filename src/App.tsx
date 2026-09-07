@@ -42,6 +42,9 @@ import HoustonToMiamiPage from "./pages/HoustonToMiamiPage";
 import NewYorkToMiamiPage from "./pages/NewYorkToMiamiPage";
 import HoustonToLosAngelesPage from "./pages/HoustonToLosAngelesPage";
 import MiamiToCharlottePage from "./pages/MiamiToCharlottePage";
+import CarShippingRoutesIndexPage from "./pages/CarShippingRoutesIndexPage";
+import RoutePage from "./pages/RoutePage";
+
 function App() {
   return (
     <>
@@ -56,6 +59,11 @@ function App() {
           <Route path="/about" element={<AboutPage />} />
           <Route path="/the-truth-about-auto-transport" element={<TruthAboutAutoTransportPage />} />
           <Route path="/business-auto-transport" element={<BusinessAutoTransportPage />} />
+
+          {/* Car Shipping Routes */}
+          <Route path="/car-shipping-routes" element={<CarShippingRoutesIndexPage />} />
+          <Route path="/car-shipping-routes/:slug" element={<RoutePage />} />
+          <Route path="/auto-transport-:slug" element={<RoutePage />} />
 
           {/* Blog (public) */}
           <Route path="/blog" element={<BlogListPage />} />
