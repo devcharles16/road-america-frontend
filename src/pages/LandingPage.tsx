@@ -219,7 +219,7 @@ const LandingPage = () => {
         <div className="bg-brand-dark min-h-screen text-white">
             <SEO
                 title="Get a Free Car Shipping Quote"
-                description="Trusted by 50,000+ customers. Get an instant, guaranteed auto transport quote. No hidden fees, fully insured door-to-door delivery."
+                description="Get an instant, guaranteed auto transport quote. No hidden fees, fully insured door-to-door delivery."
                 canonical="/express-quote"
                 keywords={['car shipping quote', 'auto transport prices', 'ship my car', 'vehicle transport cost']}
             />
@@ -238,7 +238,7 @@ const LandingPage = () => {
                     <div className="lg:w-1/2 pt-2 lg:pt-8">
                         <div className="inline-flex items-center gap-2 rounded-full bg-brand-red/10 px-4 py-1.5 text-xs font-bold text-brand-redSoft border border-brand-red/20 mb-6 backdrop-blur-sm">
                             <Star className="w-3.5 h-3.5 fill-current" />
-                            <span>Rated 5/5 by 50,000+ Customers</span>
+                            <span>Rated 5/5 by Customers</span>
                         </div>
 
                         <h1 className="text-3xl md:text-5xl lg:text-6xl font-display font-bold leading-[1.1] mb-4 tracking-tight">
