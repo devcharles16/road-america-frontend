@@ -37,7 +37,106 @@
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
-  
+
+  <!-- Car Shipping Routes (auto-generated at build time from src/data/routesData.ts; this static
+       copy is the fallback used by `vite dev`/`vite preview`, which do not run the build plugin) -->
+  <url>
+    <loc>https://www.roadamericatransport.com/car-shipping-routes</loc>
+    <lastmod>2026-09-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.roadamericatransport.com/car-shipping-routes/miami-to-new-york</loc>
+    <lastmod>2026-09-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.roadamericatransport.com/car-shipping-routes/new-york-to-miami</loc>
+    <lastmod>2026-09-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.roadamericatransport.com/car-shipping-routes/houston-to-los-angeles</loc>
+    <lastmod>2026-09-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.roadamericatransport.com/car-shipping-routes/los-angeles-to-houston</loc>
+    <lastmod>2026-09-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.roadamericatransport.com/car-shipping-routes/los-angeles-to-miami</loc>
+    <lastmod>2026-09-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.roadamericatransport.com/car-shipping-routes/miami-to-los-angeles</loc>
+    <lastmod>2026-09-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.roadamericatransport.com/car-shipping-routes/los-angeles-to-atlanta</loc>
+    <lastmod>2026-09-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.roadamericatransport.com/car-shipping-routes/atlanta-to-los-angeles</loc>
+    <lastmod>2026-09-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.roadamericatransport.com/car-shipping-routes/houston-to-miami</loc>
+    <lastmod>2026-09-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.roadamericatransport.com/car-shipping-routes/miami-to-houston</loc>
+    <lastmod>2026-09-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.roadamericatransport.com/car-shipping-routes/atlanta-to-miami</loc>
+    <lastmod>2026-09-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.roadamericatransport.com/car-shipping-routes/orlando-to-miami</loc>
+    <lastmod>2026-09-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.roadamericatransport.com/car-shipping-routes/miami-to-orlando</loc>
+    <lastmod>2026-09-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.roadamericatransport.com/car-shipping-routes/miami-to-charlotte</loc>
+    <lastmod>2026-09-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.roadamericatransport.com/car-shipping-routes/charlotte-to-miami</loc>
+    <lastmod>2026-09-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
   <!-- Legal Pages -->
   <url>
     <loc>https://www.roadamericatransport.com/terms</loc>

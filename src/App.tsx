@@ -33,17 +33,9 @@ import RequireRoles from "./routes/RequireRoles";
 import LandingPage from "./pages/LandingPage";
 import GlobalBanner from "./components/GlobalBanner";
 import AdminBannerPage from "./pages/AdminBannerPage";
-import OrlandoToMiamiPage from "./pages/OrlandoToMiamiPage";
-import AtlantaToMiamiPage from "./pages/AtlantaToMiamiPage";
-import LosAngelesToHoustonPage from "./pages/LosAngelesToHoustonPage";
-import LosAngelesToMiamiPage from "./pages/LosAngelesToMiamiPage";
-import LosAngelesToAtlantaPage from "./pages/LosAngelesToAtlantaPage";
-import HoustonToMiamiPage from "./pages/HoustonToMiamiPage";
-import NewYorkToMiamiPage from "./pages/NewYorkToMiamiPage";
-import HoustonToLosAngelesPage from "./pages/HoustonToLosAngelesPage";
-import MiamiToCharlottePage from "./pages/MiamiToCharlottePage";
 import CarShippingRoutesIndexPage from "./pages/CarShippingRoutesIndexPage";
 import RoutePage from "./pages/RoutePage";
+import { getAllRoutes } from "./data/routesData";
 
 function App() {
   return (
@@ -63,7 +55,17 @@ function App() {
           {/* Car Shipping Routes */}
           <Route path="/car-shipping-routes" element={<CarShippingRoutesIndexPage />} />
           <Route path="/car-shipping-routes/:slug" element={<RoutePage />} />
-          <Route path="/auto-transport-:slug" element={<RoutePage />} />
+
+          {/* Legacy "/auto-transport-city-to-city" aliases, one exact route per
+              entry in ROUTES_DATA. NOTE: React Router cannot match a dynamic
+              param fused onto literal text within the same path segment
+              (":slug" must be preceded by a literal "/" to be treated as a
+              param — see compilePath in react-router's source), so a single
+              "/auto-transport-:slug" catch-all can never work here. Explicit
+              per-route paths, generated from route.legacyPath, are the fix. */}
+          {getAllRoutes().map((route) => (
+            <Route key={route.id} path={route.legacyPath} element={<RoutePage routeId={route.id} />} />
+          ))}
 
           {/* Blog (public) */}
           <Route path="/blog" element={<BlogListPage />} />
@@ -94,15 +96,6 @@ function App() {
         {/* Landing Pages */}
         <Route element={<LandingLayout />}>
           <Route path="/express-quote" element={<LandingPage />} />
-          <Route path="/auto-transport-orlando-to-miami" element={<OrlandoToMiamiPage />} />
-          <Route path="/auto-transport-atlanta-to-miami" element={<AtlantaToMiamiPage />} />
-          <Route path="/auto-transport-los-angeles-to-houston" element={<LosAngelesToHoustonPage />} />
-          <Route path="/auto-transport-los-angeles-to-miami" element={<LosAngelesToMiamiPage />} />
-          <Route path="/auto-transport-los-angeles-to-atlanta" element={<LosAngelesToAtlantaPage />} />
-          <Route path="/auto-transport-houston-to-miami" element={<HoustonToMiamiPage />} />
-          <Route path="/auto-transport-new-york-to-miami" element={<NewYorkToMiamiPage />} />
-          <Route path="/auto-transport-houston-to-los-angeles" element={<HoustonToLosAngelesPage />} />
-          <Route path="/auto-transport-miami-to-charlotte" element={<MiamiToCharlottePage />} />
         </Route>
 
         {/* Admin + Employee */}
