@@ -4,13 +4,13 @@ import { Facebook, Instagram, MessageCircle } from "lucide-react";
 
 const Footer = () => {
   return (
-    <footer className="bg-[#323232] border-t border-white/10 text-white">
+    <footer className="bg-footer-bg border-t border-footer-text/10 text-footer-text">
       <div className="mx-auto max-w-7xl px-4 py-10 grid gap-10 md:grid-cols-4">
 
         {/* Brand */}
         <div>
-          <h3 className="text-lg font-semibold">Road America Auto Transport</h3>
-          <p className="mt-3 text-sm text-white/60 max-w-xs">
+          <h3 className="text-lg font-semibold text-white">Road America Auto Transport</h3>
+          <p className="mt-3 text-sm text-footer-text max-w-xs">
             Premium vehicle transport with clear communication, trusted carriers,
             and shipment status updates.
           </p>
@@ -24,7 +24,7 @@ const Footer = () => {
               className="group p-2 rounded-full bg-white/5 hover:bg-[#E1306C]/20 transition-all duration-300"
               aria-label="Instagram"
             >
-              <Instagram className="w-5 h-5 text-white/70 group-hover:text-[#E1306C] transition-colors" />
+              <Instagram className="w-5 h-5 text-footer-text group-hover:text-[#E1306C] transition-colors" />
             </a>
             <a
               href="https://www.facebook.com/roadamericatransport"
@@ -33,7 +33,7 @@ const Footer = () => {
               className="group p-2 rounded-full bg-white/5 hover:bg-[#1877F2]/20 transition-all duration-300"
               aria-label="Facebook"
             >
-              <Facebook className="w-5 h-5 text-white/70 group-hover:text-[#1877F2] transition-colors" />
+              <Facebook className="w-5 h-5 text-footer-text group-hover:text-[#1877F2] transition-colors" />
             </a>
             <a
               href="https://wa.me/17546005772"
@@ -42,15 +42,15 @@ const Footer = () => {
               className="group p-2 rounded-full bg-white/5 hover:bg-[#25D366]/20 transition-all duration-300"
               aria-label="WhatsApp"
             >
-              <MessageCircle className="w-5 h-5 text-white/70 group-hover:text-[#25D366] transition-colors" />
+              <MessageCircle className="w-5 h-5 text-footer-text group-hover:text-[#25D366] transition-colors" />
             </a>
           </div>
         </div>
 
         {/* Navigation */}
         <div>
-          <h4 className="text-sm font-semibold mb-3">Company</h4>
-          <ul className="space-y-2 text-sm text-white/70">
+          <h4 className="text-sm font-semibold mb-3 text-white">Company</h4>
+          <ul className="space-y-2 text-sm text-footer-text">
             <li><Link to="/about" className="hover:text-white">About</Link></li>
             <li><Link to="/business-auto-transport" className="hover:text-white">Business Auto Transport</Link></li>
             <li><Link to="/the-truth-about-auto-transport" className="hover:text-white">The Truth About Auto Transport</Link></li>
@@ -63,8 +63,8 @@ const Footer = () => {
 
         {/* Services */}
         <div>
-          <h4 className="text-sm font-semibold mb-3">Transport</h4>
-          <ul className="space-y-2 text-sm text-white/70">
+          <h4 className="text-sm font-semibold mb-3 text-white">Transport</h4>
+          <ul className="space-y-2 text-sm text-footer-text">
             <li><Link to="/quote" className="hover:text-white">Get a Quote</Link></li>
             <li><Link to="/car-shipping-routes" className="hover:text-white">Car Shipping Routes</Link></li>
             <li><Link to="/track" className="hover:text-white">Track Shipment</Link></li>
@@ -76,8 +76,8 @@ const Footer = () => {
 
         {/* Legal + Admin */}
         <div>
-          <h4 className="text-sm font-semibold mb-3">Legal</h4>
-          <ul className="space-y-2 text-sm text-white/70">
+          <h4 className="text-sm font-semibold mb-3 text-white">Legal</h4>
+          <ul className="space-y-2 text-sm text-footer-text">
             <li>
               <Link to="/privacy" className="hover:text-white">
                 Privacy Policy
@@ -98,7 +98,7 @@ const Footer = () => {
               {/*
               <Link
                 to="/admin/login"
-                className="hover:text-brand-redSoft text-white/50 text-[11px] tracking-wide"
+                className="hover:text-brand-redSoft text-footer-text text-[11px] tracking-wide"
               >
                 Admin Login
               </Link>
@@ -109,7 +109,7 @@ const Footer = () => {
       </div>
 
       {/* Bottom bar */}
-      <div className="border-t border-white/10 py-4 text-center text-[11px] text-white/50">
+      <div className="border-t border-footer-text/10 py-4 text-center text-[11px] text-footer-text">
         © {new Date().getFullYear()} Road America Auto Transport. All rights reserved.
       </div>
     </footer>

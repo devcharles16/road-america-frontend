@@ -96,7 +96,7 @@ const ClientRegisterPage = () => {
   }
 
   return (
-    <section className="bg-brand-dark py-12 text-white min-h-[70vh] flex items-center">
+    <section className="bg-brand-dark py-12 text-text-primary min-h-[70vh] flex items-center">
       <div className="mx-auto max-w-md px-4 w-full">
         <p className="text-xs uppercase tracking-[0.2em] text-brand-redSoft">
           Client Portal
@@ -104,17 +104,17 @@ const ClientRegisterPage = () => {
         <h1 className="mt-2 font-display text-2xl font-semibold">
           Create Your Client Account
         </h1>
-        <p className="mt-2 text-sm text-white/70">
+        <p className="mt-2 text-sm text-text-primary">
           Create a login to view your active and past shipments, track status,
           and keep your contact details up to date.
         </p>
 
         <form
           onSubmit={handleSubmit}
-          className="mt-6 space-y-4 rounded-2xl bg-black/20 p-5 shadow-soft-card border border-white/10"
+          className="mt-6 space-y-4 rounded-2xl bg-background-warm p-5 shadow-soft-card border border-[#172B3D]/10"
         >
           <div>
-            <label className="block text-xs text-white/70 mb-1">
+            <label className="block text-xs text-text-primary mb-1">
               Full Name *
             </label>
             <input
@@ -123,12 +123,12 @@ const ClientRegisterPage = () => {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="First and last name"
-              className="w-full rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+              className="w-full rounded-xl border border-[#172B3D]/15 bg-background-warm px-3 py-2 text-sm text-text-primary outline-none focus:border-brand-redSoft"
             />
           </div>
 
           <div>
-            <label className="block text-xs text-white/70 mb-1">
+            <label className="block text-xs text-text-primary mb-1">
               Email *
             </label>
             <input
@@ -137,12 +137,12 @@ const ClientRegisterPage = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
-              className="w-full rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+              className="w-full rounded-xl border border-[#172B3D]/15 bg-background-warm px-3 py-2 text-sm text-text-primary outline-none focus:border-brand-redSoft"
             />
           </div>
 
           <div>
-            <label className="block text-xs text-white/70 mb-1">
+            <label className="block text-xs text-text-primary mb-1">
               Phone (optional)
             </label>
             <input
@@ -150,13 +150,13 @@ const ClientRegisterPage = () => {
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder="(555) 555-5555"
-              className="w-full rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+              className="w-full rounded-xl border border-[#172B3D]/15 bg-background-warm px-3 py-2 text-sm text-text-primary outline-none focus:border-brand-redSoft"
             />
           </div>
 
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <label className="block text-xs text-white/70 mb-1">
+              <label className="block text-xs text-text-primary mb-1">
                 Password *
               </label>
               <input
@@ -164,11 +164,11 @@ const ClientRegisterPage = () => {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+                className="w-full rounded-xl border border-[#172B3D]/15 bg-background-warm px-3 py-2 text-sm text-text-primary outline-none focus:border-brand-redSoft"
               />
             </div>
             <div>
-              <label className="block text-xs text-white/70 mb-1">
+              <label className="block text-xs text-text-primary mb-1">
                 Confirm Password *
               </label>
               <input
@@ -176,7 +176,7 @@ const ClientRegisterPage = () => {
                 required
                 value={confirm}
                 onChange={(e) => setConfirm(e.target.value)}
-                className="w-full rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+                className="w-full rounded-xl border border-[#172B3D]/15 bg-background-warm px-3 py-2 text-sm text-text-primary outline-none focus:border-brand-redSoft"
               />
             </div>
           </div>
@@ -194,11 +194,11 @@ const ClientRegisterPage = () => {
             {loading ? "Creating account..." : "Create Account"}
           </button>
 
-          <p className="text-[10px] text-white/40 text-center mt-2">
+          <p className="text-[10px] text-text-supporting text-center mt-2">
             Protected by reCAPTCHA security.
           </p>
 
-          <p className="text-[11px] text-white/60 mt-3">
+          <p className="text-[11px] text-text-muted mt-3">
             Already have an account?{" "}
             <Link
               to="/login"

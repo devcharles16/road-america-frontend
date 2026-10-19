@@ -4,14 +4,14 @@ import SEO from "../components/SEO";
 
 const AboutPage = () => {
   return (
-    <main className="bg-brand-dark text-white min-h-screen">
+    <main className="bg-brand-dark text-text-primary min-h-screen">
       <SEO
         title="About Us"
         description="Learn about Road America Auto Transport's mission to provide reliable, transparent vehicle shipping services nationwide."
         canonical="/about"
       />
       {/* Hero */}
-      <section className="relative min-h-[30vh] flex items-center border-b border-white/5 overflow-hidden">
+      <section className="relative min-h-[30vh] flex items-center border-b border-[#172B3D]/5 overflow-hidden">
         {/* Background Image */}
         <div className="absolute inset-0 z-0">
           <img
@@ -19,18 +19,18 @@ const AboutPage = () => {
             alt="Auto Transport on the road"
             className="h-full w-full object-cover opacity-50"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#2e2e2e] via-[#2e2e2e]/80 to-transparent" />
-          <div className="absolute inset-0 bg-black/20" />
+          <div className="absolute inset-0 bg-gradient-to-t from-background-warm via-background-warm/80 to-transparent" />
+          <div className="absolute inset-0 bg-background-warm/80" />
         </div>
 
         <div className="relative z-10 mx-auto max-w-6xl px-4 py-8 w-full">
           <p className="text-[10px] uppercase tracking-[0.25em] text-brand-redSoft font-bold">
             About Us
           </p>
-          <h1 className="mt-1 font-display text-2xl md:text-3xl font-semibold text-white drop-shadow-sm">
+          <h1 className="mt-1 font-display text-2xl md:text-3xl font-semibold text-text-primary drop-shadow-sm">
             Road America Auto Transport
           </h1>
-          <p className="mt-2 max-w-xl text-xs md:text-sm text-white/90 leading-relaxed font-light drop-shadow-sm">
+          <p className="mt-2 max-w-xl text-xs md:text-sm text-text-primary leading-relaxed font-light drop-shadow-sm">
             We help dealerships, relocators, and everyday drivers move their
             vehicles with confidence. From first quote to final delivery,
             we treat every transport like it&apos;s our own.
@@ -44,7 +44,7 @@ const AboutPage = () => {
             </Link>
             <Link
               to="/track"
-              className="rounded-full border border-white/30 backdrop-blur-sm bg-white/5 px-5 py-2 text-[11px] font-semibold text-white hover:bg-white/10 hover:border-white transition-all transform hover:-translate-y-0.5"
+              className="rounded-full border border-[#172B3D]/30 backdrop-blur-sm bg-[#172B3D]/5 px-5 py-2 text-[11px] font-semibold text-text-primary hover:bg-[#172B3D]/10 hover:border-[#172B3D] transition-all transform hover:-translate-y-0.5"
             >
               Track a Shipment
             </Link>
@@ -53,14 +53,14 @@ const AboutPage = () => {
       </section>
 
       {/* About Content */}
-      <section className="border-b border-white/5 bg-[#323232]/40">
+      <section className="border-b border-[#172B3D]/5 bg-white/40">
         <div className="mx-auto max-w-4xl px-4 py-16">
           <div className="space-y-12">
             <div>
-              <h2 className="font-display text-2xl md:text-3xl font-semibold text-white">
+              <h2 className="font-display text-2xl md:text-3xl font-semibold text-text-primary">
                 About Road America Auto Transport
               </h2>
-              <div className="mt-6 space-y-6 text-sm md:text-base text-white/70 leading-relaxed">
+              <div className="mt-6 space-y-6 text-sm md:text-base text-text-primary leading-relaxed">
                 <p>
                   Road America Auto Transport exists for people who want honest answers, fair pricing, and real support when shipping a vehicle.
                 </p>
@@ -71,18 +71,18 @@ const AboutPage = () => {
             </div>
 
             <div>
-              <h3 className="font-display text-xl font-semibold text-white">
+              <h3 className="font-display text-xl font-semibold text-text-primary">
                 Rooted in the Automotive World
               </h3>
-              <p className="mt-4 text-sm md:text-base text-white/70 leading-relaxed">
+              <p className="mt-4 text-sm md:text-base text-text-primary leading-relaxed">
                 Road America was founded by an ASE-Certified Master Technician with more than 25 years in the automotive industry, including leadership roles within some of the world’s largest fleet management organizations.
                 <br /><br />
-                <span className="font-semibold text-white">That experience matters.</span> It means we understand vehicles beyond paperwork—how they’re handled, how damage happens, and how shipments should be managed properly. We don’t just move cars; we protect them.
+                <span className="font-semibold text-text-primary">That experience matters.</span> It means we understand vehicles beyond paperwork—how they’re handled, how damage happens, and how shipments should be managed properly. We don’t just move cars; we protect them.
               </p>
             </div>
 
             <div>
-              <h3 className="font-display text-xl font-semibold text-white">
+              <h3 className="font-display text-xl font-semibold text-text-primary">
                 What Makes Us Different
               </h3>
               <ul className="mt-6 space-y-4">
@@ -93,7 +93,7 @@ const AboutPage = () => {
                   "No spam, no lead reselling",
                   "Real people who stay involved from pickup to delivery"
                 ].map((item, i) => (
-                  <li key={i} className="flex items-start gap-3 text-sm md:text-base text-white/70">
+                  <li key={i} className="flex items-start gap-3 text-sm md:text-base text-text-primary">
                     <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-brand-red flex-shrink-0" />
                     <span>{item}</span>
                   </li>
@@ -102,10 +102,10 @@ const AboutPage = () => {
             </div>
 
             <div>
-              <h3 className="font-display text-xl font-semibold text-white">
+              <h3 className="font-display text-xl font-semibold text-text-primary">
                 Customer Experience Comes First
               </h3>
-              <p className="mt-4 text-sm md:text-base text-white/70 leading-relaxed">
+              <p className="mt-4 text-sm md:text-base text-text-primary leading-relaxed">
                 Every shipment is different. We take the time to explain your options, set realistic expectations, and communicate throughout the process. You’ll work with people who know your shipment—not scripts.
               </p>
             </div>
@@ -114,13 +114,13 @@ const AboutPage = () => {
       </section>
 
       {/* CTA */}
-      <section className="bg-[#2a2b2d]">
+      <section className="bg-cta-bg">
         <div className="mx-auto max-w-6xl px-4 py-12 md:py-14 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
           <div>
             <h2 className="font-display text-xl md:text-2xl font-semibold">
               Ready to Get Started?
             </h2>
-            <p className="mt-2 text-sm text-white/70 max-w-xl">
+            <p className="mt-2 text-sm text-text-primary max-w-xl">
               If you value integrity, expertise, and a customer-first approach, we’re here to help.
             </p>
             <p className="mt-8 text-sm font-semibold italic text-brand-red/90">
@@ -138,7 +138,7 @@ const AboutPage = () => {
 
               <Link
                 to="/login"
-                className="rounded-full border border-white/30 px-6 py-3 text-xs md:text-sm font-semibold text-white hover:border-brand-redSoft"
+                className="rounded-full border border-[#172B3D]/30 px-6 py-3 text-xs md:text-sm font-semibold text-text-primary hover:border-brand-redSoft"
               >
                 Login
               </Link>

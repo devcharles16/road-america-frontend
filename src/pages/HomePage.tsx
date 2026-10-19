@@ -119,12 +119,12 @@ function HeroSection() {
 
 
   return (
-    <section className="relative overflow-hidden bg-gradient-to-r from-black via-brand-gray to-brand-red py-20">
+    <section className="relative overflow-hidden bg-white py-20">
       <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_top,_#ffffff22,_transparent_60%)]" />
       <div className="relative mx-auto flex max-w-6xl flex-col gap-10 px-4 md:flex-row md:items-center">
         {/* Left: text */}
         <div className="md:w-1/2">
-          <p className="mb-3 inline-block rounded-full border border-white/20 bg-black/15 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-brand-redSoft">
+          <p className="mb-3 inline-block rounded-full border border-[#172B3D]/20 bg-background-warm px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-brand-redSoft">
             Road America Auto Transport
           </p>
           <h1 className="font-display text-4xl font-semibold leading-tight md:text-5xl">
@@ -132,7 +132,7 @@ function HeroSection() {
             <span className="block text-brand-redSoft">Vehicle Transport</span>
             Across the U.S.
           </h1>
-          <p className="mt-4 max-w-xl text-sm md:text-base text-white/80">
+          <p className="mt-4 max-w-xl text-sm md:text-base text-text-primary">
             Door-to-door auto transport with white-glove service, insured
             carriers, and status updates—for everyday cars and
             high-value vehicles.
@@ -147,23 +147,23 @@ function HeroSection() {
             </button>
             <button
               onClick={() => navigate("/track")}
-              className="rounded-full border border-white/30 bg-transparent px-6 py-3 text-sm font-semibold text-white/90 hover:border-white"
+              className="rounded-full border border-[#172B3D]/30 bg-transparent px-6 py-3 text-sm font-semibold text-text-primary hover:border-[#172B3D]"
             >
               Track Shipment
             </button>
           </div>
 
-          <div className="mt-6 flex flex-wrap gap-6 text-xs text-white/60">
+          <div className="mt-6 flex flex-wrap gap-6 text-xs text-text-muted">
             <div>
-              <p className="font-semibold text-white">5 / 5</p>
+              <p className="font-semibold text-text-primary">5 / 5</p>
               <p>Average customer rating</p>
             </div>
             <div>
-              <p className="font-semibold text-white">10k+</p>
+              <p className="font-semibold text-text-primary">10k+</p>
               <p>Vehicles shipped</p>
             </div>
             <div>
-              <p className="font-semibold text-white">Nationwide</p>
+              <p className="font-semibold text-text-primary">Nationwide</p>
               <p>Coverage across all states</p>
             </div>
           </div>
@@ -171,18 +171,18 @@ function HeroSection() {
 
         {/* Right: visual card */}
         <div className="md:w-1/2">
-          <div className="relative mx-auto max-w-md rounded-3xl bg-gradient-to-br from-brand-gray to-black p-6 shadow-soft-card">
-            <div className="mb-4 flex items-center justify-between text-xs text-white/70">
-              <span className="rounded-full bg-white/10 px-3 py-1">
+          <div className="relative mx-auto max-w-md rounded-3xl bg-white border border-[#172B3D]/10 p-6 shadow-soft-card">
+            <div className="mb-4 flex items-center justify-between text-xs text-text-primary">
+              <span className="rounded-full bg-[#172B3D]/10 px-3 py-1">
                 Live Transport Snapshot
               </span>
               <span>{`RA-10234`}</span>
             </div>
 
-            <div className="rounded-2xl bg-black/20 p-4 transition-all duration-500">
-              <div className="flex items-center justify-between text-xs text-white/80">
+            <div className="rounded-2xl bg-background-warm p-4 transition-all duration-500">
+              <div className="flex items-center justify-between text-xs text-text-primary">
                 <div>
-                  <p className="text-[11px] uppercase tracking-wide text-white/50">
+                  <p className="text-[11px] uppercase tracking-wide text-text-muted">
                     Pickup
                   </p>
                   <p className="font-semibold">{shipment.pickup}</p>
@@ -191,35 +191,35 @@ function HeroSection() {
                 <Car className="text-brand-red w-5 h-5" />
 
                 <div className="text-right">
-                  <p className="text-[11px] uppercase tracking-wide text-white/50">
+                  <p className="text-[11px] uppercase tracking-wide text-text-muted">
                     Delivery
                   </p>
                   <p className="font-semibold">{shipment.delivery}</p>
                 </div>
               </div>
 
-              <div className="mt-6 flex items-center justify-between text-xs text-white/70">
+              <div className="mt-6 flex items-center justify-between text-xs text-text-primary">
                 <div>
-                  <p className="text-[11px] uppercase text-white/50">Vehicle</p>
+                  <p className="text-[11px] uppercase text-text-muted">Vehicle</p>
                   <p>{shipment.vehicle}</p>
                 </div>
 
                 <div>
-                  <p className="text-[11px] uppercase text-white/50">Status</p>
+                  <p className="text-[11px] uppercase text-text-muted">Status</p>
                   <p className="rounded-full bg-brand-red/20 px-3 py-1 text-[11px] font-semibold text-brand-redSoft">
                     {shipment.status}
                   </p>
                 </div>
               </div>
 
-              <div className="mt-4 h-1.5 rounded-full bg-white/10">
+              <div className="mt-4 h-1.5 rounded-full bg-[#172B3D]/10">
                 <div
                   className="h-full rounded-full bg-brand-redSoft transition-all duration-500"
                   style={{ width: `${shipment.progress * 100}%` }}
                 />
               </div>
 
-              <p className="mt-3 text-[11px] text-white/60">{shipment.eta}</p>
+              <p className="mt-3 text-[11px] text-text-muted">{shipment.eta}</p>
             </div>
 
           </div>
@@ -288,13 +288,13 @@ function HowItWorksSection() {
   return (
     <section
       id="how-it-works"
-      className="bg-brand-dark py-16 text-white border-t border-white/5"
+      className="bg-brand-dark py-16 text-text-primary border-t border-[#172B3D]/5"
     >
       <div className="mx-auto max-w-6xl px-4">
         <h2 className="font-display text-2xl font-semibold md:text-3xl">
           How It Works
         </h2>
-        <p className="mt-2 max-w-xl text-sm text-white/70">
+        <p className="mt-2 max-w-xl text-sm text-text-primary">
           A simple, guided process from quote to delivery—whether you’re
           shipping across the state or across the country.
         </p>
@@ -307,7 +307,7 @@ function HowItWorksSection() {
               </div>
               <div>
                 <h3 className="text-sm font-semibold">{step.title}</h3>
-                <p className="mt-1 text-xs text-white/70">
+                <p className="mt-1 text-xs text-text-primary">
                   {step.description}
                 </p>
               </div>
@@ -378,12 +378,12 @@ function CallToActionSection() {
   const navigate = useNavigate();
 
   return (
-    <section className="bg-brand-dark py-14 text-white border-t border-white/5">
+    <section className="bg-brand-dark py-14 text-text-primary border-t border-[#172B3D]/5">
       <div className="mx-auto max-w-4xl px-4 text-center">
         <h2 className="font-display text-2xl font-semibold md:text-3xl">
           Ready to ship your vehicle with Road America Auto Transport?
         </h2>
-        <p className="mt-3 text-sm text-white/70">
+        <p className="mt-3 text-sm text-text-primary">
           Start with a quick quote—no obligation. We’ll pair you with a vetted
           carrier and keep you updated every mile of the way.
         </p>
@@ -412,7 +412,7 @@ function CallToActionSection() {
                 document.addEventListener("tidioChat-ready", openChat, { once: true });
               }
             }}
-            className="rounded-full border border-white/30 px-8 py-3 text-sm font-semibold text-white hover:border-white"
+            className="rounded-full border border-[#172B3D]/30 px-8 py-3 text-sm font-semibold text-text-primary hover:border-[#172B3D]"
           >
             Talk to a Transport Specialist
           </button>

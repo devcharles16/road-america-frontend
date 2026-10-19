@@ -57,22 +57,22 @@ export default function AdminBannerPage() {
     return (
         <div className="max-w-3xl mx-auto">
             <div className="mb-6">
-                <h1 className="text-3xl font-bold text-white mb-2">Global Banner Management</h1>
-                <p className="text-white/60">
+                <h1 className="text-3xl font-bold text-text-primary mb-2">Global Banner Management</h1>
+                <p className="text-text-muted">
                     Configure the alert banner shown at the top of the website.
                 </p>
             </div>
 
             {loading ? (
-                <div className="text-white">Loading configuration...</div>
+                <div className="text-text-primary">Loading configuration...</div>
             ) : (
-                <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+                <div className="bg-[#172B3D]/5 border border-[#172B3D]/10 rounded-2xl p-6">
                     <form onSubmit={handleSave} className="space-y-6">
                         {/* Toggle Visibility */}
-                        <div className="flex items-center justify-between p-4 bg-black/10 rounded-xl border border-white/5">
+                        <div className="flex items-center justify-between p-4 bg-background-warm rounded-xl border border-[#172B3D]/5">
                             <div>
-                                <h3 className="text-lg font-medium text-white">Banner Visibility</h3>
-                                <p className="text-sm text-white/50">
+                                <h3 className="text-lg font-medium text-text-primary">Banner Visibility</h3>
+                                <p className="text-sm text-text-muted">
                                     Toggle to show or hide the banner on the public site.
                                 </p>
                             </div>
@@ -85,33 +85,33 @@ export default function AdminBannerPage() {
                                         setSettings({ ...settings, is_active: e.target.checked })
                                     }
                                 />
-                                <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-redSoft"></div>
+                                <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-[#172B3D] after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-redSoft"></div>
                             </label>
                         </div>
 
                         {/* Message Input */}
                         <div>
-                            <label className="block text-sm font-medium text-white/80 mb-2">
+                            <label className="block text-sm font-medium text-text-primary mb-2">
                                 Banner Message
                             </label>
                             <textarea
                                 required
                                 rows={3}
-                                className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-brand-redSoft/50"
+                                className="w-full bg-background-warm border border-[#172B3D]/10 rounded-xl px-4 py-3 text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-redSoft/50"
                                 placeholder="e.g., Winter Storm Alert: Expect delays..."
                                 value={settings.message}
                                 onChange={(e) =>
                                     setSettings({ ...settings, message: e.target.value })
                                 }
                             />
-                            <p className="mt-2 text-xs text-white/40">
+                            <p className="mt-2 text-xs text-text-supporting">
                                 This text will be displayed prominently. Keep it short and clear.
                             </p>
                         </div>
 
                         {/* Type Selection */}
                         <div>
-                            <label className="block text-sm font-medium text-white/80 mb-2">
+                            <label className="block text-sm font-medium text-text-primary mb-2">
                                 Alert Type
                             </label>
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -122,8 +122,8 @@ export default function AdminBannerPage() {
                                             setSettings({ ...settings, type: type as any })
                                         }
                                         className={`cursor-pointer border rounded-xl p-3 flex items-center gap-2 transition ${settings.type === type
-                                            ? "bg-white/10 border-brand-redSoft text-white"
-                                            : "bg-black/10 border-white/5 text-white/60 hover:bg-white/5"
+                                            ? "bg-[#172B3D]/10 border-brand-redSoft text-text-primary"
+                                            : "bg-background-warm border-[#172B3D]/5 text-text-muted hover:bg-[#172B3D]/5"
                                             }`}
                                     >
                                         <div
@@ -141,13 +141,13 @@ export default function AdminBannerPage() {
                         </div>
 
                         {/* Preview Section */}
-                        <div className="mt-8 pt-8 border-t border-white/10">
-                            <h3 className="text-sm font-medium text-white/60 mb-4">Live Preview</h3>
-                            <div className="bg-white/5 p-4 rounded-xl border border-dashed border-white/10 flex justify-center">
+                        <div className="mt-8 pt-8 border-t border-[#172B3D]/10">
+                            <h3 className="text-sm font-medium text-text-muted mb-4">Live Preview</h3>
+                            <div className="bg-[#172B3D]/5 p-4 rounded-xl border border-dashed border-[#172B3D]/10 flex justify-center">
                                 {/* Simulate the banner look */}
                                 <div
-                                    className={`px-4 py-2 text-center text-sm font-medium rounded relative z-0 w-full max-w-2xl ${settings.type === 'error' ? 'bg-red-600 text-white' :
-                                        settings.type === 'info' ? 'bg-blue-600 text-white' :
+                                    className={`px-4 py-2 text-center text-sm font-medium rounded relative z-0 w-full max-w-2xl ${settings.type === 'error' ? 'bg-red-600 text-text-primary' :
+                                        settings.type === 'info' ? 'bg-blue-600 text-text-primary' :
                                             'bg-amber-500 text-black'
                                         } ${!settings.is_active ? 'opacity-50 grayscale' : ''}`}
                                 >
@@ -158,7 +158,7 @@ export default function AdminBannerPage() {
                                 </div>
                             </div>
                             {!settings.is_active && (
-                                <p className="text-center text-xs text-white/40 mt-2">
+                                <p className="text-center text-xs text-text-supporting mt-2">
                                     (Banner is currently hidden)
                                 </p>
                             )}

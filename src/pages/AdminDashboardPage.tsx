@@ -132,7 +132,7 @@ export default function AdminDashboardPage() {
           <h1 className="text-2xl md:text-3xl font-display font-semibold">
             Admin Dashboard
           </h1>
-          <p className="mt-2 text-sm text-white/60 max-w-xl">
+          <p className="mt-2 text-sm text-text-muted max-w-xl">
             High-level view of Road America Auto Transport operations. Monitor shipments,
             quotes, and content at a glance.
           </p>
@@ -145,9 +145,9 @@ export default function AdminDashboardPage() {
           <Link
             key={stat.label}
             to={stat.href}
-            className="block rounded-2xl border border-white/10 bg-black/25 px-4 py-3 transition-colors hover:border-brand-redSoft/50 hover:bg-white/5"
+            className="block rounded-2xl border border-[#172B3D]/10 bg-background-warm px-4 py-3 transition-colors hover:border-brand-redSoft/50 hover:bg-[#172B3D]/5"
           >
-            <p className="text-[11px] uppercase tracking-wide text-white/50">
+            <p className="text-[11px] uppercase tracking-wide text-text-muted">
               {stat.label}
             </p>
             <p className="mt-2 text-xl font-semibold">{stat.value}</p>
@@ -158,10 +158,10 @@ export default function AdminDashboardPage() {
       {/* Charts row */}
       <section className="grid gap-4 md:grid-cols-2">
         {/* Shipments by status (bar chart) */}
-        <div className="rounded-2xl border border-white/10 bg-black/25 p-4">
+        <div className="rounded-2xl border border-[#172B3D]/10 bg-background-warm p-4">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-semibold">Shipments by Status</h2>
-            <span className="text-[11px] text-white/40">
+            <span className="text-[11px] text-text-supporting">
               Mock data · visual only
             </span>
           </div>
@@ -170,31 +170,31 @@ export default function AdminDashboardPage() {
               <BarChart data={shipmentsByStatus} margin={{ left: -20 }}>
                 <CartesianGrid
                   strokeDasharray="3 3"
-                  stroke="rgba(255,255,255,0.08)"
+                  stroke="rgba(23,43,61,0.1)"
                   vertical={false}
                 />
                 <XAxis
                   dataKey="status"
-                  tick={{ fill: "rgba(255,255,255,0.7)", fontSize: 10 }}
+                  tick={{ fill: "#5C6A76", fontSize: 10 }}
                   axisLine={false}
                   tickLine={false}
                 />
                 <YAxis
-                  tick={{ fill: "rgba(255,255,255,0.7)", fontSize: 10 }}
+                  tick={{ fill: "#5C6A76", fontSize: 10 }}
                   axisLine={false}
                   tickLine={false}
                   width={24}
                 />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: "#252529",
-                    border: "1px solid rgba(255,255,255,0.12)",
+                    backgroundColor: "#FFFFFF",
+                    border: "1px solid rgba(23,43,61,0.12)",
                     borderRadius: "0.75rem",
                     padding: "0.5rem 0.75rem",
                     fontSize: "11px",
-                    color: "white",
+                    color: "#172B3D",
                   }}
-                  cursor={{ fill: "rgba(255,255,255,0.04)" }}
+                  cursor={{ fill: "rgba(23,43,61,0.04)" }}
                 />
                 <Bar
                   dataKey="count"
@@ -207,10 +207,10 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* Quotes per day (area chart) */}
-        <div className="rounded-2xl border border-white/10 bg-black/25 p-4">
+        <div className="rounded-2xl border border-[#172B3D]/10 bg-background-warm p-4">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-semibold">Quotes This Week</h2>
-            <span className="text-[11px] text-white/40">
+            <span className="text-[11px] text-text-supporting">
               Mock data · visual only
             </span>
           </div>
@@ -225,31 +225,31 @@ export default function AdminDashboardPage() {
                 </defs>
                 <CartesianGrid
                   strokeDasharray="3 3"
-                  stroke="rgba(255,255,255,0.08)"
+                  stroke="rgba(23,43,61,0.1)"
                   vertical={false}
                 />
                 <XAxis
                   dataKey="day"
-                  tick={{ fill: "rgba(255,255,255,0.7)", fontSize: 10 }}
+                  tick={{ fill: "#5C6A76", fontSize: 10 }}
                   axisLine={false}
                   tickLine={false}
                 />
                 <YAxis
-                  tick={{ fill: "rgba(255,255,255,0.7)", fontSize: 10 }}
+                  tick={{ fill: "#5C6A76", fontSize: 10 }}
                   axisLine={false}
                   tickLine={false}
                   width={24}
                 />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: "#252529",
-                    border: "1px solid rgba(255,255,255,0.12)",
+                    backgroundColor: "#FFFFFF",
+                    border: "1px solid rgba(23,43,61,0.12)",
                     borderRadius: "0.75rem",
                     padding: "0.5rem 0.75rem",
                     fontSize: "11px",
-                    color: "white",
+                    color: "#172B3D",
                   }}
-                  cursor={{ fill: "rgba(255,255,255,0.04)" }}
+                  cursor={{ fill: "rgba(23,43,61,0.04)" }}
                 />
                 <Area
                   type="monotone"
@@ -271,9 +271,9 @@ export default function AdminDashboardPage() {
         <LiveShipmentsCard />
 
         {/* Right: Quick Actions */}
-        <div className="rounded-2xl border border-white/10 bg-black/25 p-4">
+        <div className="rounded-2xl border border-[#172B3D]/10 bg-background-warm p-4">
           <h2 className="text-sm font-semibold">Quick Actions</h2>
-          <ul className="mt-3 space-y-2 text-sm text-white/70">
+          <ul className="mt-3 space-y-2 text-sm text-text-primary">
             <li>• Review new transport quote requests</li>
             <li>• Update shipment statuses for in-transit vehicles</li>
             <li>• Publish a new blog article for SEO and trust</li>

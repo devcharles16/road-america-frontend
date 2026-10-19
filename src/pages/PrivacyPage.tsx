@@ -3,7 +3,7 @@ import SEO from "../components/SEO";
 
 const PrivacyPage = () => {
   return (
-    <main className="bg-brand-dark text-white min-h-screen px-4 py-12">
+    <main className="bg-brand-dark text-text-primary min-h-screen px-4 py-12">
       <SEO
         title="Privacy Policy"
         description="Road America Auto Transport Privacy Policy. How we collect, use, and protect your personal information."
@@ -11,11 +11,11 @@ const PrivacyPage = () => {
       />
       <div className="mx-auto max-w-4xl">
         <h1 className="text-3xl font-display font-semibold">Privacy Policy</h1>
-        <p className="text-sm text-white/60 mt-2">
+        <p className="text-sm text-text-muted mt-2">
           Last updated: {new Date().toLocaleDateString()}
         </p>
 
-        <section className="mt-8 space-y-6 text-sm leading-relaxed text-white/80">
+        <section className="mt-8 space-y-6 text-sm leading-relaxed text-text-primary">
 
           <h2 className="font-bold">1. Introduction</h2>
           <p >Welcome to Road America Auto Transport ("we," "our," "us"). We are committed to protecting your privacy and ensuring that your personal information is handled in a safe and responsible manner. This Privacy Policy outlines how we collect, use, and protect your information when you visit our website [<a href="https://roadamericatransport.com/" target="_blank">https://roadamericatransport.com</a>] ("Website") and use our services.</p>
@@ -101,7 +101,7 @@ const PrivacyPage = () => {
             For more information about how we use and protect your data, please review this Privacy Policy and our Terms & Conditions.
           </p>
 
-          <ul className="space-y-2 text-sm text-white/80">
+          <ul className="space-y-2 text-sm text-text-primary">
             <li>• Load offers and job assignments</li>
             <li>• Pickup and delivery confirmations</li>
             <li>• Payment reminders and updates</li>

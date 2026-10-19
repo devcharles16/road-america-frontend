@@ -14,14 +14,14 @@ export default function RequireRoles({
   // Wait for auth + role hydration
   if (loading || role === undefined) {
     return (
-      <div className="p-6 text-white">
+      <div className="p-6 text-text-primary">
         <div className="text-lg font-semibold">Loading your account…</div>
         {roleError ? (
           <div className="text-red-400 text-sm mt-2">
             Error: {roleError}
           </div>
         ) : (
-          <div className="text-white/70 text-sm mt-2">
+          <div className="text-text-primary text-sm mt-2">
             Please wait while we verify permissions.
           </div>
         )}
@@ -32,13 +32,13 @@ export default function RequireRoles({
               // Force a retry
               refreshAuth();
             }}
-            className="px-3 py-1 bg-white/10 hover:bg-white/20 rounded text-xs text-white transition-colors"
+            className="px-3 py-1 bg-[#172B3D]/10 hover:bg-[#172B3D]/20 rounded text-xs text-text-primary transition-colors"
           >
             Retry
           </button>
         </div>
 
-        <div className="text-xs text-white/30 mt-8 font-mono">
+        <div className="text-xs text-text-supporting mt-8 font-mono">
           Debug: loading={String(loading)}, role={String(role)}
         </div>
       </div>

@@ -2,6 +2,28 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --color-text-primary: #172B3D;
+  --color-primary: #C9362B;
+  --color-primary-hover: #B93025;
+  --color-background: #FFFFFF;
+  --color-background-warm: #FAF7F2;
+  --color-text-muted: #5C6A76;
+  --color-text-supporting: #536372;
+  --color-accent-dark-red: #A7352C;
+  --color-header: #FFFEFA;
+  --color-tracking-background: #EFF4F4;
+  --color-founder-background: #EAF0F2;
+  --color-cta-background: #F9EEE5;
+  --color-footer-background: #0C1926;
+  --color-footer-text: #BCC6D0;
+  --color-gold-background: #FFFCF6;
+  --color-gold-border: #C6A05E;
+  --color-gold-heading: #8B6527;
+  --color-gold-label: #8E6824;
+  --color-trust-check: #376C60;
+}
+
 @layer base {
   html,
   body,
@@ -10,8 +32,8 @@
   }
 
   body {
-    /* 🔽 lightened Smoky Graphite */
-    background-color: #323232;
-    @apply text-white font-sans;
+    background-color: var(--color-background);
+    color: var(--color-text-primary);
+    @apply font-sans;
   }
 }

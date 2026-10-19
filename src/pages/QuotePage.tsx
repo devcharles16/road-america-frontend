@@ -219,15 +219,15 @@ const QuotePage = () => {
   );
   return (
     <>
-      <section className="relative overflow-hidden bg-gradient-to-r from-black via-brand-gray to-brand-red text-white py-10 md:py-14 px-4">
+      <section className="relative overflow-hidden bg-primary text-white py-10 md:py-14 px-4">
         <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_top,_#ffffff22,_transparent_60%)]" />
         <div className="relative max-w-5xl mx-auto text-center">
-          
+
           <h1 className="text-2xl md:text-4xl font-semibold tracking-tight mb-3">
             Car Shipping Made Simple
           </h1>
 
-          <p className="text-base md:text-lg text-gray-200 mb-6">
+          <p className="text-base md:text-lg text-white/90 mb-6">
             We price your shipment to get it picked up — not ignored.
           </p>
 
@@ -236,7 +236,7 @@ const QuotePage = () => {
             onClick={() => {
               document.getElementById("quote-form")?.scrollIntoView({ behavior: "smooth" });
             }}
-            className="bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-md font-medium transition"
+            className="bg-white text-primary hover:bg-gray-100 px-5 py-2.5 rounded-md font-medium transition"
           >
             Get Your Quote
           </button>
@@ -244,7 +244,7 @@ const QuotePage = () => {
         </div>
       </section>
 
-      <section className="bg-brand-dark py-12 text-white">
+      <section className="bg-brand-dark py-12 text-text-primary">
         <SEO
           title="Get A Quote"
           description="Request a free, no-obligation auto transport quote. Accurate pricing for open and enclosed car shipping."
@@ -258,14 +258,14 @@ const QuotePage = () => {
             <h1 className="mt-2 font-display text-3xl font-semibold">
               Vehicle Transport Quote
             </h1>
-            <p className="mt-2 text-sm text-white/70">
+            <p className="mt-2 text-sm text-text-primary">
               Share a few details about your vehicle and route. We’ll follow up with
               pricing by email.
             </p>
           </div>
 
           <div className="max-w-3xl mx-auto mt-8 mb-6 text-center px-4">
-            <p className="text-lg font-medium text-white/90">
+            <p className="text-lg font-medium text-text-primary">
               Most low quotes don’t get picked up. We price it right the first time.
             </p>
           </div>
@@ -273,34 +273,34 @@ const QuotePage = () => {
           <form
             id="quote-form"
             onSubmit={handleSubmit}
-            className="space-y-8 rounded-3xl bg-black/20 p-6 shadow-soft-card border border-white/10"
+            className="space-y-8 rounded-3xl bg-background-warm p-6 shadow-soft-card border border-[#172B3D]/10"
           >
             {/* Pickup & Delivery */}
             <div className="grid gap-6 md:grid-cols-2">
               <div>
-                <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-white/60">
+                <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-text-muted">
                   Pickup Location
                 </h2>
                 <div className="space-y-3">
                   <div>
-                    <label className="block text-xs text-white/70">City</label>
+                    <label className="block text-xs text-text-primary">City</label>
                     <input
                       type="text"
                       name="pickupCity"
                       value={form.pickupCity}
                       onChange={handleChange}
                       onBlur={handleCapitalizeBlur("pickupCity")}
-                      className="mt-1 w-full rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+                      className="mt-1 w-full rounded-xl border border-[#172B3D]/15 bg-background-warm px-3 py-2 text-sm text-text-primary outline-none focus:border-brand-redSoft"
                       required
                     />
                   </div>
                   <div>
-                    <label className="block text-xs text-white/70">State</label>
+                    <label className="block text-xs text-text-primary">State</label>
                     <select
                       name="pickupState"
                       value={form.pickupState}
                       onChange={handleChange}
-                      className="mt-1 w-full rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+                      className="mt-1 w-full rounded-xl border border-[#172B3D]/15 bg-background-warm px-3 py-2 text-sm text-text-primary outline-none focus:border-brand-redSoft"
                       required
                     >
                       <option value="">Select state</option>
@@ -317,29 +317,29 @@ const QuotePage = () => {
               </div>
 
               <div>
-                <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-white/60">
+                <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-text-muted">
                   Delivery Location
                 </h2>
                 <div className="space-y-3">
                   <div>
-                    <label className="block text-xs text-white/70">City</label>
+                    <label className="block text-xs text-text-primary">City</label>
                     <input
                       type="text"
                       name="deliveryCity"
                       value={form.deliveryCity}
                       onChange={handleChange}
                       onBlur={handleCapitalizeBlur("deliveryCity")}
-                      className="mt-1 w-full rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+                      className="mt-1 w-full rounded-xl border border-[#172B3D]/15 bg-background-warm px-3 py-2 text-sm text-text-primary outline-none focus:border-brand-redSoft"
                       required
                     />
                   </div>
                   <div>
-                    <label className="block text-xs text-white/70">State</label>
+                    <label className="block text-xs text-text-primary">State</label>
                     <select
                       name="deliveryState"
                       value={form.deliveryState}
                       onChange={handleChange}
-                      className="mt-1 w-full rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+                      className="mt-1 w-full rounded-xl border border-[#172B3D]/15 bg-background-warm px-3 py-2 text-sm text-text-primary outline-none focus:border-brand-redSoft"
                       required
                     >
                       <option value="">Select state</option>
@@ -356,8 +356,8 @@ const QuotePage = () => {
             </div>
 
             {/* Vehicle info */}
-            <div className="border-t border-white/10 pt-6">
-              <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-white/60">
+            <div className="border-t border-[#172B3D]/10 pt-6">
+              <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-text-muted">
                 Vehicle Details
               </h2>
 
@@ -374,7 +374,7 @@ const QuotePage = () => {
               <div className={`mt-4 grid gap-4 ${SHOW_VIN ? "md:grid-cols-2" : "md:grid-cols-1"}`}>
                 {SHOW_VIN && (
                   <div>
-                    <label className="block text-xs text-white/70">
+                    <label className="block text-xs text-text-primary">
                       VIN (optional, helps us auto-verify details later)
                     </label>
                     <input
@@ -382,7 +382,7 @@ const QuotePage = () => {
                       name="vin"
                       value={form.vin}
                       onChange={handleChange}
-                      className="mt-1 w-full rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+                      className="mt-1 w-full rounded-xl border border-[#172B3D]/15 bg-background-warm px-3 py-2 text-sm text-text-primary outline-none focus:border-brand-redSoft"
 
                     />
                   </div>
@@ -390,12 +390,12 @@ const QuotePage = () => {
 
                 <div className="grid gap-3 md:grid-cols-3">
                   <div>
-                    <label className="block text-xs text-white/70">Running Condition</label>
+                    <label className="block text-xs text-text-primary">Running Condition</label>
                     <select
                       name="runningCondition"
                       value={form.runningCondition}
                       onChange={handleChange}
-                      className="mt-1 w-full rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+                      className="mt-1 w-full rounded-xl border border-[#172B3D]/15 bg-background-warm px-3 py-2 text-sm text-text-primary outline-none focus:border-brand-redSoft"
                     >
                       <option value="">Select Running Condition</option>
                       <option value="running">Running</option>
@@ -404,14 +404,14 @@ const QuotePage = () => {
                   </div>
 
                   <div>
-                    <label className="block text-xs text-white/70">
+                    <label className="block text-xs text-text-primary">
                       Vehicle Height/Modifications
                     </label>
                     <select
                       name="vehicleHeightMod"
                       value={form.vehicleHeightMod}
                       onChange={handleChange}
-                      className="mt-1 w-full rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+                      className="mt-1 w-full rounded-xl border border-[#172B3D]/15 bg-background-warm px-3 py-2 text-sm text-text-primary outline-none focus:border-brand-redSoft"
                       required
                     >
                       <option value="">Select Vehicle Height</option>
@@ -423,12 +423,12 @@ const QuotePage = () => {
                   </div>
 
                   <div>
-                    <label className="block text-xs text-white/70">Transport Type</label>
+                    <label className="block text-xs text-text-primary">Transport Type</label>
                     <select
                       name="transportType"
                       value={form.transportType}
                       onChange={handleChange}
-                      className="mt-1 w-full rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+                      className="mt-1 w-full rounded-xl border border-[#172B3D]/15 bg-background-warm px-3 py-2 text-sm text-text-primary outline-none focus:border-brand-redSoft"
                     >
                       <option value="">Select Transport Type</option>
                       <option value="open">Open Carrier</option>
@@ -440,21 +440,21 @@ const QuotePage = () => {
             </div>
 
             {/* Preferred Pickup Window */}
-            <div className="border-t border-white/10 pt-6">
-              <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-white/60">
+            <div className="border-t border-[#172B3D]/10 pt-6">
+              <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-text-muted">
                 Pickup Timing
               </h2>
 
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
-                  <label className="block text-xs text-white/70">
+                  <label className="block text-xs text-text-primary">
                     Preferred Pickup Window
                   </label>
                   <select
                     name="preferredPickupWindow"
                     value={form.preferredPickupWindow}
                     onChange={handleChange}
-                    className="mt-1 w-full rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+                    className="mt-1 w-full rounded-xl border border-[#172B3D]/15 bg-background-warm px-3 py-2 text-sm text-text-primary outline-none focus:border-brand-redSoft"
                     required
                   >
                     <option value="">Select Pickup Window</option>
@@ -468,58 +468,58 @@ const QuotePage = () => {
             </div>
 
             {/* Contact info */}
-            <div className="border-t border-white/10 pt-6">
-              <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-white/60">
+            <div className="border-t border-[#172B3D]/10 pt-6">
+              <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-text-muted">
                 Your Contact Info
               </h2>
 
               <div className="grid gap-4 md:grid-cols-3">
                 <div className="md:col-span-1">
-                  <label className="block text-xs text-white/70">First Name</label>
+                  <label className="block text-xs text-text-primary">First Name</label>
                   <input
                     type="text"
                     name="firstName"
                     value={form.firstName}
                     onChange={handleChange}
                     onBlur={handleCapitalizeBlur("firstName")}
-                    className="mt-1 w-full rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+                    className="mt-1 w-full rounded-xl border border-[#172B3D]/15 bg-background-warm px-3 py-2 text-sm text-text-primary outline-none focus:border-brand-redSoft"
                     required
                   />
                 </div>
 
                 <div className="md:col-span-1">
-                  <label className="block text-xs text-white/70">Last Name</label>
+                  <label className="block text-xs text-text-primary">Last Name</label>
                   <input
                     type="text"
                     name="lastName"
                     value={form.lastName}
                     onChange={handleChange}
                     onBlur={handleCapitalizeBlur("lastName")}
-                    className="mt-1 w-full rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+                    className="mt-1 w-full rounded-xl border border-[#172B3D]/15 bg-background-warm px-3 py-2 text-sm text-text-primary outline-none focus:border-brand-redSoft"
                     required
                   />
                 </div>
 
                 <div className="md:col-span-1">
-                  <label className="block text-xs text-white/70">Email</label>
+                  <label className="block text-xs text-text-primary">Email</label>
                   <input
                     type="email"
                     name="email"
                     value={form.email}
                     onChange={handleChange}
-                    className="mt-1 w-full rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+                    className="mt-1 w-full rounded-xl border border-[#172B3D]/15 bg-background-warm px-3 py-2 text-sm text-text-primary outline-none focus:border-brand-redSoft"
                     required
                   />
                 </div>
 
                 <div className="md:col-span-1">
-                  <label className="block text-xs text-white/70">Mobile Phone</label>
+                  <label className="block text-xs text-text-primary">Mobile Phone</label>
                   <input
                     type="tel"
                     name="phone"
                     value={form.phone}
                     onChange={handleChange}
-                    className="mt-1 w-full rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+                    className="mt-1 w-full rounded-xl border border-[#172B3D]/15 bg-background-warm px-3 py-2 text-sm text-text-primary outline-none focus:border-brand-redSoft"
                     required
                   />
                 </div>
@@ -527,8 +527,8 @@ const QuotePage = () => {
             </div>
 
             {/* Submit */}
-            <div className="flex flex-col gap-3 border-t border-white/10 pt-6 text-sm">
-              <p className="text-xs text-white/70 italic text-center">
+            <div className="flex flex-col gap-3 border-t border-[#172B3D]/10 pt-6 text-sm">
+              <p className="text-xs text-text-primary italic text-center">
                 *All fields are required
               </p>
               <button
@@ -544,7 +544,7 @@ const QuotePage = () => {
                 {loading ? "Submitting..." : "Get My Transport Quote"}
               </button>
 
-              <p className="text-xs text-white/60 text-center">
+              <p className="text-xs text-text-muted text-center">
                 By submitting, you agree to be contacted about your quote request.
               </p>
               {error && <p className="text-xs text-red-400">{error}</p>}
@@ -552,7 +552,7 @@ const QuotePage = () => {
             </div>
           </form>
 
-          <div className="max-w-3xl mx-auto mt-6 text-center text-sm text-white/70 px-4">
+          <div className="max-w-3xl mx-auto mt-6 text-center text-sm text-text-primary px-4">
             <div className="flex flex-wrap justify-center gap-4">
               <span>✔️ Licensed & Bonded</span>
               <span>✔️ Real Carrier Pricing</span>

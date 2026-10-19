@@ -38,21 +38,21 @@ export default function PostLoginRedirectPage() {
   const stuckTooLong = !user && waitedMs >= 15000;
 
   return (
-    <div className="min-h-[60vh] flex flex-col items-center justify-center text-white/70 px-6">
+    <div className="min-h-[60vh] flex flex-col items-center justify-center text-text-primary px-6">
       <div className="text-lg">{stuck ? "Redirecting…" : "Redirect complete."}</div>
 
       {stuckTooLong && (
         <div className="mt-4 flex flex-wrap gap-3">
           <button
             onClick={() => window.location.reload()}
-            className="rounded-full bg-white/10 px-5 py-2 text-sm text-white hover:bg-white/15"
+            className="rounded-full bg-[#172B3D]/10 px-5 py-2 text-sm text-text-primary hover:bg-[#172B3D]/15"
           >
             Reload
           </button>
 
           <button
             onClick={() => navigate("/login", { replace: true })}
-            className="rounded-full bg-white/10 px-5 py-2 text-sm text-white hover:bg-white/15"
+            className="rounded-full bg-[#172B3D]/10 px-5 py-2 text-sm text-text-primary hover:bg-[#172B3D]/15"
           >
             Back to Login
           </button>
@@ -67,7 +67,7 @@ export default function PostLoginRedirectPage() {
       )}
 
       {/* TEMP DEBUG — remove later */}
-      <div className="mt-4 w-full max-w-xl rounded-xl border border-white/10 bg-white/5 p-4 text-xs text-white/70">
+      <div className="mt-4 w-full max-w-xl rounded-xl border border-[#172B3D]/10 bg-[#172B3D]/5 p-4 text-xs text-text-primary">
         <div>
           <b>loading:</b> {String(loading)}
         </div>

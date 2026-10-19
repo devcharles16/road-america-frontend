@@ -29,19 +29,19 @@ export default function CarShippingRoutesIndexPage() {
                 "@type": "ListItem",
                 "position": 1,
                 "name": "Home",
-                "item": "https://roadamericacars.com/",
+                "item": "https://roadamericatransport.com/",
             },
             {
                 "@type": "ListItem",
                 "position": 2,
                 "name": "Car Shipping Routes",
-                "item": "https://roadamericacars.com/car-shipping-routes",
+                "item": "https://roadamericatransport.com/car-shipping-routes",
             },
         ],
     };
 
     return (
-        <div className="bg-brand-dark min-h-screen text-white">
+        <div className="bg-brand-dark min-h-screen text-text-primary">
             <SEO
                 title="Car Shipping Routes & City-to-City Auto Transport"
                 description="Explore popular city-to-city car shipping routes across the US. Get estimated transit times, distances, and instant door-to-door auto transport quotes."
@@ -62,7 +62,7 @@ export default function CarShippingRoutesIndexPage() {
             {/* HERO SECTION */}
             <section className="relative pt-28 pb-16 overflow-hidden">
                 <div className="absolute inset-0 z-0">
-                    <div className="absolute inset-0 bg-gradient-to-br from-brand-dark via-[#3a3a3a] to-brand-red/10" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-white via-background-warm to-primary/10" />
                     <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
                 </div>
 
@@ -76,7 +76,7 @@ export default function CarShippingRoutesIndexPage() {
                         Popular <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-red to-brand-redSoft">Car Shipping Routes</span>
                     </h1>
 
-                    <p className="text-base md:text-lg text-white/80 max-w-2xl mx-auto mb-10 leading-relaxed">
+                    <p className="text-base md:text-lg text-text-primary max-w-2xl mx-auto mb-10 leading-relaxed">
                         Explore our top city-to-city auto transport corridors. Road America provides fully insured, hand-calculated vehicle shipping quotes with zero hidden fees across the United States.
                     </p>
 
@@ -94,16 +94,16 @@ export default function CarShippingRoutesIndexPage() {
                         </div>
                     </div>
 
-                    <div className="flex flex-wrap justify-center gap-4 text-xs text-white/70">
-                        <div className="flex items-center gap-1.5 bg-white/5 px-3 py-1.5 rounded-full border border-white/10">
+                    <div className="flex flex-wrap justify-center gap-4 text-xs text-text-primary">
+                        <div className="flex items-center gap-1.5 bg-[#172B3D]/5 px-3 py-1.5 rounded-full border border-[#172B3D]/10">
                             <ShieldCheck className="w-4 h-4 text-brand-redSoft" />
                             <span>100% Insured Carriers</span>
                         </div>
-                        <div className="flex items-center gap-1.5 bg-white/5 px-3 py-1.5 rounded-full border border-white/10">
+                        <div className="flex items-center gap-1.5 bg-[#172B3D]/5 px-3 py-1.5 rounded-full border border-[#172B3D]/10">
                             <Star className="w-4 h-4 text-brand-redSoft fill-current" />
                             <span>5-Star Rated Service</span>
                         </div>
-                        <div className="flex items-center gap-1.5 bg-white/5 px-3 py-1.5 rounded-full border border-white/10">
+                        <div className="flex items-center gap-1.5 bg-[#172B3D]/5 px-3 py-1.5 rounded-full border border-[#172B3D]/10">
                             <MapPin className="w-4 h-4 text-brand-redSoft" />
                             <span>Door-to-Door Delivery</span>
                         </div>

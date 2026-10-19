@@ -108,7 +108,7 @@ export default function AdminQuotesPage() {
 
 
   return (
-    <section className="bg-brand-dark text-white min-h-[70vh] py-10">
+    <section className="bg-brand-dark text-text-primary min-h-[70vh] py-10">
       <div className="mx-auto max-w-7xl px-4">
         <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
           <div>
@@ -118,30 +118,30 @@ export default function AdminQuotesPage() {
             <h1 className="mt-2 font-display text-2xl font-semibold">
               Quotes
             </h1>
-            <p className="mt-2 text-sm text-white/70">
+            <p className="mt-2 text-sm text-text-primary">
               Review new quote requests and convert them into shipments.
             </p>
           </div>
 
           <button
             onClick={load}
-            className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/5 px-5 py-2 text-sm text-white/80 hover:bg-white/10"
+            className="inline-flex items-center justify-center rounded-full border border-[#172B3D]/15 bg-[#172B3D]/5 px-5 py-2 text-sm text-text-primary hover:bg-[#172B3D]/10"
           >
             Refresh
           </button>
         </div>
 
-        <div className="mt-6 rounded-2xl border border-white/10 bg-black/15 shadow-soft-card overflow-hidden">
+        <div className="mt-6 rounded-2xl border border-[#172B3D]/10 bg-background-warm shadow-soft-card overflow-hidden">
           {loading ? (
             <LoadingState message="Loading quotes..." />
           ) : err ? (
             <div className="p-6 text-red-300">{err}</div>
           ) : rows.length === 0 ? (
-            <div className="p-6 text-white/70">No quotes found.</div>
+            <div className="p-6 text-text-primary">No quotes found.</div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="bg-white/5 text-white/70">
+                <thead className="bg-[#172B3D]/5 text-text-primary">
                   <tr className="text-left">
                     <th className="px-4 py-3">Customer</th>
                     <th className="px-4 py-3">Route</th>
@@ -151,7 +151,7 @@ export default function AdminQuotesPage() {
                     <th className="px-4 py-3"></th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/10">
+                <tbody className="divide-y divide-[#172B3D]/10">
                   {rows.map((q) => {
                     const name = [q.first_name, q.last_name].filter(Boolean).join(" ").trim();
                     const route = `${q.pickup_city ?? ""}, ${q.pickup_state ?? ""} → ${q.delivery_city ?? ""}, ${q.delivery_state ?? ""}`.trim();
@@ -160,38 +160,38 @@ export default function AdminQuotesPage() {
                     return (
                       <tr key={q.id} className="align-top">
                         <td className="px-4 py-3">
-                          <div className="font-semibold text-white">
+                          <div className="font-semibold text-text-primary">
                             {name || "—"}
                           </div>
-                          <div className="text-xs text-white/60">
+                          <div className="text-xs text-text-muted">
                             {q.customer_email ?? "—"}
                           </div>
-                          <div className="text-xs text-white/60">
+                          <div className="text-xs text-text-muted">
                             {q.referenceId ?? q.id}
                           </div>
 
                         </td>
 
                         <td className="px-4 py-3">
-                          <div className="text-white/80">{route || "—"}</div>
+                          <div className="text-text-primary">{route || "—"}</div>
                         </td>
 
                         <td className="px-4 py-3">
-                          <div className="text-white/80">{vehicle || "—"}</div>
-                          <div className="text-xs text-white/60">
+                          <div className="text-text-primary">{vehicle || "—"}</div>
+                          <div className="text-xs text-text-muted">
                             {q.transport_type ?? "—"} · {q.running_condition ?? "—"}
                           </div>
-                          <div className="text-xs text-white/60">
+                          <div className="text-xs text-text-muted">
                             Height/Mods: {q.vehicle_height_mod ?? "—"}
                           </div>
                         </td>
 
                         <td className="px-4 py-3">
-                          <div className="text-white/80">{q.pickup_window ?? "—"}</div>
+                          <div className="text-text-primary">{q.pickup_window ?? "—"}</div>
                         </td>
 
                         <td className="px-4 py-3">
-                          <span className="inline-flex rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs text-white/80">
+                          <span className="inline-flex rounded-full border border-[#172B3D]/15 bg-[#172B3D]/5 px-3 py-1 text-xs text-text-primary">
                             {q.quote_status ?? "New"}
                           </span>
                         </td>
@@ -212,7 +212,7 @@ export default function AdminQuotesPage() {
                             <button
                               disabled={closingId === q.id || convertingId === q.id}
                               onClick={() => handleCloseNotConverted(q.id)}
-                              className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/5 px-4 py-2 text-xs font-semibold text-white/80 hover:bg-white/10 disabled:opacity-60"
+                              className="inline-flex items-center justify-center rounded-full border border-[#172B3D]/15 bg-[#172B3D]/5 px-4 py-2 text-xs font-semibold text-text-primary hover:bg-[#172B3D]/10 disabled:opacity-60"
                               title={`Sets status to: ${QUOTE_STATUS_CLOSED_NOT_CONVERTED}`}
                             >
                               {closingId === q.id
@@ -224,7 +224,7 @@ export default function AdminQuotesPage() {
                             <button
                               disabled={closingId === q.id || convertingId === q.id}
                               onClick={() => handleMarkConverted(q.id)}
-                              className="mt-1 text-xs text-white/60 hover:text-white underline decoration-white/30 underline-offset-4"
+                              className="mt-1 text-xs text-text-muted hover:text-text-primary underline decoration-white/30 underline-offset-4"
                               title="Hide from list (mark as Converted) without creating a shipment"
                             >
                               Mark as Already Converted

@@ -105,10 +105,10 @@ export default function RoutePage({ routeId }: RoutePageProps) {
 
     if (!route) {
         return (
-            <div className="bg-brand-dark min-h-screen text-white pt-32 pb-20 px-4 text-center">
-                <div className="max-w-md mx-auto bg-white/5 p-8 rounded-2xl border border-white/10">
+            <div className="bg-brand-dark min-h-screen text-text-primary pt-32 pb-20 px-4 text-center">
+                <div className="max-w-md mx-auto bg-[#172B3D]/5 p-8 rounded-2xl border border-[#172B3D]/10">
                     <h1 className="text-3xl font-bold font-display mb-4">Route Not Found</h1>
-                    <p className="text-white/70 mb-6 text-sm">
+                    <p className="text-text-primary mb-6 text-sm">
                         We couldn't find the specific route page you were looking for. Explore our full route index below.
                     </p>
                     <Link
@@ -258,7 +258,7 @@ export default function RoutePage({ routeId }: RoutePageProps) {
     const isFormValid = requiredValues.every((v) => String(v ?? "").trim() !== "");
 
     const canonicalPath = `/car-shipping-routes/${route.slug}`;
-    const fullCanonicalUrl = `https://roadamericacars.com${canonicalPath}`;
+    const fullCanonicalUrl = `https://roadamericatransport.com${canonicalPath}`;
 
     // Schema definitions
     const faqSchema = {
@@ -282,13 +282,13 @@ export default function RoutePage({ routeId }: RoutePageProps) {
                 "@type": "ListItem",
                 "position": 1,
                 "name": "Home",
-                "item": "https://roadamericacars.com/",
+                "item": "https://roadamericatransport.com/",
             },
             {
                 "@type": "ListItem",
                 "position": 2,
                 "name": "Car Shipping Routes",
-                "item": "https://roadamericacars.com/car-shipping-routes",
+                "item": "https://roadamericatransport.com/car-shipping-routes",
             },
             {
                 "@type": "ListItem",
@@ -304,7 +304,7 @@ export default function RoutePage({ routeId }: RoutePageProps) {
         .filter((r): r is RouteConfig => Boolean(r));
 
     return (
-        <div className="bg-brand-dark min-h-screen text-white">
+        <div className="bg-brand-dark min-h-screen text-text-primary">
             <SEO
                 title={route.seoTitle}
                 description={route.seoDescription}
@@ -327,7 +327,7 @@ export default function RoutePage({ routeId }: RoutePageProps) {
             {/* HERO SECTION */}
             <section className="relative pt-24 pb-12 overflow-hidden">
                 <div className="absolute inset-0 z-0">
-                    <div className="absolute inset-0 bg-gradient-to-br from-brand-dark via-[#3a3a3a] to-brand-red/10" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-white via-background-warm to-primary/10" />
                     <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
                 </div>
 
@@ -335,10 +335,10 @@ export default function RoutePage({ routeId }: RoutePageProps) {
                     {/* Left Content */}
                     <div className="lg:w-1/2 pt-2 lg:pt-8">
                         {/* Breadcrumbs Nav */}
-                        <nav className="flex items-center gap-2 text-xs text-white/60 mb-4" aria-label="Breadcrumb">
-                            <Link to="/" className="hover:text-white transition">Home</Link>
+                        <nav className="flex items-center gap-2 text-xs text-text-muted mb-4" aria-label="Breadcrumb">
+                            <Link to="/" className="hover:text-text-primary transition">Home</Link>
                             <span>/</span>
-                            <Link to="/car-shipping-routes" className="hover:text-white transition">Routes</Link>
+                            <Link to="/car-shipping-routes" className="hover:text-text-primary transition">Routes</Link>
                             <span>/</span>
                             <span className="text-brand-redSoft font-medium">{route.fromCity} to {route.toCity}</span>
                         </nav>
@@ -355,51 +355,51 @@ export default function RoutePage({ routeId }: RoutePageProps) {
                             </span>
                         </h1>
 
-                        <p className="text-base md:text-lg text-white/80 mb-8 max-w-xl leading-relaxed">
+                        <p className="text-base md:text-lg text-text-primary mb-8 max-w-xl leading-relaxed">
                             {route.introductoryCopy}
                         </p>
 
                         <div className="flex flex-wrap gap-3 mb-8">
-                            <div className="flex items-center gap-2 text-white/90 bg-white/5 px-3 py-1.5 rounded-lg border border-white/5 backdrop-blur-sm">
+                            <div className="flex items-center gap-2 text-text-primary bg-[#172B3D]/5 px-3 py-1.5 rounded-lg border border-[#172B3D]/5 backdrop-blur-sm">
                                 <ShieldCheck className="text-brand-redSoft w-4 h-4" />
                                 <span className="text-sm font-medium">Fully Insured</span>
                             </div>
-                            <div className="flex items-center gap-2 text-white/90 bg-white/5 px-3 py-1.5 rounded-lg border border-white/5 backdrop-blur-sm">
+                            <div className="flex items-center gap-2 text-text-primary bg-[#172B3D]/5 px-3 py-1.5 rounded-lg border border-[#172B3D]/5 backdrop-blur-sm">
                                 <Truck className="text-brand-redSoft w-4 h-4" />
                                 <span className="text-sm font-medium">Door-to-Door</span>
                             </div>
-                            <div className="flex items-center gap-2 text-white/90 bg-white/5 px-3 py-1.5 rounded-lg border border-white/5 backdrop-blur-sm">
+                            <div className="flex items-center gap-2 text-text-primary bg-[#172B3D]/5 px-3 py-1.5 rounded-lg border border-[#172B3D]/5 backdrop-blur-sm">
                                 <CheckCircle2 className="text-brand-redSoft w-4 h-4" />
                                 <span className="text-sm font-medium">No Deposit</span>
                             </div>
                         </div>
 
                         {/* Route Overview Quick Badge Stats */}
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 bg-white/5 border border-white/10 p-4 rounded-xl max-w-xl mb-6 backdrop-blur-sm">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 bg-[#172B3D]/5 border border-[#172B3D]/10 p-4 rounded-xl max-w-xl mb-6 backdrop-blur-sm">
                             <div>
-                                <span className="text-[10px] uppercase font-semibold text-white/50 block">Distance</span>
-                                <span className="text-sm font-bold text-white flex items-center gap-1">
+                                <span className="text-[10px] uppercase font-semibold text-text-muted block">Distance</span>
+                                <span className="text-sm font-bold text-text-primary flex items-center gap-1">
                                     <Navigation className="w-3.5 h-3.5 text-brand-redSoft" />
                                     {route.approximateDistance}
                                 </span>
                             </div>
                             <div>
-                                <span className="text-[10px] uppercase font-semibold text-white/50 block">Est. Transit</span>
-                                <span className="text-sm font-bold text-white flex items-center gap-1">
+                                <span className="text-[10px] uppercase font-semibold text-text-muted block">Est. Transit</span>
+                                <span className="text-sm font-bold text-text-primary flex items-center gap-1">
                                     <Clock className="w-3.5 h-3.5 text-brand-redSoft" />
                                     {route.estimatedTransitTime}
                                 </span>
                             </div>
                             <div>
-                                <span className="text-[10px] uppercase font-semibold text-white/50 block">Service</span>
-                                <span className="text-sm font-bold text-white flex items-center gap-1">
+                                <span className="text-[10px] uppercase font-semibold text-text-muted block">Service</span>
+                                <span className="text-sm font-bold text-text-primary flex items-center gap-1">
                                     <Truck className="w-3.5 h-3.5 text-brand-redSoft" />
                                     Door-to-Door
                                 </span>
                             </div>
                             <div>
-                                <span className="text-[10px] uppercase font-semibold text-white/50 block">Coverage</span>
-                                <span className="text-sm font-bold text-white flex items-center gap-1">
+                                <span className="text-[10px] uppercase font-semibold text-text-muted block">Coverage</span>
+                                <span className="text-sm font-bold text-text-primary flex items-center gap-1">
                                     <ShieldCheck className="w-3.5 h-3.5 text-brand-redSoft" />
                                     Full Cargo
                                 </span>
@@ -407,18 +407,18 @@ export default function RoutePage({ routeId }: RoutePageProps) {
                         </div>
 
                         {/* Trust Stats */}
-                        <div className="grid grid-cols-3 gap-6 max-w-md border-t border-white/10 pt-6 opacity-80">
+                        <div className="grid grid-cols-3 gap-6 max-w-md border-t border-[#172B3D]/10 pt-6 opacity-80">
                             <div>
-                                <div className="text-xl md:text-2xl font-bold font-display text-white">10k+</div>
-                                <div className="text-[10px] md:text-xs text-white/50 uppercase tracking-wider font-semibold">Customers</div>
+                                <div className="text-xl md:text-2xl font-bold font-display text-text-primary">10k+</div>
+                                <div className="text-[10px] md:text-xs text-text-muted uppercase tracking-wider font-semibold">Customers</div>
                             </div>
                             <div>
-                                <div className="text-xl md:text-2xl font-bold font-display text-white">15+</div>
-                                <div className="text-[10px] md:text-xs text-white/50 uppercase tracking-wider font-semibold">Years Exp.</div>
+                                <div className="text-xl md:text-2xl font-bold font-display text-text-primary">15+</div>
+                                <div className="text-[10px] md:text-xs text-text-muted uppercase tracking-wider font-semibold">Years Exp.</div>
                             </div>
                             <div>
-                                <div className="text-xl md:text-2xl font-bold font-display text-white">5</div>
-                                <div className="text-[10px] md:text-xs text-white/50 uppercase tracking-wider font-semibold">Avg Rating</div>
+                                <div className="text-xl md:text-2xl font-bold font-display text-text-primary">5</div>
+                                <div className="text-[10px] md:text-xs text-text-muted uppercase tracking-wider font-semibold">Avg Rating</div>
                             </div>
                         </div>
                     </div>
@@ -623,7 +623,7 @@ export default function RoutePage({ routeId }: RoutePageProps) {
 
                 {/* Wave Separator */}
                 <div className="absolute bottom-0 left-0 right-0 z-20 translate-y-[1px]">
-                    <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-[60px] md:h-[100px] text-white fill-current preserve-3d">
+                    <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-[60px] md:h-[100px] text-text-primary fill-current preserve-3d">
                         <path d="M0 120L1440 120L1440 0C1440 0 1082.5 99 720 99C357.5 99 0 0 0 0L0 120Z" />
                     </svg>
                 </div>
@@ -739,7 +739,7 @@ export default function RoutePage({ routeId }: RoutePageProps) {
             </section>
 
             {/* TESTIMONIALS SECTION */}
-            <section className="bg-[#323232] py-20 text-white border-t border-white/5 relative overflow-hidden">
+            <section className="bg-white py-20 text-text-primary border-t border-[#172B3D]/5 relative overflow-hidden">
                 <div className="mx-auto max-w-4xl px-4 text-center relative z-10">
                     <h2 className="text-3xl md:text-4xl font-bold font-display mb-12">What Our Customers Say</h2>
 
@@ -758,20 +758,20 @@ export default function RoutePage({ routeId }: RoutePageProps) {
                                 stars: 5,
                             },
                         ].map((review, i) => (
-                            <div key={i} className="bg-white/5 border border-white/10 p-8 rounded-2xl text-left hover:bg-white/10 transition-colors duration-300">
+                            <div key={i} className="bg-[#172B3D]/5 border border-[#172B3D]/10 p-8 rounded-2xl text-left hover:bg-[#172B3D]/10 transition-colors duration-300">
                                 <div className="flex gap-1 mb-4 text-brand-red">
                                     {[...Array(review.stars)].map((_, i) => (
                                         <Star key={i} className="w-4 h-4 fill-current" />
                                     ))}
                                 </div>
-                                <p className="text-white/80 text-sm mb-6 leading-relaxed italic">"{review.text}"</p>
+                                <p className="text-text-primary text-sm mb-6 leading-relaxed italic">"{review.text}"</p>
                                 <div className="flex items-center gap-3">
                                     <div className="w-10 h-10 rounded-full bg-brand-red/20 flex items-center justify-center text-brand-red font-bold text-xs uppercase">
                                         {review.name.charAt(0)}
                                     </div>
                                     <div>
-                                        <p className="font-bold text-sm text-white">{review.name}</p>
-                                        <p className="text-xs text-white/40">{review.role}</p>
+                                        <p className="font-bold text-sm text-text-primary">{review.name}</p>
+                                        <p className="text-xs text-text-supporting">{review.role}</p>
                                     </div>
                                 </div>
                             </div>

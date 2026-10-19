@@ -51,7 +51,7 @@ function getStatusBadgeClasses(status: ShipmentStatus) {
   if (status === "Delivered") return "bg-sky-500/15 text-sky-300";
   if (status === "Canceled" || status === "Cancelled") return "bg-purple-500/15 text-purple-300";
   if (status === "Expired") return "bg-rose-500/15 text-rose-300";
-  return "bg-white/10 text-white/80";
+  return "bg-[#172B3D]/10 text-text-primary";
 }
 
 function getStatusIcon(status: ShipmentStatus) {
@@ -138,16 +138,16 @@ export default function LiveShipmentsCard() {
   }, []);
 
   return (
-    <div className="rounded-2xl border border-white/10 bg-black/25 p-4">
+    <div className="rounded-2xl border border-[#172B3D]/10 bg-background-warm p-4">
       <div className="mb-3">
         <h2 className="text-sm font-semibold">Live Shipments</h2>
-        <p className="mt-1 text-[11px] text-white/50">
+        <p className="mt-1 text-[11px] text-text-muted">
           Last 5 active shipments (Submitted, Driver Assigned, In Transit)
         </p>
       </div>
 
       {!loading && !error && shipments.length === 0 && (
-        <p className="text-xs text-white/60">
+        <p className="text-xs text-text-muted">
           No active shipments found yet.
         </p>
       )}
@@ -180,11 +180,11 @@ export default function LiveShipmentsCard() {
             return (
               <div
                 key={shipment.id}
-                className="rounded-xl bg-black/20 p-3 text-xs text-white/80"
+                className="rounded-xl bg-background-warm p-3 text-xs text-text-primary"
               >
                 <div className="flex items-center justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="text-[11px] uppercase tracking-wide text-white/40">
+                    <p className="text-[11px] uppercase tracking-wide text-text-supporting">
                       Route
                     </p>
                     <p className="truncate font-semibold">
@@ -195,7 +195,7 @@ export default function LiveShipmentsCard() {
                   </div>
 
                   <div className="text-right">
-                    <p className="text-[11px] uppercase tracking-wide text-white/40">
+                    <p className="text-[11px] uppercase tracking-wide text-text-supporting">
                       Status
                     </p>
 
@@ -213,14 +213,14 @@ export default function LiveShipmentsCard() {
 
                 <div className="mt-3 flex items-center justify-between">
                   <div className="min-w-0">
-                    <p className="text-[11px] uppercase text-white/40">
+                    <p className="text-[11px] uppercase text-text-supporting">
                       Vehicle
                     </p>
                     <p className="truncate">{vehicle}</p>
                   </div>
 
                   {shipment.referenceId && (
-                    <p className="text-[11px] text-white/50">
+                    <p className="text-[11px] text-text-muted">
                       Ref:{" "}
                       <span className="font-mono">
                         {shipment.referenceId}
@@ -229,7 +229,7 @@ export default function LiveShipmentsCard() {
                   )}
                 </div>
 
-                <p className="mt-2 text-[10px] text-white/40">
+                <p className="mt-2 text-[10px] text-text-supporting">
                   Last update: {updatedLabel}
                 </p>
               </div>

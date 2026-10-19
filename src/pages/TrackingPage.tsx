@@ -191,7 +191,7 @@ const TrackingPage = () => {
   const currentStatus = shipment ? normalizeStatus(shipment.status) : "Request Submitted";
 
   return (
-    <section className="bg-brand-dark py-12 text-white">
+    <section className="bg-tracking-bg py-12 text-text-primary">
       <div className="mx-auto max-w-5xl px-4">
         <div className="mb-8">
           <p className="text-xs uppercase tracking-[0.2em] text-brand-redSoft">
@@ -200,7 +200,7 @@ const TrackingPage = () => {
           <h1 className="mt-2 font-display text-3xl font-semibold">
             Track Your Vehicle Transport
           </h1>
-          <p className="mt-2 text-sm text-white/70">
+          <p className="mt-2 text-sm text-text-primary">
             Enter your Road America Auto Transport reference ID and the email
             used on your quote so we can display the latest status of your
             shipment.
@@ -211,10 +211,10 @@ const TrackingPage = () => {
           {/* Left: form */}
           <form
             onSubmit={handleSubmit}
-            className="space-y-4 rounded-2xl bg-black/20 p-5 shadow-soft-card border border-white/10"
+            className="space-y-4 rounded-2xl bg-background-warm p-5 shadow-soft-card border border-[#172B3D]/10"
           >
             <div>
-              <label className="block text-xs text-white/70 mb-1">
+              <label className="block text-xs text-text-primary mb-1">
                 Reference ID
               </label>
               <input
@@ -223,20 +223,20 @@ const TrackingPage = () => {
                 value={form.referenceId}
                 onChange={handleChange}
                 placeholder="e.g. RA-10234"
-                className="w-full rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+                className="w-full rounded-xl border border-[#172B3D]/15 bg-background-warm px-3 py-2 text-sm text-text-primary outline-none focus:border-brand-redSoft"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-xs text-white/70 mb-1">Email</label>
+              <label className="block text-xs text-text-primary mb-1">Email</label>
               <input
                 type="email"
                 name="email"
                 value={form.email}
                 onChange={handleChange}
                 placeholder="Email used with your quote request"
-                className="w-full rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-sm text-white outline-none focus:border-brand-redSoft"
+                className="w-full rounded-xl border border-[#172B3D]/15 bg-background-warm px-3 py-2 text-sm text-text-primary outline-none focus:border-brand-redSoft"
                 required
               />
             </div>
@@ -249,7 +249,7 @@ const TrackingPage = () => {
               {loading ? "Checking..." : "Check Status"}
             </button>
 
-            <p className="text-[11px] text-white/50 mt-2">
+            <p className="text-[11px] text-text-muted mt-2">
               Don’t see your status? Tracking will appear after payment is
               completed and your vehicle has been dispatched.
             </p>
@@ -258,11 +258,11 @@ const TrackingPage = () => {
           </form>
 
           {/* Right: timeline */}
-          <div className="rounded-2xl bg-black/20 p-5 shadow-soft-card border border-white/10">
+          <div className="rounded-2xl bg-background-warm p-5 shadow-soft-card border border-[#172B3D]/10">
             <h2 className="text-sm font-semibold mb-4">Shipment Status</h2>
 
             {!shipment && !loading && !error && (
-              <p className="text-xs text-white/60">
+              <p className="text-xs text-text-muted">
                 Enter your reference ID and email to view your shipment’s
                 progress from quote to delivery.
               </p>
@@ -274,9 +274,9 @@ const TrackingPage = () => {
 
             {shipment && (
               <>
-                <div className="mb-4 flex items-center justify-between text-xs text-white/60">
+                <div className="mb-4 flex items-center justify-between text-xs text-text-muted">
                   <div>
-                    <p className="text-[11px] uppercase text-white/50">
+                    <p className="text-[11px] uppercase text-text-muted">
                       Current Status
                     </p>
                     <p className="text-sm font-semibold text-brand-redSoft">
@@ -284,18 +284,18 @@ const TrackingPage = () => {
                     </p>
 
                     {shipment.eta ? (
-                      <p className="mt-1 text-[11px] text-white/60">
+                      <p className="mt-1 text-[11px] text-text-muted">
                         ETA: {shipment.eta}
                       </p>
                     ) : null}
                   </div>
 
                   <div className="text-right">
-                    <p className="text-[11px] uppercase text-white/50">
+                    <p className="text-[11px] uppercase text-text-muted">
                       Reference
                     </p>
                     <p className="text-xs font-mono">{shipment.referenceId}</p>
-                    <p className="mt-1 text-[11px] text-white/60">
+                    <p className="mt-1 text-[11px] text-text-muted">
                       {shipment.pickupCity}, {shipment.pickupState} →{" "}
                       {shipment.deliveryCity}, {shipment.deliveryState}
                     </p>
@@ -305,7 +305,7 @@ const TrackingPage = () => {
                 <ol
                   className="relative mt-4 space-y-5 pl-0
                     before:absolute before:left-[14px] before:top-0 before:bottom-0
-                    before:w-px before:bg-white/15"
+                    before:w-px before:bg-[#172B3D]/15"
                 >
                   {/* Filled progress line */}
                   <span
@@ -327,8 +327,8 @@ const TrackingPage = () => {
                       isActive
                         ? "border-brand-red/60 bg-brand-red/20 text-brand-redSoft shadow-[0_0_18px_rgba(255,0,0,0.22)]"
                         : isCompleted
-                          ? "border-brand-red/40 bg-brand-red/10 text-white/80"
-                          : "border-white/25 bg-brand-dark text-white/55",
+                          ? "border-brand-red/40 bg-brand-red/10 text-text-primary"
+                          : "border-[#172B3D]/25 bg-brand-dark text-text-muted",
                     ].join(" ");
 
                     return (
@@ -347,12 +347,12 @@ const TrackingPage = () => {
                               "text-xs font-semibold",
                               isActive
                                 ? "text-brand-redSoft"
-                                : "text-white/80",
+                                : "text-text-primary",
                             ].join(" ")}
                           >
                             {step.label}
                           </p>
-                          <p className="mt-1 text-[11px] text-white/60">
+                          <p className="mt-1 text-[11px] text-text-muted">
                             {step.description}
                           </p>
 

@@ -45,7 +45,7 @@ const Header = () => {
   ];
 
   return (
-    <header className="bg-[#323232]/40 backdrop-blur-md border-b border-white/10 sticky top-0 z-50">
+    <header className="bg-header/95 backdrop-blur-md border-b border-[#172B3D]/10 sticky top-0 z-50">
       <div className="mx-auto max-w-7xl px-4 py-4 flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-3">
@@ -54,19 +54,19 @@ const Header = () => {
             alt="Road America Auto Transport"
             className="h-10 w-auto object-contain"
           />
-          <span className="text-sm md:text-xl font-bold tracking-wide text-white whitespace-nowrap">
+          <span className="text-sm md:text-xl font-bold tracking-wide text-text-primary whitespace-nowrap">
             Road America Auto Transport
           </span>
         </Link>
 
         {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center gap-8 text-sm text-white/80">
+        <nav className="hidden md:flex items-center gap-8 text-sm text-text-primary">
           {navItems.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
               className={({ isActive }) =>
-                `hover:text-white transition ${isActive ? "text-white" : "text-white/80"
+                `hover:text-text-primary transition ${isActive ? "text-text-primary" : "text-text-primary"
                 }`
               }
             >
@@ -79,7 +79,7 @@ const Header = () => {
             <NavLink
               to="/shipments"
               className={({ isActive }) =>
-                `hover:text-brand-red transition ${isActive ? "text-brand-red" : "text-white/80"
+                `hover:text-brand-red transition ${isActive ? "text-brand-red" : "text-text-primary"
                 }`
               }
             >
@@ -92,7 +92,7 @@ const Header = () => {
             <NavLink
               to="/admin/shipments"
               className={({ isActive }) =>
-                `hover:text-brand-redSoft transition ${isActive ? "text-brand-redSoft" : "text-white/80"
+                `hover:text-brand-redSoft transition ${isActive ? "text-brand-redSoft" : "text-text-primary"
                 }`
               }
             >
@@ -109,7 +109,7 @@ const Header = () => {
           ) : (
             <>
               <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2 text-white/80">
+                <div className="flex items-center gap-2 text-text-primary">
                   <div className="h-8 w-8 rounded-full bg-brand-red/20 flex items-center justify-center text-brand-redSoft border border-brand-red/30">
                     <User className="w-4 h-4" />
                   </div>
@@ -120,7 +120,7 @@ const Header = () => {
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="flex items-center gap-2 text-xs font-medium text-white/60 hover:text-white transition-colors"
+                  className="flex items-center gap-2 text-xs font-medium text-text-muted hover:text-text-primary transition-colors"
                   title="Logout"
                 >
                   <LogOut className="w-4 h-4" />
@@ -133,7 +133,7 @@ const Header = () => {
 
         {/* Mobile toggle */}
         <button
-          className="md:hidden rounded-full border border-white/25 px-3 py-2 text-white"
+          className="md:hidden rounded-full border border-[#172B3D]/25 px-3 py-2 text-text-primary"
           onClick={() => setMobileOpen((o) => !o)}
           type="button"
         >
@@ -143,14 +143,14 @@ const Header = () => {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="md:hidden bg-black/45 border-t border-white/10">
+        <div className="md:hidden bg-background-warm border-t border-[#172B3D]/10">
           <div className="px-4 py-4 space-y-3 text-sm">
             {navItems.map((item) => (
               <Link
                 key={item.to}
                 to={item.to}
                 onClick={() => setMobileOpen(false)}
-                className="block text-white/80"
+                className="block text-text-primary"
               >
                 {item.label}
               </Link>
@@ -160,7 +160,7 @@ const Header = () => {
               <Link
                 to="/shipments"
                 onClick={() => setMobileOpen(false)}
-                className="block text-white/80"
+                className="block text-text-primary"
               >
                 My Shipments
               </Link>
@@ -170,34 +170,34 @@ const Header = () => {
               <Link
                 to="/admin/shipments"
                 onClick={() => setMobileOpen(false)}
-                className="block text-white/80"
+                className="block text-text-primary"
               >
                 Admin Dashboard
               </Link>
             )}
 
             {/* Auth UI (mobile) */}
-            <div className="pt-3 border-t border-white/10 space-y-3">
+            <div className="pt-3 border-t border-[#172B3D]/10 space-y-3">
               {!isLoggedIn ? (
                 <>
                   <Link
                     to="/login"
                     onClick={() => setMobileOpen(false)}
-                    className="block text-white/80"
+                    className="block text-text-primary"
                   >
                     Login
                   </Link>
                   <Link
                     to="/register"
                     onClick={() => setMobileOpen(false)}
-                    className="block text-white/80"
+                    className="block text-text-primary"
                   >
                     Register
                   </Link>
                 </>
               ) : (
                 <>
-                  <div className="flex items-center gap-2 px-1 text-white/80">
+                  <div className="flex items-center gap-2 px-1 text-text-primary">
                     <div className="h-8 w-8 rounded-full bg-brand-red/20 flex items-center justify-center text-brand-redSoft border border-brand-red/30">
                       <User className="w-4 h-4" />
                     </div>
@@ -206,7 +206,7 @@ const Header = () => {
                   <button
                     type="button"
                     onClick={handleLogout}
-                    className="flex items-center gap-2 text-white/80 hover:text-white transition-colors px-1"
+                    className="flex items-center gap-2 text-text-primary hover:text-text-primary transition-colors px-1"
                   >
                     <LogOut className="w-4 h-4" />
                     <span className="text-sm">Logout</span>

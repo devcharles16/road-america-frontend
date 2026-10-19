@@ -33,7 +33,7 @@ import { createBusinessInquiry } from "../services/businessInquiriesService";
 // Section 1: Hero Section
 function HeroSection() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-[#36383d] via-brand-dark to-[#2e2f32] py-16 md:py-24 border-b border-white/10">
+    <section className="relative overflow-hidden bg-white py-16 md:py-24 border-b border-[#172B3D]/10">
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[500px] opacity-25 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-brand-redSoft via-brand-red/20 to-transparent pointer-events-none" />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -45,18 +45,18 @@ function HeroSection() {
               BUSINESS AUTO TRANSPORT
             </div>
 
-            <h1 className="font-display text-3xl font-extrabold tracking-tight text-white sm:text-4xl md:text-5xl lg:text-6xl leading-[1.15]">
+            <h1 className="font-display text-3xl font-extrabold tracking-tight text-text-primary sm:text-4xl md:text-5xl lg:text-6xl leading-[1.15]">
               You Don’t Need Another Broker.{" "}
               <span className="bg-gradient-to-r from-brand-redSoft via-red-400 to-amber-300 bg-clip-text text-transparent">
                 You Need a Better Transportation Resource.
               </span>
             </h1>
 
-            <p className="text-base sm:text-lg text-white/80 leading-relaxed max-w-2xl font-light">
+            <p className="text-base sm:text-lg text-text-primary leading-relaxed max-w-2xl font-light">
               Road America helps dealerships, fleets, auctions, and businesses move vehicles without the constant follow-up, unclear expectations, and communication gaps that make transportation harder than it should be.
             </p>
 
-            <p className="text-sm text-white/70 font-medium">
+            <p className="text-sm text-text-primary font-medium">
               Use us as your primary transportation partner, an overflow resource, or a dependable second option when your regular provider cannot deliver.
             </p>
 
@@ -70,13 +70,13 @@ function HeroSection() {
               </a>
               <a
                 href="#test-shipment"
-                className="inline-flex items-center justify-center rounded-full border border-white/20 bg-white/5 backdrop-blur-sm px-7 py-4 text-sm font-semibold text-white transition-all duration-300 hover:bg-white/10 hover:border-white/40 hover:-translate-y-0.5 text-center"
+                className="inline-flex items-center justify-center rounded-full border border-[#172B3D]/20 bg-[#172B3D]/5 backdrop-blur-sm px-7 py-4 text-sm font-semibold text-text-primary transition-all duration-300 hover:bg-[#172B3D]/10 hover:border-[#172B3D]/40 hover:-translate-y-0.5 text-center"
               >
                 Give Us a Test Shipment
               </a>
             </div>
 
-            <div className="pt-4 grid grid-cols-3 gap-4 border-t border-white/10 text-xs sm:text-sm text-white/70">
+            <div className="pt-4 grid grid-cols-3 gap-4 border-t border-[#172B3D]/10 text-xs sm:text-sm text-text-primary">
               <div className="flex items-center gap-2">
                 <ShieldCheck className="w-4 h-4 text-brand-redSoft flex-shrink-0" />
                 <span>Licensed FMCSA Broker</span>
@@ -94,11 +94,11 @@ function HeroSection() {
 
           {/* Right Column: Commercial Dashboard Visual */}
           <div className="lg:col-span-5">
-            <div className="rounded-3xl border border-white/15 bg-[#34363b]/95 p-6 shadow-2xl backdrop-blur-xl relative overflow-hidden">
-              <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-4">
+            <div className="rounded-3xl border border-[#172B3D]/15 bg-white/95 p-6 shadow-2xl backdrop-blur-xl relative overflow-hidden">
+              <div className="flex items-center justify-between pb-4 border-b border-[#172B3D]/10 mb-4">
                 <div className="flex items-center gap-2">
                   <div className="h-3 w-3 rounded-full bg-emerald-400 animate-pulse" />
-                  <span className="text-xs font-semibold text-white/80">Commercial Dispatch Network</span>
+                  <span className="text-xs font-semibold text-text-primary">Commercial Dispatch Network</span>
                 </div>
                 <span className="text-[11px] font-mono text-brand-redSoft bg-brand-red/10 px-2.5 py-1 rounded-full border border-brand-red/20">
                   B2B Account Portal
@@ -108,9 +108,9 @@ function HeroSection() {
               {/* Visual Card Content */}
               <div className="space-y-4 text-xs">
                 {/* Active Shipment Snapshot */}
-                <div className="p-4 rounded-2xl bg-black/20 border border-white/10 space-y-3">
+                <div className="p-4 rounded-2xl bg-background-warm border border-[#172B3D]/10 space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-white/60 font-semibold uppercase tracking-wider text-[10px]">
+                    <span className="text-text-muted font-semibold uppercase tracking-wider text-[10px]">
                       Dealership Batch Dispatch • Ref #RA-COMM-884
                     </span>
                     <span className="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">
@@ -118,18 +118,18 @@ function HeroSection() {
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-2 text-white">
+                  <div className="grid grid-cols-2 gap-2 text-text-primary">
                     <div>
-                      <p className="text-white/50 text-[10px]">Origin</p>
-                      <p className="font-semibold text-white/90">Manheim Auto Auction (Orlando, FL)</p>
+                      <p className="text-text-muted text-[10px]">Origin</p>
+                      <p className="font-semibold text-text-primary">Manheim Auto Auction (Orlando, FL)</p>
                     </div>
                     <div>
-                      <p className="text-white/50 text-[10px]">Destination</p>
-                      <p className="font-semibold text-white/90">Apex Dealer Group (Atlanta, GA)</p>
+                      <p className="text-text-muted text-[10px]">Destination</p>
+                      <p className="font-semibold text-text-primary">Apex Dealer Group (Atlanta, GA)</p>
                     </div>
                   </div>
 
-                  <div className="pt-2 border-t border-white/10 flex items-center justify-between text-white/70">
+                  <div className="pt-2 border-t border-[#172B3D]/10 flex items-center justify-between text-text-primary">
                     <div className="flex items-center gap-1.5">
                       <Truck className="w-3.5 h-3.5 text-brand-redSoft" />
                       <span>Vetted Multi-Car Transport</span>
@@ -139,22 +139,22 @@ function HeroSection() {
                 </div>
 
                 {/* Proactive Communication Card */}
-                <div className="p-3.5 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between text-white/80">
+                <div className="p-3.5 rounded-xl bg-[#172B3D]/5 border border-[#172B3D]/10 flex items-center justify-between text-text-primary">
                   <div className="flex items-center gap-2.5">
                     <div className="h-8 w-8 rounded-lg bg-brand-red/20 flex items-center justify-center text-brand-redSoft flex-shrink-0">
                       <MessageCircle className="w-4 h-4" />
                     </div>
                     <div>
-                      <p className="font-semibold text-white text-xs">Dedicated Account Coordinator</p>
-                      <p className="text-[11px] text-white/50">Pickup confirmed & BOL filed automatically</p>
+                      <p className="font-semibold text-text-primary text-xs">Dedicated Account Coordinator</p>
+                      <p className="text-[11px] text-text-muted">Pickup confirmed & BOL filed automatically</p>
                     </div>
                   </div>
                   <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
                 </div>
 
                 {/* Operational Summary */}
-                <div className="p-3 rounded-xl bg-brand-red/10 border border-brand-red/20 text-white/80 text-[11px] flex items-center justify-between">
-                  <span className="text-white/90 font-medium">Overflow & Difficult Lane Partner</span>
+                <div className="p-3 rounded-xl bg-brand-red/10 border border-brand-red/20 text-text-primary text-[11px] flex items-center justify-between">
+                  <span className="text-text-primary font-medium">Overflow & Difficult Lane Partner</span>
                   <span className="text-brand-redSoft font-bold">Zero Chasing Required</span>
                 </div>
               </div>
@@ -177,16 +177,16 @@ function OperationalImpactSection() {
   ];
 
   return (
-    <section className="py-16 md:py-24 bg-[#313337] border-b border-white/10">
+    <section className="py-16 md:py-24 bg-background-warm border-b border-[#172B3D]/10">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <span className="text-xs font-bold uppercase tracking-widest text-brand-redSoft">
             Operational Disruption
           </span>
-          <h2 className="mt-2 font-display text-2xl sm:text-3xl md:text-4xl font-bold text-white">
+          <h2 className="mt-2 font-display text-2xl sm:text-3xl md:text-4xl font-bold text-text-primary">
             Your Transportation Provider Affects More Than Transportation.
           </h2>
-          <p className="mt-4 text-sm sm:text-base text-white/70 leading-relaxed font-light">
+          <p className="mt-4 text-sm sm:text-base text-text-primary leading-relaxed font-light">
             A delayed or poorly communicated shipment can affect inventory availability, vehicle reconditioning, sales commitments, customer delivery dates, auction purchases, employee productivity, port appointments, cash flow, customer satisfaction, and your team’s time.
           </p>
           <p className="mt-2 text-sm sm:text-base text-brand-redSoft font-semibold">
@@ -205,8 +205,8 @@ function OperationalImpactSection() {
                   </span>
                   <AlertCircle className="w-4 h-4 text-red-400" />
                 </div>
-                <h3 className="text-sm font-bold text-white mb-2">{step.title}</h3>
-                <p className="text-xs text-white/60 leading-relaxed">{step.desc}</p>
+                <h3 className="text-sm font-bold text-text-primary mb-2">{step.title}</h3>
+                <p className="text-xs text-text-muted leading-relaxed">{step.desc}</p>
               </div>
             </div>
           ))}
@@ -231,26 +231,26 @@ function AlreadyHaveBrokerSection() {
   ];
 
   return (
-    <section className="py-16 md:py-24 bg-brand-dark border-b border-white/10">
+    <section className="py-16 md:py-24 bg-brand-dark border-b border-[#172B3D]/10">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid gap-12 lg:grid-cols-12 items-center">
           <div className="lg:col-span-6 space-y-6">
             <span className="text-xs font-bold uppercase tracking-widest text-brand-redSoft">
               Low-Risk Partnership
             </span>
-            <h2 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold text-white">
+            <h2 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold text-text-primary">
               Already Have a Transportation Broker? Good.
             </h2>
-            <p className="text-sm sm:text-base text-white/70 leading-relaxed font-light">
+            <p className="text-sm sm:text-base text-text-primary leading-relaxed font-light">
               Most established dealerships and businesses already have one or more transportation providers. Road America does not need to replace your current broker on day one.
             </p>
-            <p className="text-sm sm:text-base text-white/80 font-medium">
+            <p className="text-sm sm:text-base text-text-primary font-medium">
               We position ourselves as your overflow partner, backup resource, and difficult-lane specialist.
             </p>
 
-            <div className="p-6 rounded-3xl border border-brand-red/30 bg-brand-red/10 text-white space-y-3">
+            <div className="p-6 rounded-3xl border border-brand-red/30 bg-brand-red/10 text-text-primary space-y-3">
               <h3 className="text-base font-bold text-brand-redSoft">Strategic Takeaway:</h3>
-              <p className="text-sm font-semibold text-white/90 italic">
+              <p className="text-sm font-semibold text-text-primary italic">
                 “The best time to establish a backup transportation resource is before you urgently need one.”
               </p>
             </div>
@@ -266,15 +266,15 @@ function AlreadyHaveBrokerSection() {
           </div>
 
           <div className="lg:col-span-6">
-            <div className="rounded-3xl border border-white/10 bg-[#36383e] p-6 sm:p-8 shadow-2xl">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-white/60 mb-6 flex items-center gap-2">
+            <div className="rounded-3xl border border-[#172B3D]/10 bg-white p-6 sm:p-8 shadow-2xl">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-text-muted mb-6 flex items-center gap-2">
                 <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                 When Commercial Accounts Call Road America:
               </h3>
 
-              <div className="space-y-3 text-xs sm:text-sm text-white/80">
+              <div className="space-y-3 text-xs sm:text-sm text-text-primary">
                 {useCases.map((useCase, idx) => (
-                  <div key={idx} className="flex items-start gap-3 p-3 rounded-xl bg-white/5 border border-white/5">
+                  <div key={idx} className="flex items-start gap-3 p-3 rounded-xl bg-[#172B3D]/5 border border-[#172B3D]/5">
                     <Check className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" />
                     <span>{useCase}</span>
                   </div>
@@ -291,17 +291,17 @@ function AlreadyHaveBrokerSection() {
 // Section 4: High-Impact Scenario Section
 function ScenarioSection() {
   return (
-    <section className="py-16 md:py-24 bg-[#2d2e31] border-b border-white/10">
+    <section className="py-16 md:py-24 bg-background-warm border-b border-[#172B3D]/10">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="rounded-3xl border border-red-500/30 bg-gradient-to-b from-[#3a3c42] to-black p-8 sm:p-12 shadow-2xl relative overflow-hidden">
+        <div className="rounded-3xl border border-red-500/30 bg-white p-8 sm:p-12 shadow-2xl relative overflow-hidden">
           <div className="grid gap-8 lg:grid-cols-12 items-center">
             {/* Left: The Scenario */}
-            <div className="lg:col-span-6 space-y-4 border-b lg:border-b-0 lg:border-r border-white/10 pb-8 lg:pb-0 lg:pr-8">
+            <div className="lg:col-span-6 space-y-4 border-b lg:border-b-0 lg:border-r border-[#172B3D]/10 pb-8 lg:pb-0 lg:pr-8">
               <span className="text-xs font-bold uppercase tracking-widest text-red-400 flex items-center gap-2">
                 <AlertTriangle className="w-4 h-4 text-red-400" />
                 The Common Industry Problem
               </span>
-              <h2 className="font-display text-2xl sm:text-3xl font-bold text-white">
+              <h2 className="font-display text-2xl sm:text-3xl font-bold text-text-primary">
                 The Vehicle Was Supposed to Arrive Yesterday. Now Everyone Wants an Answer.
               </h2>
               <ul className="space-y-2 text-xs sm:text-sm text-red-200/80">
@@ -311,7 +311,7 @@ function ScenarioSection() {
                 <li>• The promised delivery date is approaching.</li>
                 <li>• Your transportation provider has not responded.</li>
               </ul>
-              <p className="text-xs text-white/60 italic pt-2">
+              <p className="text-xs text-text-muted italic pt-2">
                 This is where a simple transportation transaction becomes an operational crisis.
               </p>
             </div>
@@ -322,17 +322,17 @@ function ScenarioSection() {
                 <ShieldCheck className="w-4 h-4 text-emerald-400" />
                 The Road America Standard
               </span>
-              <h3 className="text-xl font-bold text-white">
+              <h3 className="text-xl font-bold text-text-primary">
                 Built Around Operational Accountability
               </h3>
-              <div className="grid grid-cols-2 gap-3 text-xs text-white/80">
-                <div className="p-3 rounded-xl bg-white/5 border border-white/10">✓ Clear Ownership</div>
-                <div className="p-3 rounded-xl bg-white/5 border border-white/10">✓ Responsive Communication</div>
-                <div className="p-3 rounded-xl bg-white/5 border border-white/10">✓ Realistic Expectations</div>
-                <div className="p-3 rounded-xl bg-white/5 border border-white/10">✓ Active Follow-up</div>
+              <div className="grid grid-cols-2 gap-3 text-xs text-text-primary">
+                <div className="p-3 rounded-xl bg-[#172B3D]/5 border border-[#172B3D]/10">✓ Clear Ownership</div>
+                <div className="p-3 rounded-xl bg-[#172B3D]/5 border border-[#172B3D]/10">✓ Responsive Communication</div>
+                <div className="p-3 rounded-xl bg-[#172B3D]/5 border border-[#172B3D]/10">✓ Realistic Expectations</div>
+                <div className="p-3 rounded-xl bg-[#172B3D]/5 border border-[#172B3D]/10">✓ Active Follow-up</div>
               </div>
 
-              <blockquote className="p-4 rounded-2xl border-l-4 border-brand-redSoft bg-white/5 text-sm font-bold text-white">
+              <blockquote className="p-4 rounded-2xl border-l-4 border-brand-redSoft bg-[#172B3D]/5 text-sm font-bold text-text-primary">
                 “You should not have to chase your broker for information about your own shipment.”
               </blockquote>
             </div>
@@ -357,29 +357,29 @@ function CommercialSolutionsSection() {
   ];
 
   return (
-    <section className="py-16 md:py-24 bg-brand-dark border-b border-white/10">
+    <section className="py-16 md:py-24 bg-brand-dark border-b border-[#172B3D]/10">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <span className="text-xs font-bold uppercase tracking-widest text-brand-redSoft">
             B2B Service Portfolio
           </span>
-          <h2 className="mt-2 font-display text-2xl sm:text-3xl md:text-4xl font-bold text-white">
+          <h2 className="mt-2 font-display text-2xl sm:text-3xl md:text-4xl font-bold text-text-primary">
             Transportation Support Built Around Your Business
           </h2>
-          <p className="mt-4 text-sm sm:text-base text-white/70 leading-relaxed font-light">
+          <p className="mt-4 text-sm sm:text-base text-text-primary leading-relaxed font-light">
             Custom logistics solutions tailored to commercial workflows, auctions, dealer networks, and corporate fleet operations.
           </p>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {solutions.map((item, idx) => (
-            <div key={idx} className="rounded-2xl border border-white/10 bg-[#36383e] p-6 hover:border-brand-red/40 transition group flex flex-col justify-between">
+            <div key={idx} className="rounded-2xl border border-[#172B3D]/10 bg-white p-6 hover:border-brand-red/40 transition group flex flex-col justify-between">
               <div>
                 <div className="h-10 w-10 rounded-xl bg-brand-red/20 flex items-center justify-center text-brand-redSoft mb-4 group-hover:scale-110 transition-transform">
                   <item.icon className="w-5 h-5" />
                 </div>
-                <h3 className="text-base font-bold text-white mb-2">{item.title}</h3>
-                <p className="text-xs text-white/60 leading-relaxed">{item.desc}</p>
+                <h3 className="text-base font-bold text-text-primary mb-2">{item.title}</h3>
+                <p className="text-xs text-text-muted leading-relaxed">{item.desc}</p>
               </div>
             </div>
           ))}
@@ -403,26 +403,26 @@ function CommercialWorkflowSection() {
   ];
 
   return (
-    <section className="py-16 md:py-24 bg-[#313337] border-b border-white/10">
+    <section className="py-16 md:py-24 bg-background-warm border-b border-[#172B3D]/10">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <span className="text-xs font-bold uppercase tracking-widest text-brand-redSoft">
             Operational Lifecycle
           </span>
-          <h2 className="mt-2 font-display text-2xl sm:text-3xl md:text-4xl font-bold text-white">
+          <h2 className="mt-2 font-display text-2xl sm:text-3xl md:text-4xl font-bold text-text-primary">
             A Clear Process From Request to Delivery
           </h2>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {workflowStages.map((stage) => (
-            <div key={stage.num} className="rounded-2xl border border-white/10 bg-white/5 p-6 relative backdrop-blur-sm">
+            <div key={stage.num} className="rounded-2xl border border-[#172B3D]/10 bg-[#172B3D]/5 p-6 relative backdrop-blur-sm">
               <div className="flex items-center justify-between mb-3">
                 <span className="font-mono text-xl font-bold text-brand-redSoft">{stage.num}</span>
                 <div className="h-2 w-2 rounded-full bg-brand-redSoft" />
               </div>
-              <h3 className="text-sm font-bold text-white mb-2">{stage.title}</h3>
-              <p className="text-xs text-white/60 leading-relaxed">{stage.desc}</p>
+              <h3 className="text-sm font-bold text-text-primary mb-2">{stage.title}</h3>
+              <p className="text-xs text-text-muted leading-relaxed">{stage.desc}</p>
             </div>
           ))}
         </div>
@@ -451,31 +451,31 @@ function CommercialComparisonSection() {
   ];
 
   return (
-    <section className="py-16 md:py-24 bg-brand-dark border-b border-white/10">
+    <section className="py-16 md:py-24 bg-brand-dark border-b border-[#172B3D]/10">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <span className="text-xs font-bold uppercase tracking-widest text-brand-redSoft">
             Service Philosophy
           </span>
-          <h2 className="mt-2 font-display text-2xl sm:text-3xl md:text-4xl font-bold text-white">
+          <h2 className="mt-2 font-display text-2xl sm:text-3xl md:text-4xl font-bold text-text-primary">
             Typical Transaction vs. Road America Partnership
           </h2>
         </div>
 
-        <div className="hidden md:block overflow-hidden rounded-3xl border border-white/10 bg-[#36383e] shadow-2xl">
-          <table className="w-full text-left text-sm text-white">
-            <thead className="border-b border-white/10 bg-white/5 text-xs uppercase tracking-wider text-white/60">
+        <div className="hidden md:block overflow-hidden rounded-3xl border border-[#172B3D]/10 bg-white shadow-2xl">
+          <table className="w-full text-left text-sm text-text-primary">
+            <thead className="border-b border-[#172B3D]/10 bg-[#172B3D]/5 text-xs uppercase tracking-wider text-text-muted">
               <tr>
                 <th className="py-4 px-6">Operational Aspect</th>
                 <th className="py-4 px-6 text-red-400">A Transactional Broker Experience</th>
                 <th className="py-4 px-6 text-emerald-400 bg-emerald-950/20">The Road America Approach</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5 text-xs sm:text-sm">
+            <tbody className="divide-y divide-[#172B3D]/5 text-xs sm:text-sm">
               {items.map((row, i) => (
-                <tr key={i} className="hover:bg-white/5 transition">
-                  <td className="py-4 px-6 font-semibold text-white/90">{row.topic}</td>
-                  <td className="py-4 px-6 text-white/60">{row.typical}</td>
+                <tr key={i} className="hover:bg-[#172B3D]/5 transition">
+                  <td className="py-4 px-6 font-semibold text-text-primary">{row.topic}</td>
+                  <td className="py-4 px-6 text-text-muted">{row.typical}</td>
                   <td className="py-4 px-6 font-semibold text-emerald-300 bg-emerald-950/10">
                     ✓ {row.ra}
                   </td>
@@ -488,15 +488,15 @@ function CommercialComparisonSection() {
         {/* Mobile View */}
         <div className="md:hidden space-y-4">
           {items.map((row, i) => (
-            <div key={i} className="rounded-2xl border border-white/10 bg-[#36383e] p-5 space-y-2 text-xs">
-              <div className="font-bold text-white border-b border-white/10 pb-2">{row.topic}</div>
+            <div key={i} className="rounded-2xl border border-[#172B3D]/10 bg-background-warm p-5 space-y-2 text-xs">
+              <div className="font-bold text-text-primary border-b border-[#172B3D]/10 pb-2">{row.topic}</div>
               <div className="text-red-300"><span className="font-bold text-red-400">Transactional:</span> {row.typical}</div>
               <div className="text-emerald-300 font-medium"><span className="font-bold text-emerald-400">Road America:</span> ✓ {row.ra}</div>
             </div>
           ))}
         </div>
 
-        <p className="mt-6 text-center text-xs text-white/50 italic">
+        <p className="mt-6 text-center text-xs text-text-muted italic">
           Service requirements and communication cadence may be customized based on shipment volume and the needs of the business account.
         </p>
       </div>
@@ -516,28 +516,28 @@ function ServiceLevelSection() {
   ];
 
   return (
-    <section className="py-16 md:py-24 bg-[#313337] border-b border-white/10">
+    <section className="py-16 md:py-24 bg-white border-b border-[#172B3D]/10">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <span className="text-xs font-bold uppercase tracking-widest text-brand-redSoft">
             Commercial Standards
           </span>
-          <h2 className="mt-2 font-display text-2xl sm:text-3xl md:text-4xl font-bold text-white">
+          <h2 className="mt-2 font-display text-2xl sm:text-3xl md:text-4xl font-bold text-text-primary">
             Service Is More Than Finding an Available Truck.
           </h2>
-          <p className="mt-4 text-sm sm:text-base text-white/70 leading-relaxed font-light">
+          <p className="mt-4 text-sm sm:text-base text-text-primary leading-relaxed font-light">
             A carrier moves the vehicle. A strong transportation partner manages the experience around that movement.
           </p>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {levels.map((lvl, idx) => (
-            <div key={idx} className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm">
+            <div key={idx} className="rounded-2xl border border-[#172B3D]/10 bg-[#172B3D]/5 p-6 backdrop-blur-sm">
               <div className="h-10 w-10 rounded-xl bg-brand-red/20 text-brand-redSoft flex items-center justify-center mb-4">
                 <lvl.icon className="w-5 h-5" />
               </div>
-              <h3 className="text-base font-bold text-white mb-2">{lvl.title}</h3>
-              <p className="text-xs text-white/70 leading-relaxed font-light">{lvl.desc}</p>
+              <h3 className="text-base font-bold text-text-primary mb-2">{lvl.title}</h3>
+              <p className="text-xs text-text-primary leading-relaxed font-light">{lvl.desc}</p>
             </div>
           ))}
         </div>
@@ -560,14 +560,14 @@ function B2BFounderSection() {
   ];
 
   return (
-    <section className="py-16 md:py-24 bg-brand-dark border-b border-white/10">
+    <section className="py-16 md:py-24 bg-brand-dark border-b border-[#172B3D]/10">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-[#383a40] via-black to-[#323438] p-8 sm:p-12 shadow-2xl relative overflow-hidden">
+        <div className="rounded-3xl border border-[#172B3D]/10 bg-founder-bg p-8 sm:p-12 shadow-2xl relative overflow-hidden">
           <div className="grid gap-8 lg:grid-cols-12 items-center">
             {/* Left Column */}
             <div className="lg:col-span-4 flex flex-col items-center text-center">
               <div className="relative mb-4">
-                <div className="h-36 w-36 sm:h-44 sm:w-44 rounded-full border-4 border-brand-red/40 bg-white/10 flex items-center justify-center overflow-hidden shadow-2xl">
+                <div className="h-36 w-36 sm:h-44 sm:w-44 rounded-full border-4 border-brand-red/40 bg-[#172B3D]/10 flex items-center justify-center overflow-hidden shadow-2xl">
                   <img
                     src="/amilcar-charles.jpg"
                     alt="Amilcar Charles - Founder, Road America Auto Transport"
@@ -580,11 +580,11 @@ function B2BFounderSection() {
                   className="absolute bottom-0 right-0 h-10 w-auto bg-white p-1 rounded-md shadow-md"
                 />
               </div>
-              <h3 className="text-xl font-bold text-white">Amilcar Charles</h3>
+              <h3 className="text-xl font-bold text-text-primary">Amilcar Charles</h3>
               <p className="text-xs text-brand-redSoft font-semibold uppercase tracking-wider mt-1">
                 Founder, Road America Auto Transport
               </p>
-              <p className="text-xs text-white/50 mt-1">Former Enterprise Fleet Executive</p>
+              <p className="text-xs text-text-muted mt-1">Former Enterprise Fleet Executive</p>
             </div>
 
             {/* Right Column */}
@@ -592,19 +592,19 @@ function B2BFounderSection() {
               <span className="text-xs font-bold uppercase tracking-widest text-brand-redSoft">
                 BUILT BY A FLEET OPERATIONS LEADER
               </span>
-              <h2 className="font-display text-2xl sm:text-3xl font-bold text-white">
+              <h2 className="font-display text-2xl sm:text-3xl font-bold text-text-primary">
                 Road America Was Built With an Operator’s Mindset.
               </h2>
 
-              <p className="text-sm text-white/80 leading-relaxed font-light">
+              <p className="text-sm text-text-primary leading-relaxed font-light">
                 Road America Auto Transport was founded by Amilcar Charles, an automotive and fleet-management professional with more than 25 years of experience.
               </p>
 
-              <p className="text-sm text-white/80 leading-relaxed font-light">
-                Before building Road America, Amilcar worked across automotive service, fleet operations, vendor management, customer experience, process improvement, and enterprise client support. In his most recent fleet leadership role, he led a team supporting approximately <span className="font-semibold text-white">2,400 enterprise clients</span> and a portfolio representing roughly <span className="font-semibold text-white">870,000 vehicles</span> across North America.
+              <p className="text-sm text-text-primary leading-relaxed font-light">
+                Before building Road America, Amilcar worked across automotive service, fleet operations, vendor management, customer experience, process improvement, and enterprise client support. In his most recent fleet leadership role, he led a team supporting approximately <span className="font-semibold text-text-primary">2,400 enterprise clients</span> and a portfolio representing roughly <span className="font-semibold text-text-primary">870,000 vehicles</span> across North America.
               </p>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-white/80 pt-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-text-primary pt-2">
                 {experiences.map((exp, idx) => (
                   <div key={idx} className="flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 text-brand-redSoft flex-shrink-0" />
@@ -613,11 +613,11 @@ function B2BFounderSection() {
                 ))}
               </div>
 
-              <div className="p-4 rounded-2xl bg-white/5 border border-white/10 text-xs text-white/70">
-                <span className="font-bold text-white">Core Operating Principles:</span> Clear ownership. Measurable service. Vendor accountability. Proactive communication. Continuous improvement.
+              <div className="p-4 rounded-2xl bg-[#172B3D]/5 border border-[#172B3D]/10 text-xs text-text-primary">
+                <span className="font-bold text-text-primary">Core Operating Principles:</span> Clear ownership. Measurable service. Vendor accountability. Proactive communication. Continuous improvement.
               </div>
 
-              <blockquote className="p-6 rounded-2xl border-l-4 border-brand-redSoft bg-brand-red/10 italic text-sm text-white/90">
+              <blockquote className="p-6 rounded-2xl border-l-4 border-brand-redSoft bg-brand-red/10 italic text-sm text-text-primary">
                 “Businesses do not need another person who can post a vehicle for transport. They need a partner who understands how a delayed vehicle affects the rest of their operation.”
                 <span className="block mt-2 not-italic font-bold text-xs text-brand-redSoft">
                   — Amilcar Charles, Founder
@@ -641,36 +641,36 @@ function OperationalMindsetSection() {
   ];
 
   return (
-    <section className="py-16 md:py-24 bg-[#313337] border-b border-white/10">
+    <section className="py-16 md:py-24 bg-background-warm border-b border-[#172B3D]/10">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <span className="text-xs font-bold uppercase tracking-widest text-brand-redSoft">
             Commercial Analysis
           </span>
-          <h2 className="mt-2 font-display text-2xl sm:text-3xl md:text-4xl font-bold text-white">
+          <h2 className="mt-2 font-display text-2xl sm:text-3xl md:text-4xl font-bold text-text-primary">
             We Look Beyond the Shipment.
           </h2>
-          <p className="mt-4 text-sm sm:text-base text-white/70 leading-relaxed font-light">
+          <p className="mt-4 text-sm sm:text-base text-text-primary leading-relaxed font-light">
             How Road America evaluates every commercial move to ensure operational alignment:
           </p>
         </div>
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {mindsetQuestions.map((m, idx) => (
-            <div key={idx} className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm flex flex-col justify-between">
+            <div key={idx} className="rounded-2xl border border-[#172B3D]/10 bg-[#172B3D]/5 p-6 backdrop-blur-sm flex flex-col justify-between">
               <div>
                 <span className="text-xs font-mono font-bold text-brand-redSoft uppercase tracking-wider block mb-2">
                   Factor 0{idx + 1}
                 </span>
-                <h3 className="text-base font-bold text-white mb-2">{m.q}</h3>
-                <p className="text-xs text-white/60 leading-relaxed">{m.a}</p>
+                <h3 className="text-base font-bold text-text-primary mb-2">{m.q}</h3>
+                <p className="text-xs text-text-muted leading-relaxed">{m.a}</p>
               </div>
             </div>
           ))}
         </div>
 
         <div className="mt-12 text-center">
-          <p className="text-sm font-semibold text-white italic">
+          <p className="text-sm font-semibold text-text-primary italic">
             “Understanding the business purpose behind a shipment helps us manage it more effectively.”
           </p>
         </div>
@@ -693,25 +693,25 @@ function BusinessUseCasesSection() {
   ];
 
   return (
-    <section className="py-16 md:py-24 bg-brand-dark border-b border-white/10">
+    <section className="py-16 md:py-24 bg-brand-dark border-b border-[#172B3D]/10">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <span className="text-xs font-bold uppercase tracking-widest text-brand-redSoft">
             Scenario Portfolio
           </span>
-          <h2 className="mt-2 font-display text-2xl sm:text-3xl md:text-4xl font-bold text-white">
+          <h2 className="mt-2 font-display text-2xl sm:text-3xl md:text-4xl font-bold text-text-primary">
             Where Road America Can Add Value
           </h2>
         </div>
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {cases.map((c, idx) => (
-            <div key={idx} className="rounded-2xl border border-white/10 bg-[#36383e] p-6 flex flex-col justify-between hover:border-brand-red/40 transition">
+            <div key={idx} className="rounded-2xl border border-[#172B3D]/10 bg-white p-6 flex flex-col justify-between hover:border-brand-red/40 transition">
               <div>
-                <h3 className="text-sm font-bold text-white mb-2">{c.title}</h3>
-                <p className="text-xs text-white/60 leading-relaxed mb-4">{c.scenario}</p>
+                <h3 className="text-sm font-bold text-text-primary mb-2">{c.title}</h3>
+                <p className="text-xs text-text-muted leading-relaxed mb-4">{c.scenario}</p>
               </div>
-              <span className="text-[11px] font-semibold text-brand-redSoft border-t border-white/10 pt-3 block">
+              <span className="text-[11px] font-semibold text-brand-redSoft border-t border-[#172B3D]/10 pt-3 block">
                 Road America can serve as the additional resource.
               </span>
             </div>
@@ -725,29 +725,29 @@ function BusinessUseCasesSection() {
 // Section 12: Test-Shipment Offer Section
 function TestShipmentSection() {
   return (
-    <section id="test-shipment" className="py-16 md:py-24 bg-[#2e3034] border-b border-white/10">
+    <section id="test-shipment" className="py-16 md:py-24 bg-background-warm border-b border-[#172B3D]/10">
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-        <div className="rounded-3xl border-2 border-brand-red/40 bg-gradient-to-b from-[#383a40] to-[#2c2d30] p-8 sm:p-14 text-center shadow-2xl">
+        <div className="rounded-3xl border-2 border-brand-red/40 bg-white p-8 sm:p-14 text-center shadow-2xl">
           <span className="text-xs font-bold uppercase tracking-widest text-brand-redSoft bg-brand-red/10 px-4 py-1.5 rounded-full border border-brand-red/20 inline-block mb-6">
             LOW-RISK PILOT OFFER
           </span>
 
-          <h2 className="font-display text-3xl sm:text-4xl font-extrabold text-white mb-4">
+          <h2 className="font-display text-3xl sm:text-4xl font-extrabold text-text-primary mb-4">
             Don’t Replace Your Current Broker. Compare Us.
           </h2>
 
-          <p className="text-sm sm:text-base text-white/70 leading-relaxed max-w-2xl mx-auto mb-8 font-light">
+          <p className="text-sm sm:text-base text-text-primary leading-relaxed max-w-2xl mx-auto mb-8 font-light">
             Give Road America an opportunity to earn your business with just one vehicle, one difficult lane, one auction purchase, one customer delivery, one port movement, one overflow shipment, or one recurring route.
           </p>
 
-          <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4 text-xs text-white/80 mb-8">
-            <div className="p-3 rounded-xl bg-white/5 border border-white/10 font-medium">✓ Responsiveness</div>
-            <div className="p-3 rounded-xl bg-white/5 border border-white/10 font-medium">✓ Pricing Transparency</div>
-            <div className="p-3 rounded-xl bg-white/5 border border-white/10 font-medium">✓ Carrier Coordination</div>
-            <div className="p-3 rounded-xl bg-white/5 border border-white/10 font-medium">✓ Ease of Doing Business</div>
+          <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4 text-xs text-text-primary mb-8">
+            <div className="p-3 rounded-xl bg-[#172B3D]/5 border border-[#172B3D]/10 font-medium">✓ Responsiveness</div>
+            <div className="p-3 rounded-xl bg-[#172B3D]/5 border border-[#172B3D]/10 font-medium">✓ Pricing Transparency</div>
+            <div className="p-3 rounded-xl bg-[#172B3D]/5 border border-[#172B3D]/10 font-medium">✓ Carrier Coordination</div>
+            <div className="p-3 rounded-xl bg-[#172B3D]/5 border border-[#172B3D]/10 font-medium">✓ Ease of Doing Business</div>
           </div>
 
-          <blockquote className="text-base sm:text-lg font-bold text-white mb-8 italic">
+          <blockquote className="text-base sm:text-lg font-bold text-text-primary mb-8 italic">
             “A business relationship should be earned through performance—not promises.”
           </blockquote>
 
@@ -769,13 +769,13 @@ function TestShipmentSection() {
 // Section 13: "Are We a Good Fit?" Section
 function GoodFitSection() {
   return (
-    <section className="py-16 md:py-24 bg-[#313337] border-b border-white/10">
+    <section className="py-16 md:py-24 bg-white border-b border-[#172B3D]/10">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <span className="text-xs font-bold uppercase tracking-widest text-brand-redSoft">
             Account Qualification
           </span>
-          <h2 className="mt-2 font-display text-2xl sm:text-3xl md:text-4xl font-bold text-white">
+          <h2 className="mt-2 font-display text-2xl sm:text-3xl md:text-4xl font-bold text-text-primary">
             Are We a Good Fit for Your Business?
           </h2>
         </div>
@@ -787,7 +787,7 @@ function GoodFitSection() {
               <CheckCircle2 className="w-5 h-5" />
               Road America May Be a Good Fit If You Value:
             </h3>
-            <ul className="space-y-3 text-xs sm:text-sm text-white/80">
+            <ul className="space-y-3 text-xs sm:text-sm text-text-primary">
               <li>✓ A responsive point of contact who understands your business needs</li>
               <li>✓ Honest conversations about market transportation conditions</li>
               <li>✓ Support beyond carrier assignment through delivery sign-off</li>
@@ -803,7 +803,7 @@ function GoodFitSection() {
               <XCircle className="w-5 h-5" />
               We May Not Be the Right Fit If:
             </h3>
-            <ul className="space-y-3 text-xs sm:text-sm text-white/80">
+            <ul className="space-y-3 text-xs sm:text-sm text-text-primary">
               <li>✗ The only consideration is obtaining the lowest advertised number</li>
               <li>✗ You expect guaranteed carrier availability before a carrier is confirmed</li>
               <li>✗ You expect exact pickup and delivery times regardless of weather/traffic</li>
@@ -814,7 +814,7 @@ function GoodFitSection() {
         </div>
 
         <div className="mt-8 text-center">
-          <p className="text-xs sm:text-sm text-white/60 italic">
+          <p className="text-xs sm:text-sm text-text-muted italic">
             We would rather set an honest expectation than make a promise we cannot keep.
           </p>
         </div>
@@ -826,38 +826,38 @@ function GoodFitSection() {
 // Section 14: Commercial Trust and Compliance Section
 function ComplianceTrustSection() {
   return (
-    <section className="py-16 md:py-24 bg-brand-dark border-b border-white/10">
+    <section className="py-16 md:py-24 bg-brand-dark border-b border-[#172B3D]/10">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <span className="text-xs font-bold uppercase tracking-widest text-brand-redSoft">
             Regulatory Compliance
           </span>
-          <h2 className="mt-2 font-display text-2xl sm:text-3xl md:text-4xl font-bold text-white">
+          <h2 className="mt-2 font-display text-2xl sm:text-3xl md:text-4xl font-bold text-text-primary">
             Professional Transportation Starts With Responsible Coordination.
           </h2>
         </div>
 
         <div className="grid gap-6 md:grid-cols-3">
-          <div className="rounded-2xl border border-white/10 bg-[#36383e] p-6">
+          <div className="rounded-2xl border border-[#172B3D]/10 bg-background-warm p-6">
             <ShieldCheck className="w-6 h-6 text-brand-redSoft mb-3" />
-            <h3 className="text-base font-bold text-white mb-2">Licensed Broker</h3>
-            <p className="text-xs text-white/60 leading-relaxed">
+            <h3 className="text-base font-bold text-text-primary mb-2">Licensed Broker</h3>
+            <p className="text-xs text-text-muted leading-relaxed">
               Road America Auto Transport is a licensed and bonded auto transport broker operating under FMCSA regulations.
             </p>
           </div>
 
-          <div className="rounded-2xl border border-white/10 bg-[#36383e] p-6">
+          <div className="rounded-2xl border border-[#172B3D]/10 bg-white p-6">
             <FileCheck className="w-6 h-6 text-brand-redSoft mb-3" />
-            <h3 className="text-base font-bold text-white mb-2">Carrier & Insurance Verification</h3>
-            <p className="text-xs text-white/60 leading-relaxed">
+            <h3 className="text-base font-bold text-text-primary mb-2">Carrier & Insurance Verification</h3>
+            <p className="text-xs text-text-muted leading-relaxed">
               We verify active motor-carrier operating authority and required insurance credentials before assigning any carrier.
             </p>
           </div>
 
-          <div className="rounded-2xl border border-white/10 bg-[#36383e] p-6">
+          <div className="rounded-2xl border border-[#172B3D]/10 bg-background-warm p-6">
             <Lock className="w-6 h-6 text-brand-redSoft mb-3" />
-            <h3 className="text-base font-bold text-white mb-2">Privacy & Transparency</h3>
-            <p className="text-xs text-white/60 leading-relaxed">
+            <h3 className="text-base font-bold text-text-primary mb-2">Privacy & Transparency</h3>
+            <p className="text-xs text-text-muted leading-relaxed">
               Zero lead reselling. Commercial terms, payment responsibilities, and broker fees are fully disclosed in shipment docs.
             </p>
           </div>
@@ -876,14 +876,14 @@ function B2BCaseStudyCard({ title, clientType, challenge, solution, outcome }: {
   outcome: string;
 }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm space-y-3">
+    <div className="rounded-2xl border border-[#172B3D]/10 bg-[#172B3D]/5 p-6 backdrop-blur-sm space-y-3">
       <div className="flex items-center justify-between text-xs text-brand-redSoft font-semibold">
         <span>{clientType}</span>
         <span>Case Study</span>
       </div>
-      <h3 className="text-base font-bold text-white">{title}</h3>
-      <p className="text-xs text-white/70"><strong>Challenge:</strong> {challenge}</p>
-      <p className="text-xs text-white/70"><strong>Solution:</strong> {solution}</p>
+      <h3 className="text-base font-bold text-text-primary">{title}</h3>
+      <p className="text-xs text-text-primary"><strong>Challenge:</strong> {challenge}</p>
+      <p className="text-xs text-text-primary"><strong>Solution:</strong> {solution}</p>
       <p className="text-xs text-emerald-300 font-medium"><strong>Outcome:</strong> {outcome}</p>
     </div>
   );
@@ -891,16 +891,16 @@ function B2BCaseStudyCard({ title, clientType, challenge, solution, outcome }: {
 
 function B2BTestimonialsSection() {
   return (
-    <section className="py-16 md:py-24 bg-[#313337] border-b border-white/10">
+    <section className="py-16 md:py-24 bg-white border-b border-[#172B3D]/10">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-12">
           <span className="text-xs font-bold uppercase tracking-widest text-brand-redSoft">
             Commercial Proof
           </span>
-          <h2 className="mt-2 font-display text-2xl sm:text-3xl md:text-4xl font-bold text-white">
+          <h2 className="mt-2 font-display text-2xl sm:text-3xl md:text-4xl font-bold text-text-primary">
             Trusted Through Performance
           </h2>
-          <p className="mt-4 text-sm text-white/70">
+          <p className="mt-4 text-sm text-text-primary">
             Ask us about recent business transportation projects, dealer references, and commercial case studies.
           </p>
         </div>
@@ -945,13 +945,13 @@ function CommercialFAQSection() {
   ];
 
   return (
-    <section className="py-16 md:py-24 bg-brand-dark border-b border-white/10">
+    <section className="py-16 md:py-24 bg-brand-dark border-b border-[#172B3D]/10">
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <span className="text-xs font-bold uppercase tracking-widest text-brand-redSoft">
             B2B Clarifications
           </span>
-          <h2 className="mt-2 font-display text-2xl sm:text-3xl md:text-4xl font-bold text-white">
+          <h2 className="mt-2 font-display text-2xl sm:text-3xl md:text-4xl font-bold text-text-primary">
             Frequently Asked Business Questions
           </h2>
         </div>
@@ -962,18 +962,18 @@ function CommercialFAQSection() {
             return (
               <div
                 key={idx}
-                className="rounded-2xl border border-white/10 bg-[#36383e] overflow-hidden transition"
+                className="rounded-2xl border border-[#172B3D]/10 bg-background-warm overflow-hidden transition"
               >
                 <button
                   type="button"
                   onClick={() => setOpenIdx(isOpen ? null : idx)}
-                  className="w-full p-6 text-left flex items-center justify-between gap-4 text-white hover:text-brand-redSoft font-semibold text-sm sm:text-base"
+                  className="w-full p-6 text-left flex items-center justify-between gap-4 text-text-primary hover:text-brand-redSoft font-semibold text-sm sm:text-base"
                 >
                   <span>{faq.q}</span>
                   <ChevronDown className={`w-5 h-5 flex-shrink-0 transition-transform ${isOpen ? "rotate-180" : ""}`} />
                 </button>
                 {isOpen && (
-                  <div className="px-6 pb-6 text-xs sm:text-sm text-white/70 leading-relaxed border-t border-white/5 pt-4">
+                  <div className="px-6 pb-6 text-xs sm:text-sm text-text-primary leading-relaxed border-t border-[#172B3D]/5 pt-4">
                     {faq.a}
                   </div>
                 )}
@@ -1054,7 +1054,7 @@ function CommercialInquiryFormSection() {
   };
 
   return (
-    <section id="business-inquiry" className="py-16 md:py-24 bg-[#2a2b2d] text-white">
+    <section id="business-inquiry" className="py-16 md:py-24 bg-white text-text-primary">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid gap-12 lg:grid-cols-12 items-start">
           {/* Left Column: Heading, CTAs & Desktop Trust Sidebar */}
@@ -1062,17 +1062,17 @@ function CommercialInquiryFormSection() {
             <span className="text-xs font-bold uppercase tracking-widest text-brand-redSoft">
               START WITH ONE SHIPMENT
             </span>
-            <h2 className="font-display text-3xl sm:text-4xl font-extrabold text-white leading-tight">
+            <h2 className="font-display text-3xl sm:text-4xl font-extrabold text-text-primary leading-tight">
               Let Road America Earn the Next One.
             </h2>
-            <p className="text-sm text-white/70 leading-relaxed font-light">
+            <p className="text-sm text-text-primary leading-relaxed font-light">
               Whether you need coverage for one difficult move, additional capacity, recurring transportation support, or a more responsive business relationship, Road America is ready to learn how your operation works.
             </p>
 
             <div className="space-y-3 pt-2">
               <a
                 href="tel:17546005772"
-                className="flex items-center gap-3 p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition text-sm font-semibold"
+                className="flex items-center gap-3 p-4 rounded-2xl bg-[#172B3D]/5 border border-[#172B3D]/10 hover:bg-[#172B3D]/10 transition text-sm font-semibold"
               >
                 <Phone className="w-5 h-5 text-brand-redSoft" />
                 <span>Call Road America Commercial: (754) 600-5772</span>
@@ -1090,80 +1090,80 @@ function CommercialInquiryFormSection() {
             </div>
 
             {/* Desktop View Sidebar: Trust Shield Info */}
-            <div className="hidden lg:block rounded-2xl border border-white/15 bg-[#34363b] p-6 space-y-4 shadow-xl">
-              <h4 className="text-xs font-bold uppercase tracking-widest text-brand-redSoft flex items-center gap-2 border-b border-white/10 pb-3">
+            <div className="hidden lg:block rounded-2xl border border-[#172B3D]/15 bg-background-warm p-6 space-y-4 shadow-xl">
+              <h4 className="text-xs font-bold uppercase tracking-widest text-brand-redSoft flex items-center gap-2 border-b border-[#172B3D]/10 pb-3">
                 <ShieldCheck className="w-4 h-4 text-emerald-400" />
                 Corporate Compliance & Accounting
               </h4>
-              <ul className="space-y-3.5 text-xs text-white/80">
+              <ul className="space-y-3.5 text-xs text-text-primary">
                 <li className="flex items-start gap-2.5">
                   <span className="text-base leading-none">🛡️</span>
                   <div>
-                    <strong className="text-white block font-semibold">Fully Compliant</strong>
-                    <span className="text-white/70">Licensed & Bonded Broker | USDOT #3735540 | MC #1320367.</span>
+                    <strong className="text-text-primary block font-semibold">Fully Compliant</strong>
+                    <span className="text-text-primary">Licensed & Bonded Broker | USDOT #3735540 | MC #1320367.</span>
                   </div>
                 </li>
                 <li className="flex items-start gap-2.5">
                   <span className="text-base leading-none">🔒</span>
                   <div>
-                    <strong className="text-white block font-semibold">Secure Corporate Accounting</strong>
-                    <span className="text-white/70">We never request, process, or store credit card information over the phone or web. All transactions are handled securely via official QuickBooks electronic invoicing.</span>
+                    <strong className="text-text-primary block font-semibold">Secure Corporate Accounting</strong>
+                    <span className="text-text-primary">We never request, process, or store credit card information over the phone or web. All transactions are handled securely via official QuickBooks electronic invoicing.</span>
                   </div>
                 </li>
                 <li className="flex items-start gap-2.5">
                   <span className="text-base leading-none">🚛</span>
                   <div>
-                    <strong className="text-white block font-semibold">Elite Carrier Vetting</strong>
-                    <span className="text-white/70">Every carrier on your route undergoes rigorous safety, authority, and insurance validation before assignment.</span>
+                    <strong className="text-text-primary block font-semibold">Elite Carrier Vetting</strong>
+                    <span className="text-text-primary">Every carrier on your route undergoes rigorous safety, authority, and insurance validation before assignment.</span>
                   </div>
                 </li>
               </ul>
             </div>
 
-            <p className="text-xs text-white/50 italic border-t border-white/10 pt-4">
+            <p className="text-xs text-text-muted italic border-t border-[#172B3D]/10 pt-4">
               No long-term commitment is required to start a conversation or request an initial shipment review.
             </p>
           </div>
 
           {/* Right Column: B2B Commercial Inquiry Form */}
           <div className="lg:col-span-7">
-            <div className="rounded-3xl border border-white/15 bg-[#34363b] p-6 sm:p-10 shadow-2xl space-y-6">
+            <div className="rounded-3xl border border-[#172B3D]/15 bg-white p-6 sm:p-10 shadow-2xl space-y-6">
               {/* Form Title & Context Copy */}
               <div>
-                <h3 className="text-xl sm:text-2xl font-extrabold text-white tracking-wide uppercase font-display">
+                <h3 className="text-xl sm:text-2xl font-extrabold text-text-primary tracking-wide uppercase font-display">
                   COMMERCIAL TRANSPORT INQUIRY
                 </h3>
-                <p className="text-xs sm:text-sm text-white/70 mt-1 font-light">
+                <p className="text-xs sm:text-sm text-text-primary mt-1 font-light">
                   Streamlined logistics for dealerships, fleet managers, and corporate accounts.
                 </p>
               </div>
 
               {/* Mobile View: Inline Trust Signals stacked directly above form fields */}
-              <div className="lg:hidden rounded-2xl border border-white/15 bg-white/5 p-4 space-y-3">
-                <h4 className="text-[11px] font-bold uppercase tracking-wider text-brand-redSoft flex items-center gap-1.5 border-b border-white/10 pb-2">
+              <div className="lg:hidden rounded-2xl border border-[#172B3D]/15 bg-[#172B3D]/5 p-4 space-y-3">
+                <h4 className="text-[11px] font-bold uppercase tracking-wider text-brand-redSoft flex items-center gap-1.5 border-b border-[#172B3D]/10 pb-2">
                   <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
                   Corporate Compliance & Accounting
                 </h4>
-                <ul className="space-y-2.5 text-[11px] text-white/80">
+                <ul className="space-y-2.5 text-[11px] text-text-primary">
                   <li className="flex items-start gap-2">
                     <span className="text-sm leading-none">🛡️</span>
                     <div>
-                      <strong className="text-white block font-semibold">Fully Compliant</strong>
-                      <span className="text-white/70">Licensed & Bonded Broker | USDOT #3735540 | MC #1320367.</span>
+                      <strong className="text-text-primary block font-semibold">Fully Compliant</strong>
+                      <span className="text-text-primary">Licensed & Bonded Broker | USDOT #3735540 | MC #1320367.</span>
                     </div>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-sm leading-none">🔒</span>
                     <div>
-                      <strong className="text-white block font-semibold">Secure Corporate Accounting</strong>
-                      <span className="text-white/70">We never request, process, or store credit card information over the phone or web. All transactions are handled securely via official QuickBooks electronic invoicing.</span>
+                      <strong className="text-text-primary block font-semibold">Secure Corporate Accounting</strong>
+                      <span className="text-text-primary">We never request, process, or store credit card information over the phone or web. All transactions are handled securely via official QuickBooks electronic invoicing.</span>
                     </div>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-sm leading-none">🚛</span>
                     <div>
-                      <strong className="text-white block font-semibold">Elite Carrier Vetting</strong>
-                      <span className="text-white/70">Every carrier on your route undergoes rigorous safety, authority, and insurance validation before assignment.</span>
+                      <strong className="text-text-primary block font-semibold">Elite Carrier Vetting</strong>
+                      <span className="text-text-primary">Every carrier on your route undergoes rigorous safety, authority, and insurance validation before assignment.</span>
                     </div>
                   </li>
                 </ul>
@@ -1172,7 +1172,7 @@ function CommercialInquiryFormSection() {
               {submitted ? (
                 <div className="p-8 rounded-2xl bg-emerald-950/40 border border-emerald-500/40 text-center space-y-4 animate-fadeIn">
                   <CheckCircle2 className="w-12 h-12 text-emerald-400 mx-auto" />
-                  <h4 className="text-lg font-bold text-white">Thank You for Reaching Out</h4>
+                  <h4 className="text-lg font-bold text-text-primary">Thank You for Reaching Out</h4>
                   <p className="text-xs sm:text-sm text-emerald-200">
                     A Road America representative will review your transportation needs and contact you using your selected communication method.
                   </p>
@@ -1182,26 +1182,26 @@ function CommercialInquiryFormSection() {
                   {/* Contact Info */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-white/70 mb-1 font-medium">First Name *</label>
+                      <label className="block text-text-primary mb-1 font-medium">First Name *</label>
                       <input
                         type="text"
                         name="firstName"
                         required
                         value={formData.firstName}
                         onChange={handleChange}
-                        className="w-full rounded-xl bg-black/25 border border-white/15 px-3 py-2.5 text-white focus:border-brand-redSoft outline-none"
+                        className="w-full rounded-xl bg-background-warm border border-[#172B3D]/15 px-3 py-2.5 text-text-primary focus:border-brand-redSoft outline-none"
                         placeholder="John"
                       />
                     </div>
                     <div>
-                      <label className="block text-white/70 mb-1 font-medium">Last Name *</label>
+                      <label className="block text-text-primary mb-1 font-medium">Last Name *</label>
                       <input
                         type="text"
                         name="lastName"
                         required
                         value={formData.lastName}
                         onChange={handleChange}
-                        className="w-full rounded-xl bg-black/25 border border-white/15 px-3 py-2.5 text-white focus:border-brand-redSoft outline-none"
+                        className="w-full rounded-xl bg-background-warm border border-[#172B3D]/15 px-3 py-2.5 text-text-primary focus:border-brand-redSoft outline-none"
                         placeholder="Doe"
                       />
                     </div>
@@ -1209,25 +1209,25 @@ function CommercialInquiryFormSection() {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-white/70 mb-1 font-medium">Business Name / Company Name *</label>
+                      <label className="block text-text-primary mb-1 font-medium">Business Name / Company Name *</label>
                       <input
                         type="text"
                         name="businessName"
                         required
                         value={formData.businessName}
                         onChange={handleChange}
-                        className="w-full rounded-xl bg-black/25 border border-white/15 px-3 py-2.5 text-white focus:border-brand-redSoft outline-none"
+                        className="w-full rounded-xl bg-background-warm border border-[#172B3D]/15 px-3 py-2.5 text-text-primary focus:border-brand-redSoft outline-none"
                         placeholder="e.g., Apex Logistics or Auto Group"
                       />
                     </div>
                     <div>
-                      <label className="block text-white/70 mb-1 font-medium">Job Title</label>
+                      <label className="block text-text-primary mb-1 font-medium">Job Title</label>
                       <input
                         type="text"
                         name="jobTitle"
                         value={formData.jobTitle}
                         onChange={handleChange}
-                        className="w-full rounded-xl bg-black/25 border border-white/15 px-3 py-2.5 text-white focus:border-brand-redSoft outline-none"
+                        className="w-full rounded-xl bg-background-warm border border-[#172B3D]/15 px-3 py-2.5 text-text-primary focus:border-brand-redSoft outline-none"
                         placeholder="Inventory Manager"
                       />
                     </div>
@@ -1235,26 +1235,26 @@ function CommercialInquiryFormSection() {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-white/70 mb-1 font-medium">Business Email *</label>
+                      <label className="block text-text-primary mb-1 font-medium">Business Email *</label>
                       <input
                         type="email"
                         name="email"
                         required
                         value={formData.email}
                         onChange={handleChange}
-                        className="w-full rounded-xl bg-black/25 border border-white/15 px-3 py-2.5 text-white focus:border-brand-redSoft outline-none"
+                        className="w-full rounded-xl bg-background-warm border border-[#172B3D]/15 px-3 py-2.5 text-text-primary focus:border-brand-redSoft outline-none"
                         placeholder="john@apexauto.com"
                       />
                     </div>
                     <div>
-                      <label className="block text-white/70 mb-1 font-medium">Phone Number *</label>
+                      <label className="block text-text-primary mb-1 font-medium">Phone Number *</label>
                       <input
                         type="tel"
                         name="phone"
                         required
                         value={formData.phone}
                         onChange={handleChange}
-                        className="w-full rounded-xl bg-black/25 border border-white/15 px-3 py-2.5 text-white focus:border-brand-redSoft outline-none"
+                        className="w-full rounded-xl bg-background-warm border border-[#172B3D]/15 px-3 py-2.5 text-text-primary focus:border-brand-redSoft outline-none"
                         placeholder="(555) 000-0000"
                       />
                     </div>
@@ -1263,12 +1263,12 @@ function CommercialInquiryFormSection() {
                   {/* Dropdowns */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-white/70 mb-1 font-medium">Business Type</label>
+                      <label className="block text-text-primary mb-1 font-medium">Business Type</label>
                       <select
                         name="businessType"
                         value={formData.businessType}
                         onChange={handleChange}
-                        className="w-full rounded-xl bg-black/25 border border-white/15 px-3 py-2.5 text-white focus:border-brand-redSoft outline-none"
+                        className="w-full rounded-xl bg-background-warm border border-[#172B3D]/15 px-3 py-2.5 text-text-primary focus:border-brand-redSoft outline-none"
                       >
                         <option value="Franchise dealership">Franchise dealership</option>
                         <option value="Independent dealership">Independent dealership</option>
@@ -1285,12 +1285,12 @@ function CommercialInquiryFormSection() {
                     </div>
 
                     <div>
-                      <label className="block text-white/70 mb-1 font-medium">Transportation Need</label>
+                      <label className="block text-text-primary mb-1 font-medium">Transportation Need</label>
                       <select
                         name="transportNeed"
                         value={formData.transportNeed}
                         onChange={handleChange}
-                        className="w-full rounded-xl bg-black/25 border border-white/15 px-3 py-2.5 text-white focus:border-brand-redSoft outline-none"
+                        className="w-full rounded-xl bg-background-warm border border-[#172B3D]/15 px-3 py-2.5 text-text-primary focus:border-brand-redSoft outline-none"
                       >
                         <option value="One immediate shipment">One immediate shipment</option>
                         <option value="Recurring shipments">Recurring shipments</option>
@@ -1308,12 +1308,12 @@ function CommercialInquiryFormSection() {
                   </div>
 
                   <div>
-                    <label className="block text-white/70 mb-1 font-medium">Estimated Monthly Volume</label>
+                    <label className="block text-text-primary mb-1 font-medium">Estimated Monthly Volume</label>
                     <select
                       name="estimatedVolume"
                       value={formData.estimatedVolume}
                       onChange={handleChange}
-                      className="w-full rounded-xl bg-black/25 border border-white/15 px-3 py-2.5 text-white focus:border-brand-redSoft outline-none"
+                      className="w-full rounded-xl bg-background-warm border border-[#172B3D]/15 px-3 py-2.5 text-text-primary focus:border-brand-redSoft outline-none"
                     >
                       <option value="One-time shipment">One-time shipment</option>
                       <option value="1–4 vehicles per month">1–4 vehicles per month</option>
@@ -1329,31 +1329,31 @@ function CommercialInquiryFormSection() {
                   {/* Route & Vehicle Details */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-white/70 mb-1 font-medium">Pickup City & State</label>
+                      <label className="block text-text-primary mb-1 font-medium">Pickup City & State</label>
                       <input
                         type="text"
                         name="pickupCityState"
                         value={formData.pickupCityState}
                         onChange={handleChange}
-                        className="w-full rounded-xl bg-black/25 border border-white/15 px-3 py-2.5 text-white focus:border-brand-redSoft outline-none"
+                        className="w-full rounded-xl bg-background-warm border border-[#172B3D]/15 px-3 py-2.5 text-text-primary focus:border-brand-redSoft outline-none"
                         placeholder="Orlando, FL"
                       />
                     </div>
                     <div>
-                      <label className="block text-white/70 mb-1 font-medium">Delivery City & State</label>
+                      <label className="block text-text-primary mb-1 font-medium">Delivery City & State</label>
                       <input
                         type="text"
                         name="deliveryCityState"
                         value={formData.deliveryCityState}
                         onChange={handleChange}
-                        className="w-full rounded-xl bg-black/25 border border-white/15 px-3 py-2.5 text-white focus:border-brand-redSoft outline-none"
+                        className="w-full rounded-xl bg-background-warm border border-[#172B3D]/15 px-3 py-2.5 text-text-primary focus:border-brand-redSoft outline-none"
                         placeholder="Atlanta, GA"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-white/70 mb-1 font-medium">
+                    <label className="block text-text-primary mb-1 font-medium">
                       Describe Your Fleet or Multi-Vehicle Transport Needs (Optional)
                     </label>
                     <textarea
@@ -1361,7 +1361,7 @@ function CommercialInquiryFormSection() {
                       rows={3}
                       value={formData.additionalDetails}
                       onChange={handleChange}
-                      className="w-full rounded-xl bg-black/25 border border-white/15 px-3 py-2.5 text-white focus:border-brand-redSoft outline-none"
+                      className="w-full rounded-xl bg-background-warm border border-[#172B3D]/15 px-3 py-2.5 text-text-primary focus:border-brand-redSoft outline-none"
                       placeholder="e.g., Moving 5 off-lease vehicles from Orlando to Atlanta, monthly volume, or custom lane requirements..."
                     />
                   </div>
@@ -1380,7 +1380,7 @@ function CommercialInquiryFormSection() {
                     {loading ? "Submitting Inquiry..." : "REQUEST COMMERCIAL SERVICE PLAN"}
                   </button>
 
-                  <p className="text-[11px] text-white/60 italic leading-relaxed pt-1 text-center sm:text-left">
+                  <p className="text-[11px] text-text-muted italic leading-relaxed pt-1 text-center sm:text-left">
                     🔒 <strong>Data Security Promise:</strong> We respect your business environment. Expect one professional email response containing your custom logistics plan. Absolutely no automated robocalls or broker phone spam.
                   </p>
                 </form>
@@ -1390,8 +1390,8 @@ function CommercialInquiryFormSection() {
         </div>
 
         {/* Operational Disclaimers */}
-        <div className="mt-16 pt-8 border-t border-white/10 text-xs text-white/50 space-y-2 font-light leading-relaxed max-w-5xl mx-auto">
-          <p className="font-semibold text-white/70">Legal & Operational Disclaimers:</p>
+        <div className="mt-16 pt-8 border-t border-[#172B3D]/10 text-xs text-text-muted space-y-2 font-light leading-relaxed max-w-5xl mx-auto">
+          <p className="font-semibold text-text-primary">Legal & Operational Disclaimers:</p>
           <p>
             • Road America Auto Transport is a licensed and bonded auto transport broker under FMCSA registration (USDOT #3735540 | MC #1320367). Road America does not own or operate trucks directly, nor are motor carrier drivers employees of Road America.
           </p>
@@ -1410,7 +1410,7 @@ function CommercialInquiryFormSection() {
 // Main Component Export
 export default function BusinessAutoTransportPage() {
   return (
-    <main className="bg-brand-dark min-h-screen text-white">
+    <main className="bg-brand-dark min-h-screen text-text-primary">
       <SEO
         title="Business Auto Transport Solutions"
         tabTitle="Business Auto Transport Solutions | Road America Auto Transport"

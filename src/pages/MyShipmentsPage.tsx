@@ -72,7 +72,7 @@ const MyShipmentsPage = () => {
   }, [authLoading, user]);
 
   return (
-    <section className="bg-brand-dark py-10 text-white min-h-[70vh]">
+    <section className="bg-brand-dark py-10 text-text-primary min-h-[70vh]">
       <div className="mx-auto max-w-6xl px-4">
         <div className="mb-6">
           <p className="text-xs uppercase tracking-[0.2em] text-brand-redSoft">
@@ -81,7 +81,7 @@ const MyShipmentsPage = () => {
           <h1 className="mt-1 font-display text-2xl font-semibold">
             My Shipments
           </h1>
-          <p className="mt-2 text-xs text-white/70">
+          <p className="mt-2 text-xs text-text-primary">
             View all shipments associated with your account, including current
             transports and past deliveries.
           </p>
@@ -96,7 +96,7 @@ const MyShipmentsPage = () => {
           <LoadingState message="Loading your shipments..." />
         ) : shipments.length === 0 ? (
           <div className="text-center mt-6">
-            <p className="text-xs text-white/60">
+            <p className="text-xs text-text-muted">
               No shipments found for your account yet. Once we’ve booked a
               transport for you, it will appear here.
             </p>
@@ -109,9 +109,9 @@ const MyShipmentsPage = () => {
             </Link>
           </div>
         ) : (
-          <div className="overflow-x-auto rounded-2xl border border-white/10 bg-black/20 shadow-soft-card">
+          <div className="overflow-x-auto rounded-2xl border border-[#172B3D]/10 bg-background-warm shadow-soft-card">
             <table className="min-w-full text-xs">
-              <thead className="bg-white/5 text-white/70">
+              <thead className="bg-[#172B3D]/5 text-text-primary">
                 <tr>
                   <th className="px-3 py-2 text-left font-semibold">Ref ID</th>
                   <th className="px-3 py-2 text-left font-semibold">Route</th>
@@ -125,7 +125,7 @@ const MyShipmentsPage = () => {
                 {shipments.map((s) => (
                   <tr
                     key={s.id}
-                    className="border-t border-white/5 hover:bg-white/5"
+                    className="border-t border-[#172B3D]/5 hover:bg-[#172B3D]/5"
                   >
                     <td className="px-3 py-2 font-mono text-[11px]">
                       {s.referenceId}
@@ -142,11 +142,11 @@ const MyShipmentsPage = () => {
                       </span>
                     </td>
                     <td className="px-3 py-2">
-                      <span className="rounded-full border border-white/20 bg-[#323232]/60 px-3 py-1 text-[10px] uppercase tracking-wide">
+                      <span className="rounded-full border border-[#172B3D]/20 bg-white/60 px-3 py-1 text-[10px] uppercase tracking-wide">
                         {s.status}
                       </span>
                     </td>
-                    <td className="px-3 py-2 text-[10px] text-white/60">
+                    <td className="px-3 py-2 text-[10px] text-text-muted">
                       {/* ✅ Notes:
                           - Guard against missing/invalid dates
                       */}
@@ -164,7 +164,7 @@ const MyShipmentsPage = () => {
           <div className="mt-4">
             <button
               onClick={load}
-              className="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-xs hover:bg-white/10"
+              className="rounded-full border border-[#172B3D]/15 bg-[#172B3D]/5 px-4 py-2 text-xs hover:bg-[#172B3D]/10"
             >
               Retry
             </button>

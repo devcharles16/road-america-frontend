@@ -32,7 +32,7 @@ export default function QuoteSuccessModal({
                         initial={{ opacity: 0, scale: 0.9, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                        className="relative w-full max-w-lg overflow-hidden rounded-3xl border border-white/10 bg-[#3a3a3a] text-center shadow-2xl"
+                        className="relative w-full max-w-lg overflow-hidden rounded-3xl border border-[#172B3D]/10 bg-white text-center shadow-2xl"
                     >
                         {/* Header / Icon */}
                         <div className="bg-brand-red/10 py-8">
@@ -51,20 +51,20 @@ export default function QuoteSuccessModal({
                                     />
                                 </svg>
                             </div>
-                            <h2 className="mt-4 text-2xl font-bold text-white">
+                            <h2 className="mt-4 text-2xl font-bold text-text-primary">
                                 Quote Request Received!
                             </h2>
                         </div>
 
                         {/* Body */}
                         <div className="p-8">
-                            <p className="text-white/70">
+                            <p className="text-text-muted">
                                 Thank you for your interest. We have received your details and will
                                 be sending you a competitive price shortly.
                             </p>
 
-                            <div className="mt-6 rounded-2xl bg-white/5 border border-white/10 p-4">
-                                <p className="text-xs uppercase tracking-wider text-white/50">
+                            <div className="mt-6 rounded-2xl bg-background-warm border border-[#172B3D]/10 p-4">
+                                <p className="text-xs uppercase tracking-wider text-text-supporting">
                                     Reference ID
                                 </p>
                                 <p className="mt-1 font-mono text-3xl font-bold text-brand-redSoft tracking-wider">
@@ -72,7 +72,7 @@ export default function QuoteSuccessModal({
                                 </p>
                             </div>
 
-                            <p className="mt-4 text-xs text-white/40">
+                            <p className="mt-4 text-xs text-text-supporting">
                                 Please save this Reference ID for future correspondence.
                             </p>
 

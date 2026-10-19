@@ -1,13 +1,13 @@
 
 const OptInPage = () => {
     return (
-        <div className="min-h-screen bg-[#323232] pt-32 pb-12 px-4">
+        <div className="min-h-screen bg-white pt-32 pb-12 px-4">
             <div className="max-w-4xl mx-auto">
-                <h1 className="text-3xl md:text-4xl font-bold text-white mb-8 text-center">
+                <h1 className="text-3xl md:text-4xl font-bold text-text-primary mb-8 text-center">
                     Opt In
                 </h1>
 
-                <div className="bg-white/5 rounded-xl border border-white/10 overflow-hidden shadow-2xl">
+                <div className="bg-[#172B3D]/5 rounded-xl border border-[#172B3D]/10 overflow-hidden shadow-2xl">
                     <iframe
                         src="https://docs.google.com/forms/d/e/1FAIpQLSeE9KoBoXLwGMmfNWbU19Lk-dtc-gdEnjUjXogbW-ipscVQdQ/viewform?embedded=true"
                         width="100%"

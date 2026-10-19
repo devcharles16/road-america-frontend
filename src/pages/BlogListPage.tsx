@@ -25,7 +25,7 @@ const BlogListPage = () => {
   }, []);
 
   return (
-    <main className="bg-brand-dark text-white min-h-screen px-4 py-12">
+    <main className="bg-brand-dark text-text-primary min-h-screen px-4 py-12">
       <SEO
         title="Transport Insights Blog"
         description="Tips, guides, and industry news about car shipping and auto transport."
@@ -33,17 +33,17 @@ const BlogListPage = () => {
       />
       <div className="mx-auto max-w-5xl">
         <h1 className="text-3xl font-display font-semibold">Transport Insights</h1>
-        <p className="text-sm text-white/70 mt-2 max-w-2xl">
+        <p className="text-sm text-text-primary mt-2 max-w-2xl">
           Guides, tips, and updates from the Road America Auto Transport team
           to help you move vehicles with confidence.
         </p>
 
         {loading ? (
-          <p className="mt-8 text-sm text-white/60">Loading posts…</p>
+          <p className="mt-8 text-sm text-text-muted">Loading posts…</p>
         ) : error ? (
           <p className="mt-8 text-sm text-red-400">{error}</p>
         ) : posts.length === 0 ? (
-          <p className="mt-8 text-sm text-white/60">
+          <p className="mt-8 text-sm text-text-muted">
             No articles have been published yet. Check back soon.
           </p>
         ) : (
@@ -52,7 +52,7 @@ const BlogListPage = () => {
               <Link
                 key={post.id}
                 to={`/blog/${post.slug}`}
-                className="block rounded-2xl border border-white/10 bg-black/25 overflow-hidden hover:border-brand-redSoft hover:bg-black/35 transition"
+                className="block rounded-2xl border border-[#172B3D]/10 bg-background-warm overflow-hidden hover:border-brand-redSoft hover:bg-background-warm transition"
               >
                 {post.imageUrl && (
                   <div className="h-40 w-full overflow-hidden">
@@ -66,12 +66,12 @@ const BlogListPage = () => {
                 <div className="p-5">
                   <h2 className="text-lg font-semibold">{post.title}</h2>
                   {post.publishedAt && (
-                    <p className="mt-1 text-[11px] uppercase tracking-wide text-white/50">
+                    <p className="mt-1 text-[11px] uppercase tracking-wide text-text-muted">
                       {new Date(post.publishedAt).toLocaleDateString()}
                     </p>
                   )}
                   {post.excerpt && (
-                    <p className="mt-2 text-sm text-white/70">{post.excerpt}</p>
+                    <p className="mt-2 text-sm text-text-primary">{post.excerpt}</p>
                   )}
                   <p className="mt-3 text-[11px] text-brand-redSoft">
                     Read article →

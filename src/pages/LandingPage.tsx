@@ -216,7 +216,7 @@ const LandingPage = () => {
 
 
     return (
-        <div className="bg-brand-dark min-h-screen text-white">
+        <div className="bg-brand-dark min-h-screen text-text-primary">
             <SEO
                 title="Get a Free Car Shipping Quote"
                 description="Get an instant, guaranteed auto transport quote. No hidden fees, fully insured door-to-door delivery."
@@ -228,7 +228,7 @@ const LandingPage = () => {
             <section className="relative pt-24 pb-12 overflow-hidden">
                 {/* Background Element */}
                 <div className="absolute inset-0 z-0">
-                    <div className="absolute inset-0 bg-gradient-to-br from-brand-dark via-[#3a3a3a] to-brand-red/10" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-white via-background-warm to-primary/10" />
                     {/* subtle grid */}
                     <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10" />
                 </div>
@@ -245,38 +245,38 @@ const LandingPage = () => {
                             America's Most Trusted <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-red to-brand-redSoft">Auto Transport</span>
                         </h1>
 
-                        <p className="text-base md:text-lg text-white/80 mb-8 max-w-xl leading-relaxed">
+                        <p className="text-base md:text-lg text-text-primary mb-8 max-w-xl leading-relaxed">
                             Hand-calculated quotes by ASE Master Techs. Delivered via email. No unsolicited calls.
                         </p>
 
                         <div className="flex flex-wrap gap-3 mb-8">
-                            <div className="flex items-center gap-2 text-white/90 bg-white/5 px-3 py-1.5 rounded-lg border border-white/5 backdrop-blur-sm">
+                            <div className="flex items-center gap-2 text-text-primary bg-[#172B3D]/5 px-3 py-1.5 rounded-lg border border-[#172B3D]/5 backdrop-blur-sm">
                                 <ShieldCheck className="text-brand-redSoft w-4 h-4" />
                                 <span className="text-sm font-medium">Fully Insured</span>
                             </div>
-                            <div className="flex items-center gap-2 text-white/90 bg-white/5 px-3 py-1.5 rounded-lg border border-white/5 backdrop-blur-sm">
+                            <div className="flex items-center gap-2 text-text-primary bg-[#172B3D]/5 px-3 py-1.5 rounded-lg border border-[#172B3D]/5 backdrop-blur-sm">
                                 <Truck className="text-brand-redSoft w-4 h-4" />
                                 <span className="text-sm font-medium">Door-to-Door</span>
                             </div>
-                            <div className="flex items-center gap-2 text-white/90 bg-white/5 px-3 py-1.5 rounded-lg border border-white/5 backdrop-blur-sm">
+                            <div className="flex items-center gap-2 text-text-primary bg-[#172B3D]/5 px-3 py-1.5 rounded-lg border border-[#172B3D]/5 backdrop-blur-sm">
                                 <CheckCircle2 className="text-brand-redSoft w-4 h-4" />
                                 <span className="text-sm font-medium">No Deposit</span>
                             </div>
                         </div>
 
                         {/* Trust Stats - Replaced Badges */}
-                        <div className="grid grid-cols-3 gap-6 max-w-md border-t border-white/10 pt-6 opacity-80">
+                        <div className="grid grid-cols-3 gap-6 max-w-md border-t border-[#172B3D]/10 pt-6 opacity-80">
                             <div>
-                                <div className="text-xl md:text-2xl font-bold font-display text-white">10k+</div>
-                                <div className="text-[10px] md:text-xs text-white/50 uppercase tracking-wider font-semibold">Customers</div>
+                                <div className="text-xl md:text-2xl font-bold font-display text-text-primary">10k+</div>
+                                <div className="text-[10px] md:text-xs text-text-muted uppercase tracking-wider font-semibold">Customers</div>
                             </div>
                             <div>
-                                <div className="text-xl md:text-2xl font-bold font-display text-white">15+</div>
-                                <div className="text-[10px] md:text-xs text-white/50 uppercase tracking-wider font-semibold">Years Exp.</div>
+                                <div className="text-xl md:text-2xl font-bold font-display text-text-primary">15+</div>
+                                <div className="text-[10px] md:text-xs text-text-muted uppercase tracking-wider font-semibold">Years Exp.</div>
                             </div>
                             <div>
-                                <div className="text-xl md:text-2xl font-bold font-display text-white">5</div>
-                                <div className="text-[10px] md:text-xs text-white/50 uppercase tracking-wider font-semibold">Avg Rating</div>
+                                <div className="text-xl md:text-2xl font-bold font-display text-text-primary">5</div>
+                                <div className="text-[10px] md:text-xs text-text-muted uppercase tracking-wider font-semibold">Avg Rating</div>
                             </div>
                         </div>
                     </div>
@@ -485,7 +485,7 @@ const LandingPage = () => {
 
                 {/* Wave Separator */}
                 <div className="absolute bottom-0 left-0 right-0 z-20 translate-y-[1px]">
-                    <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-[60px] md:h-[100px] text-white fill-current preserve-3d">
+                    <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-[60px] md:h-[100px] text-text-primary fill-current preserve-3d">
                         <path d="M0 120L1440 120L1440 0C1440 0 1082.5 99 720 99C357.5 99 0 0 0 0L0 120Z" />
                     </svg>
                 </div>
@@ -515,7 +515,7 @@ const LandingPage = () => {
             </section>
 
             {/* TESTIMONIALS SECTION */}
-            <section className="bg-[#323232] py-24 text-white border-t border-white/5 relative overflow-hidden">
+            <section className="bg-white py-24 text-text-primary border-t border-[#172B3D]/5 relative overflow-hidden">
                 {/* Background decorators */}
                 <div className="absolute top-0 left-1/4 w-96 h-96 bg-brand-red/5 rounded-full blur-3xl pointer-events-none"></div>
                 <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl pointer-events-none"></div>
@@ -528,18 +528,18 @@ const LandingPage = () => {
                             { name: "Sarah J.", role: "Moved from CA to TX", text: "I was nervous about shipping my car for the first time, but Road America Auto Transport made it so easy. The driver was professional and my car arrived a day early!", stars: 5 },
                             { name: "Michael T.", role: "Moved a car from GA to FL", text: "Great price and excellent communication. They kept me updated throughout the whole process. Highly recommend.", stars: 5 }
                         ].map((review, i) => (
-                            <div key={i} className="bg-white/5 border border-white/10 p-8 rounded-2xl text-left hover:bg-white/10 transition-colors duration-300">
+                            <div key={i} className="bg-[#172B3D]/5 border border-[#172B3D]/10 p-8 rounded-2xl text-left hover:bg-[#172B3D]/10 transition-colors duration-300">
                                 <div className="flex gap-1 mb-4 text-brand-red">
                                     {[...Array(review.stars)].map((_, i) => <Star key={i} className="w-4 h-4 fill-current" />)}
                                 </div>
-                                <p className="text-white/80 text-sm mb-6 leading-relaxed italic">"{review.text}"</p>
+                                <p className="text-text-primary text-sm mb-6 leading-relaxed italic">"{review.text}"</p>
                                 <div className="flex items-center gap-3">
                                     <div className="w-10 h-10 rounded-full bg-brand-red/20 flex items-center justify-center text-brand-red font-bold text-xs uppercase">
                                         {review.name.charAt(0)}
                                     </div>
                                     <div>
-                                        <p className="font-bold text-sm text-white">{review.name}</p>
-                                        <p className="text-xs text-white/40">{review.role}</p>
+                                        <p className="font-bold text-sm text-text-primary">{review.name}</p>
+                                        <p className="text-xs text-text-supporting">{review.role}</p>
                                     </div>
                                 </div>
                             </div>

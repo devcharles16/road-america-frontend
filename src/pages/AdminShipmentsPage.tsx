@@ -227,8 +227,8 @@ const AdminShipmentsPage = () => {
       className={[
         "rounded-full px-4 py-2 text-[11px] font-semibold",
         tab === key
-          ? "bg-white/15 text-white"
-          : "border border-white/30 text-white hover:border-brand-redSoft",
+          ? "bg-[#172B3D]/15 text-text-primary"
+          : "border border-[#172B3D]/30 text-text-primary hover:border-brand-redSoft",
       ].join(" ")}
     >
       {label}
@@ -236,7 +236,7 @@ const AdminShipmentsPage = () => {
   );
 
   return (
-    <section className="bg-brand-dark py-10 text-white min-h-[70vh]">
+    <section className="bg-brand-dark py-10 text-text-primary min-h-[70vh]">
       <div className="mx-auto max-w-6xl px-4">
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
@@ -246,7 +246,7 @@ const AdminShipmentsPage = () => {
             <h1 className="mt-1 font-display text-2xl font-semibold">
               Shipments & Tracking
             </h1>
-            <p className="mt-2 text-xs text-white/70">
+            <p className="mt-2 text-xs text-text-primary">
               Manage transport requests, update statuses, and control what
               customers see on the public tracking page.
             </p>
@@ -258,7 +258,7 @@ const AdminShipmentsPage = () => {
 
             <button
               onClick={handleLogout}
-              className="rounded-full border border-white/30 px-4 py-2 text-[11px] font-semibold text-white hover:border-brand-redSoft"
+              className="rounded-full border border-[#172B3D]/30 px-4 py-2 text-[11px] font-semibold text-text-primary hover:border-brand-redSoft"
             >
               Log Out
             </button>
@@ -275,14 +275,14 @@ const AdminShipmentsPage = () => {
             {loadingShipments ? (
               <LoadingState message="Loading shipments..." />
             ) : shipments.length === 0 ? (
-              <p className="text-xs text-white/60">
+              <p className="text-xs text-text-muted">
                 No shipments found yet. Once quote requests are converted to
                 transports, they will appear here.
               </p>
             ) : (
-              <div className="overflow-x-auto rounded-2xl border border-white/10 bg-black/20 shadow-soft-card">
+              <div className="overflow-x-auto rounded-2xl border border-[#172B3D]/10 bg-background-warm shadow-soft-card">
                 <table className="min-w-full text-xs">
-                  <thead className="bg-white/5 text-white/70">
+                  <thead className="bg-[#172B3D]/5 text-text-primary">
                     <tr>
                       <th className="px-3 py-2 text-left font-semibold">
                         Ref ID
@@ -308,7 +308,7 @@ const AdminShipmentsPage = () => {
                     {shipments.map((s) => (
                       <tr
                         key={s.id}
-                        className="border-t border-white/5 hover:bg-white/5"
+                        className="border-t border-[#172B3D]/5 hover:bg-[#172B3D]/5"
                       >
                         <td className="px-3 py-2 font-mono text-[11px]">
                           {s.referenceId}
@@ -316,7 +316,7 @@ const AdminShipmentsPage = () => {
                         <td className="px-3 py-2">
                           <div className="flex flex-col">
                             <span>{s.customerName}</span>
-                            <span className="text-[10px] text-white/50">
+                            <span className="text-[10px] text-text-muted">
                               {s.customerEmail}
                             </span>
                           </div>
@@ -340,7 +340,7 @@ const AdminShipmentsPage = () => {
                               const next = e.target.value as TransportStatus;
                               handleStatusChange(s.id, next);
                             }}
-                            className="rounded-full border border-white/20 bg-[#323232]/60 px-2 py-1 text-[11px] outline-none focus:border-brand-redSoft"
+                            className="rounded-full border border-[#172B3D]/20 bg-white/60 px-2 py-1 text-[11px] outline-none focus:border-brand-redSoft"
                           >
                             {/* Allows value="" when status is null/undefined */}
                             <option value="" disabled>
@@ -355,7 +355,7 @@ const AdminShipmentsPage = () => {
                           </select>
                         </td>
 
-                        <td className="px-3 py-2 text-[10px] text-white/60">
+                        <td className="px-3 py-2 text-[10px] text-text-muted">
                           {s.updatedAt ? new Date(s.updatedAt).toLocaleString() : "—"}
                         </td>
 
@@ -373,12 +373,12 @@ const AdminShipmentsPage = () => {
             )}
 
             <div className="mb-3 flex items-center justify-between gap-3">
-              <p className="text-xs text-white/70">
+              <p className="text-xs text-text-primary">
                 Convert quotes into shipments using the same reference ID.
               </p>
               <button
                 onClick={loadQuotes}
-                className="rounded-full border border-white/30 px-4 py-2 text-[11px] font-semibold text-white hover:border-brand-redSoft"
+                className="rounded-full border border-[#172B3D]/30 px-4 py-2 text-[11px] font-semibold text-text-primary hover:border-brand-redSoft"
               >
                 Refresh Quotes
               </button>
@@ -387,11 +387,11 @@ const AdminShipmentsPage = () => {
             {loadingQuotes ? (
               <LoadingState message="Loading quotes..." />
             ) : quotes.length === 0 ? (
-              <p className="text-xs text-white/60">No quotes found.</p>
+              <p className="text-xs text-text-muted">No quotes found.</p>
             ) : (
-              <div className="overflow-x-auto rounded-2xl border border-white/10 bg-black/20 shadow-soft-card">
+              <div className="overflow-x-auto rounded-2xl border border-[#172B3D]/10 bg-background-warm shadow-soft-card">
                 <table className="min-w-full text-xs">
-                  <thead className="bg-white/5 text-white/70">
+                  <thead className="bg-[#172B3D]/5 text-text-primary">
                     <tr>
                       <th className="px-3 py-2 text-left font-semibold">
                         Quote
@@ -429,7 +429,7 @@ const AdminShipmentsPage = () => {
                       return (
                         <tr
                           key={q.id}
-                          className="border-t border-white/5 hover:bg-white/5"
+                          className="border-t border-[#172B3D]/5 hover:bg-[#172B3D]/5"
                         >
                           <td className="px-3 py-2 font-mono text-[11px]">
                             {q.referenceId ?? q.id}
@@ -437,7 +437,7 @@ const AdminShipmentsPage = () => {
                           <td className="px-3 py-2">
                             <div className="flex flex-col">
                               <span>{name || "—"}</span>
-                              <span className="text-[10px] text-white/50">
+                              <span className="text-[10px] text-text-muted">
                                 {q.customer_email || "—"}
                               </span>
                             </div>
@@ -464,7 +464,7 @@ const AdminShipmentsPage = () => {
                               <button
                                 onClick={() => handleCloseQuoteNotConverted(q.id)}
                                 disabled={closingId === q.id || convertingId === q.id}
-                                className="rounded-full border border-white/30 px-4 py-2 text-[11px] font-semibold text-white hover:border-brand-redSoft disabled:opacity-60"
+                                className="rounded-full border border-[#172B3D]/30 px-4 py-2 text-[11px] font-semibold text-text-primary hover:border-brand-redSoft disabled:opacity-60"
                                 title={`Sets status to: ${QUOTE_STATUS_CLOSED_NOT_CONVERTED}`}
                               >
                                 {closingId === q.id
@@ -475,7 +475,7 @@ const AdminShipmentsPage = () => {
                               <button
                                 onClick={() => handleMarkConverted(q.id)}
                                 disabled={closingId === q.id || convertingId === q.id}
-                                className="mt-1 text-xs text-white/60 hover:text-white underline decoration-white/30 underline-offset-4"
+                                className="mt-1 text-xs text-text-muted hover:text-text-primary underline decoration-white/30 underline-offset-4"
                                 title="Hide from list (mark as Converted) without creating a shipment"
                               >
                                 Mark as Already Converted

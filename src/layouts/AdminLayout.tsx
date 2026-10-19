@@ -13,11 +13,11 @@ const adminNavItems = [
 
 export default function AdminLayout() {
   return (
-    <div className="min-h-screen bg-brand-dark text-white flex">
+    <div className="min-h-screen bg-brand-dark text-text-primary flex">
       {/* Sidebar */}
-      <aside className="hidden md:flex w-64 flex-col border-r border-white/10 bg-black/35">
-        <div className="px-6 py-5 border-b border-white/10">
-          <p className="text-[11px] uppercase tracking-[0.2em] text-white/40">
+      <aside className="hidden md:flex w-64 flex-col border-r border-[#172B3D]/10 bg-background-warm">
+        <div className="px-6 py-5 border-b border-[#172B3D]/10">
+          <p className="text-[11px] uppercase tracking-[0.2em] text-text-supporting">
             Road America Auto Transport
           </p>
           <p className="mt-1 text-sm font-semibold">Admin Console</p>
@@ -34,8 +34,8 @@ export default function AdminLayout() {
                   "flex items-center gap-2 rounded-xl px-3 py-2 transition",
                   "border border-transparent",
                   isActive
-                    ? "bg-white/5 border-brand-redSoft text-white"
-                    : "text-white/60 hover:text-white/90 hover:bg-white/5",
+                    ? "bg-[#172B3D]/5 border-brand-redSoft text-text-primary"
+                    : "text-text-muted hover:text-text-primary hover:bg-[#172B3D]/5",
                 ].join(" ")
               }
             >
@@ -45,7 +45,7 @@ export default function AdminLayout() {
           ))}
         </nav>
 
-        <div className="px-6 py-4 border-t border-white/10 text-[11px] text-white/50">
+        <div className="px-6 py-4 border-t border-[#172B3D]/10 text-[11px] text-text-muted">
           <p>Signed in as Admin</p>
           {/* later: show real admin email/role */}
         </div>
@@ -56,7 +56,7 @@ export default function AdminLayout() {
         {/* Simple mobile header; you can make this fancier later */}
         <Header />
 
-        <main className="flex-1 px-4 py-6 md:px-8 md:py-8 bg-gradient-to-br from-black via-brand-dark to-brand-gray">
+        <main className="flex-1 px-4 py-6 md:px-8 md:py-8 bg-white">
           <Outlet />
         </main>
       </div>

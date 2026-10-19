@@ -32,9 +32,9 @@ const BlogPostPage = () => {
 
   if (loading) {
     return (
-      <main className="bg-brand-dark text-white min-h-screen px-4 py-12">
+      <main className="bg-brand-dark text-text-primary min-h-screen px-4 py-12">
         <div className="mx-auto max-w-3xl">
-          <p className="text-sm text-white/60">Loading article…</p>
+          <p className="text-sm text-text-muted">Loading article…</p>
         </div>
       </main>
     );
@@ -42,7 +42,7 @@ const BlogPostPage = () => {
 
   if (error || !post) {
     return (
-      <main className="bg-brand-dark text-white min-h-screen px-4 py-12">
+      <main className="bg-brand-dark text-text-primary min-h-screen px-4 py-12">
         <div className="mx-auto max-w-3xl space-y-4">
           <p className="text-sm text-red-400">{error || "Article not found."}</p>
           <Link to="/blog" className="text-xs text-brand-redSoft hover:text-brand-red">
@@ -54,7 +54,7 @@ const BlogPostPage = () => {
   }
 
   return (
-    <main className="bg-brand-dark text-white min-h-screen px-4 py-12">
+    <main className="bg-brand-dark text-text-primary min-h-screen px-4 py-12">
       <div className="mx-auto max-w-3xl">
         <Link
           to="/blog"
@@ -67,13 +67,13 @@ const BlogPostPage = () => {
           {post.title}
         </h1>
         {post.publishedAt && (
-          <p className="mt-2 text-xs text-white/60">
+          <p className="mt-2 text-xs text-text-muted">
             {new Date(post.publishedAt).toLocaleDateString()}
           </p>
         )}
 
         {post.imageUrl && (
-          <div className="mt-6 mb-4 rounded-2xl overflow-hidden border border-white/10">
+          <div className="mt-6 mb-4 rounded-2xl overflow-hidden border border-[#172B3D]/10">
             <img
               src={post.imageUrl}
               alt={post.title}
