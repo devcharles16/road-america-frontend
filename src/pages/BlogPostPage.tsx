@@ -44,8 +44,8 @@ const BlogPostPage = () => {
     return (
       <main className="bg-brand-dark text-text-primary min-h-screen px-4 py-12">
         <div className="mx-auto max-w-3xl space-y-4">
-          <p className="text-sm text-red-400">{error || "Article not found."}</p>
-          <Link to="/blog" className="text-xs text-brand-redSoft hover:text-brand-red">
+          <p className="text-sm text-accent-dark-red">{error || "Article not found."}</p>
+          <Link to="/blog" className="text-xs text-primary hover:text-primary-hover">
             ← Back to articles
           </Link>
         </div>
@@ -58,7 +58,7 @@ const BlogPostPage = () => {
       <div className="mx-auto max-w-3xl">
         <Link
           to="/blog"
-          className="text-xs text-brand-redSoft hover:text-brand-red"
+          className="text-xs text-primary hover:text-primary-hover"
         >
           ← Back to articles
         </Link>
@@ -82,7 +82,7 @@ const BlogPostPage = () => {
           </div>
         )}
 
-        <article className="mt-6 prose prose-invert prose-sm max-w-none prose-headings:font-display prose-a:text-brand-redSoft hover:prose-a:text-brand-red prose-img:rounded-xl">
+        <article className="mt-6 prose prose-sm max-w-none prose-headings:font-display prose-headings:text-text-primary prose-p:text-text-supporting prose-li:text-text-supporting prose-strong:text-text-primary prose-blockquote:text-text-muted prose-a:text-primary hover:prose-a:text-primary-hover prose-img:rounded-xl">
           <ReactMarkdown>{post.content}</ReactMarkdown>
         </article>
 

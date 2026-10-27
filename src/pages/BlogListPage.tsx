@@ -33,7 +33,7 @@ const BlogListPage = () => {
       />
       <div className="mx-auto max-w-5xl">
         <h1 className="text-3xl font-display font-semibold">Transport Insights</h1>
-        <p className="text-sm text-text-primary mt-2 max-w-2xl">
+        <p className="text-sm text-text-supporting mt-2 max-w-2xl">
           Guides, tips, and updates from the Road America Auto Transport team
           to help you move vehicles with confidence.
         </p>
@@ -41,7 +41,7 @@ const BlogListPage = () => {
         {loading ? (
           <p className="mt-8 text-sm text-text-muted">Loading posts…</p>
         ) : error ? (
-          <p className="mt-8 text-sm text-red-400">{error}</p>
+          <p className="mt-8 text-sm text-accent-dark-red">{error}</p>
         ) : posts.length === 0 ? (
           <p className="mt-8 text-sm text-text-muted">
             No articles have been published yet. Check back soon.
@@ -71,9 +71,9 @@ const BlogListPage = () => {
                     </p>
                   )}
                   {post.excerpt && (
-                    <p className="mt-2 text-sm text-text-primary">{post.excerpt}</p>
+                    <p className="mt-2 text-sm text-text-supporting">{post.excerpt}</p>
                   )}
-                  <p className="mt-3 text-[11px] text-brand-redSoft">
+                  <p className="mt-3 text-[11px] text-primary">
                     Read article →
                   </p>
                 </div>
