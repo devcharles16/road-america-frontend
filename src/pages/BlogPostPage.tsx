@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
+import { Helmet } from "react-helmet-async";
 import { fetchPostBySlug, type BlogPost } from "../services/blogService";
+import SEO from "../components/SEO";
+
+const SITE_URL = "https://www.roadamericatransport.com";
 
 const BlogPostPage = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -53,8 +57,58 @@ const BlogPostPage = () => {
     );
   }
 
+  const canonicalPath = `/blog/${post.slug}`;
+  const fullCanonicalUrl = `${SITE_URL}${canonicalPath}`;
+
+  const articleSchema = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    description: post.excerpt || undefined,
+    image: post.imageUrl || undefined,
+    datePublished: post.publishedAt || post.createdAt,
+    dateModified: post.updatedAt || post.publishedAt || post.createdAt,
+    author: {
+      "@type": "Organization",
+      name: "Road America Auto Transport",
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "Road America Auto Transport",
+      logo: {
+        "@type": "ImageObject",
+        url: `${SITE_URL}/logo.png`,
+      },
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": fullCanonicalUrl,
+    },
+  };
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_URL}/` },
+      { "@type": "ListItem", position: 2, name: "Blog", item: `${SITE_URL}/blog` },
+      { "@type": "ListItem", position: 3, name: post.title, item: fullCanonicalUrl },
+    ],
+  };
+
   return (
     <main className="bg-brand-dark text-text-primary min-h-screen px-4 py-12">
+      <SEO
+        title={post.title}
+        description={post.excerpt || undefined}
+        canonical={canonicalPath}
+        ogImage={post.imageUrl || undefined}
+        ogType="article"
+      />
+      <Helmet>
+        <script type="application/ld+json">{JSON.stringify(articleSchema)}</script>
+        <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>
+      </Helmet>
       <div className="mx-auto max-w-3xl">
         <Link
           to="/blog"

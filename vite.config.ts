@@ -5,9 +5,11 @@ import fs from 'node:fs'
 import { getAllRoutes } from './src/data/routesData'
 
 const SITE_URL = 'https://www.roadamericatransport.com'
+const API_BASE_URL = 'https://road-america-backend.onrender.com'
 
-// Regenerates sitemap.xml at build time from ROUTES_DATA, so adding a route
-// there is enough to get it into the sitemap — no manual XML editing.
+// Regenerates sitemap.xml at build time from ROUTES_DATA and the live blog API,
+// so adding a route or publishing a post is enough to get it into the sitemap —
+// no manual XML editing.
 // Runs in closeBundle (not writeBundle) so it always executes after Vite's
 // own publicDir copy, which would otherwise overwrite this with the static
 // fallback copy kept in public/sitemap.xml (used by `vite dev`/`vite preview`).
@@ -22,7 +24,7 @@ function routeSitemapPlugin(): Plugin {
       root = config.root
       outDir = config.build.outDir
     },
-    closeBundle() {
+    async closeBundle() {
       const staticEntries: Array<{ loc: string; priority: string; changefreq: string }> = [
         { loc: '/', priority: '1.0', changefreq: 'weekly' },
         { loc: '/express-quote', priority: '0.9', changefreq: 'weekly' },
@@ -41,8 +43,30 @@ function routeSitemapPlugin(): Plugin {
         changefreq: 'monthly',
       }))
 
+      // Best-effort: pull published blog posts from the live API so they show
+      // up in the sitemap too. Never fails the build if the API is unreachable.
+      let blogEntries: Array<{ loc: string; priority: string; changefreq: string }> = []
+      try {
+        const controller = new AbortController()
+        const timeout = setTimeout(() => controller.abort(), 8000)
+        const res = await fetch(`${API_BASE_URL}/api/blog`, { signal: controller.signal })
+        clearTimeout(timeout)
+        if (res.ok) {
+          const posts = (await res.json()) as Array<{ slug: string }>
+          blogEntries = posts.map((post) => ({
+            loc: `/blog/${post.slug}`,
+            priority: '0.6',
+            changefreq: 'monthly',
+          }))
+        } else {
+          console.warn(`[sitemap] blog API returned ${res.status}, skipping blog post entries`)
+        }
+      } catch (err) {
+        console.warn('[sitemap] could not fetch blog posts for sitemap, skipping:', (err as Error).message)
+      }
+
       const today = new Date().toISOString().slice(0, 10)
-      const urlEntries = [...staticEntries, ...routeEntries]
+      const urlEntries = [...staticEntries, ...routeEntries, ...blogEntries]
         .map(
           (entry) => `  <url>
     <loc>${SITE_URL}${entry.loc}</loc>
@@ -57,7 +81,9 @@ function routeSitemapPlugin(): Plugin {
 
       const resolvedOutDir = path.isAbsolute(outDir) ? outDir : path.join(root, outDir)
       fs.writeFileSync(path.join(resolvedOutDir, 'sitemap.xml'), xml, 'utf-8')
-      console.log(`[sitemap] wrote ${staticEntries.length + routeEntries.length} URLs to ${path.join(resolvedOutDir, 'sitemap.xml')}`)
+      console.log(
+        `[sitemap] wrote ${staticEntries.length + routeEntries.length + blogEntries.length} URLs (${blogEntries.length} blog posts) to ${path.join(resolvedOutDir, 'sitemap.xml')}`
+      )
     },
   }
 }
