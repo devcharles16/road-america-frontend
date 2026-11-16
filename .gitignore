@@ -7,6 +7,10 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 .deployment
+.env
+.env.*
+server/.env
+server/.env.*
 
 # Dependency directories
 node_modules/

@@ -10,6 +10,8 @@ import { sendStatusUpdate } from "./notifications/transportStatus.js";
 import { sendNewQuoteAlert, sendQuoteConfirmationEmail } from "./notifications/adminAlerts.js";
 
 import shipmentsRouter from "./routes/shipmentsRouter.js";
+import bookingRouter from "./routes/bookingRouter.js";
+import hubspotSyncRouter from "./routes/hubspotSyncRouter.js";
 
 dotenv.config();
 
@@ -434,6 +436,13 @@ app.use((req, _res, next) => {
 
 // ✅ Mount your API routes (includes /api/my-shipments)
 app.use("/api", shipmentsRouter);
+
+// Booking review pages: GET /book/silver, GET /book/gold, plus their
+// POST /book/api/lookup and /book/api/confirm endpoints.
+app.use("/book", bookingRouter);
+
+// Zapier -> HubSpot pricing sync: POST /api/integrations/hubspot-pricing
+app.use("/api/integrations", hubspotSyncRouter);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

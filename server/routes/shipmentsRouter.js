@@ -659,5 +659,40 @@ router.get(
   }
 );
 
+/**
+ * ADMIN/EMPLOYEE: Clear a booking package selection so the customer can
+ * pick again. "First confirmed selection wins" means once a package is
+ * recorded there is no customer-facing way to change it — this is the
+ * authorized override for staff.
+ * DELETE /api/admin/booking-selections/:referenceId
+ */
+router.delete(
+  "/admin/booking-selections/:referenceId",
+  requireAuth,
+  requireOneOf(["admin", "employee"]),
+  async (req, res) => {
+    try {
+      const referenceId = String(req.params.referenceId || "").trim().toUpperCase();
+      if (!/^RA-\d{5,12}$/i.test(referenceId)) {
+        return res.status(400).json({ message: "Invalid reference id." });
+      }
+
+      const { data, error } = await supabase
+        .from("booking_selections")
+        .delete()
+        .eq("reference_id", referenceId)
+        .select("reference_id, package")
+        .maybeSingle();
+
+      if (error) throw error;
+      if (!data) return res.status(404).json({ message: "No booking selection found for that reference." });
+
+      return res.json({ ok: true, cleared: data });
+    } catch (err) {
+      console.error("Reset booking selection error:", err);
+      return res.status(500).json({ message: "Server error resetting booking selection" });
+    }
+  }
+);
 
 export default router;
