@@ -3,6 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import supabase from '../supabaseClient.js';
 import { verifyBookingToken } from '../utils/bookingLinks.js';
+import { syncSelectedPackageToHubspot } from '../utils/hubspotTickets.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const router = express.Router();
@@ -137,6 +138,11 @@ async function confirmSelection({ reference, email, pkg }) {
     .insert({ reference_id: reference, package: pkg, customer_email: email || quote.email });
 
   if (!insertErr) {
+    // Fire only after the Supabase insert has actually succeeded. Not
+    // awaited-and-propagated as an error — a HubSpot sync failure must not
+    // turn into a failed booking confirmation for the customer, and a later
+    // resubmit of this same confirmation will retry it (see below).
+    await syncSelectedPackageToHubspot(reference, pkg);
     return { status: 200, body: { ok: true, message: 'Your package selection has been received. Our team will follow up with next steps.' } };
   }
 
@@ -150,6 +156,8 @@ async function confirmSelection({ reference, email, pkg }) {
 
     if (existing?.package === pkg) {
       // Same package, resubmitted (double-click, retry, etc.) — idempotent.
+      // Re-synced to HubSpot too, so a prior sync failure gets a retry.
+      await syncSelectedPackageToHubspot(reference, pkg);
       return { status: 200, body: { ok: true, message: 'Your package selection has been received. Our team will follow up with next steps.' } };
     }
     return {
