@@ -8,11 +8,30 @@
 const HUBSPOT_API_BASE = 'https://api.hubapi.com';
 const QUOTE_NUMBER_PROPERTY = 'quote_number';
 const SELECTED_PACKAGE_PROPERTY = 'selected_package';
+const REQUEST_TIMEOUT_MS = 8000;
 
 function getToken() {
   const token = process.env.HUBSPOT_PRIVATE_APP_TOKEN;
   if (!token) throw new Error('HUBSPOT_PRIVATE_APP_TOKEN is not set');
   return token;
+}
+
+// An unresponsive HubSpot API must not hang the booking confirmation
+// request indefinitely — this is awaited inline from confirmSelection().
+// Bounds each call (search, then patch) to REQUEST_TIMEOUT_MS.
+async function fetchWithTimeout(url, options) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  try {
+    return await fetch(url, { ...options, signal: controller.signal });
+  } catch (err) {
+    if (err.name === 'AbortError') {
+      throw new Error(`HubSpot request to ${url} timed out after ${REQUEST_TIMEOUT_MS}ms`);
+    }
+    throw err;
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 /**
@@ -21,7 +40,7 @@ function getToken() {
  * matched — callers must treat null as "do not write," not as "pick one."
  */
 async function findTicketIdByQuoteNumber(referenceId) {
-  const res = await fetch(`${HUBSPOT_API_BASE}/crm/v3/objects/tickets/search`, {
+  const res = await fetchWithTimeout(`${HUBSPOT_API_BASE}/crm/v3/objects/tickets/search`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${getToken()}`,
@@ -56,7 +75,7 @@ async function findTicketIdByQuoteNumber(referenceId) {
 }
 
 async function setSelectedPackage(ticketId, packageValue) {
-  const res = await fetch(`${HUBSPOT_API_BASE}/crm/v3/objects/tickets/${ticketId}`, {
+  const res = await fetchWithTimeout(`${HUBSPOT_API_BASE}/crm/v3/objects/tickets/${ticketId}`, {
     method: 'PATCH',
     headers: {
       Authorization: `Bearer ${getToken()}`,
