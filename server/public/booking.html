@@ -13,7 +13,9 @@
 <label for="email">Email address</label><input id="email" name="email" type="email" required autocomplete="email" placeholder="you@example.com"><p><button class="cta" id="lookupBtn">Review booking</button></p></form></section>
 <div id="message" class="notice" role="status"></div>
 <section id="booking" class="layout"><div><div class="card"><h2>Shipment summary</h2><div class="details"><div class="detail"><b>Vehicle</b><span id="vehicle"></span></div><div class="detail"><b>Transport</b><span id="transport"></span></div><div class="detail"><b>Route</b><span id="route"></span></div><div class="detail"><b>Pickup window</b><span id="window"></span></div></div></div><div class="card"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center"><h2 style="margin:0">Selected package</h2><a class="switch" id="switch" href="#">Change package</a></div><div id="selection" class="selected" style="margin-top:16px"><h3 id="packageName"></h3><p id="packageDescription"></p></div></div></div>
-<div class="card"><h2>Price summary</h2><div class="price-row"><span>Total transport price</span><strong id="total"></strong></div><div class="price-row"><span id="feeLabel">Booking fee authorization</span><strong id="fee"></strong></div><div class="price-row"><span>Pay carrier at delivery</span><strong id="carrier"></strong></div><div class="highlight" id="highlight"><b id="highlightLabel">Booking fee authorization</b><strong id="highlightAmount"></strong></div><p class="muted">After confirmation, our team will follow up with next steps. No payment is charged or authorized on this page.</p><button id="confirm" class="cta">Confirm selection</button><p class="muted" style="text-align:center">You will receive a confirmation of your selection.</p></div></section>
+<div class="card"><h2>Price summary</h2><div class="price-row"><span>Total transport price</span><strong id="total"></strong></div><div class="price-row"><span id="feeLabel">Booking fee authorization</span><strong id="fee"></strong></div><div class="price-row"><span>Pay carrier at delivery</span><strong id="carrier"></strong></div><div class="highlight" id="highlight"><b id="highlightLabel">Booking fee authorization</b><strong id="highlightAmount"></strong></div><p class="muted">After confirmation, you'll continue to a secure Stripe payment authorization. Your card will be authorized, not charged, until our team completes booking.</p><button id="confirm" class="cta">Confirm selection</button>
+<div id="payStep" style="display:none;margin-top:16px"><button id="payBtn" class="cta">Proceed to secure payment authorization</button></div>
+<p class="muted" style="text-align:center">You will receive a confirmation of your selection.</p></div></section>
 </main><footer><a href="https://roadamericatransport.com">Website</a><a href="mailto:info@roadamericatransport.com">Contact us</a><a href="https://roadamericatransport.com/terms">Terms &amp; Conditions</a></footer>
 <script>
 (() => {
@@ -57,7 +59,6 @@
    msg('Unable to verify your booking link right now.');
   }
  }
- tryTokenLookup();
 
  // Fallback path: manual quote reference + email entry.
  $('lookupForm').addEventListener('submit', async e => {
@@ -74,8 +75,47 @@
      const body = activeToken ? {token:activeToken,package:pkg} : {reference:$('ref').value.trim().toUpperCase(),email:verifiedEmail,package:pkg};
      const endpoint = activeToken ? '/book/api/confirm-by-token' : '/book/api/confirm';
      const r=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const d=await r.json();if(!r.ok)throw Error(d.error||'Unable to confirm');msg(d.message||'Your selection has been received.',true);$('confirm').textContent='Selection received';
+     // Payment authorization requires the signed-link token — the email
+     // fallback path can confirm a package but can't proceed to Stripe.
+     if (activeToken) { $('payStep').style.display='block'; } else { msg((d.message||'Your selection has been received.')+' To continue to secure payment, please use the original link we emailed you.',true); }
    }
    catch(err){msg(err.message);$('confirm').disabled=false}
  });
+
+ $('payBtn').addEventListener('click', async () => {
+  $('payBtn').disabled = true; $('message').style.display='none';
+  try {
+   const r = await fetch('/book/api/create-checkout-session-by-token',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:activeToken})});
+   const d = await r.json();
+   if (!r.ok) throw Error(d.error || 'Unable to start payment authorization.');
+   window.location.href = d.url;
+  } catch (err) {
+   msg(err.message); $('payBtn').disabled = false;
+  }
+ });
+
+ // Returning from Stripe Checkout. The URL's own payment=success param is
+ // NOT trusted as proof — a customer could land here without having paid.
+ // Poll the server for what Stripe actually confirmed via webhook instead.
+ async function checkPaymentReturn() {
+  const outcome = params.get('payment');
+  if (!outcome || !token) return;
+  if (outcome === 'canceled') { msg('Payment authorization was canceled. You can try again below.'); return; }
+
+  msg('Confirming your payment authorization…');
+  for (let attempt = 0; attempt < 6; attempt++) {
+   await new Promise(r => setTimeout(r, 1500));
+   try {
+    const r = await fetch('/book/api/payment-status-by-token',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token})});
+    const d = await r.json();
+    const auth = d.authorization;
+    if (auth?.status === 'authorized') { msg('Your payment has been authorized. Our team will follow up with next steps. No funds have been charged yet.', true); return; }
+    if (auth?.status === 'canceled' || auth?.status === 'expired') { msg('That payment authorization did not complete. Please try again below.'); return; }
+   } catch (err) { /* keep polling */ }
+  }
+  msg('We’re still confirming your payment authorization. If this message doesn’t update shortly, please contact us.');
+ }
+
+ tryTokenLookup().then(checkPaymentReturn);
 })();
 </script></body></html>

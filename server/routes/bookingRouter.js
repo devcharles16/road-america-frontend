@@ -4,6 +4,8 @@ import { fileURLToPath } from 'node:url';
 import supabase from '../supabaseClient.js';
 import { verifyBookingToken } from '../utils/bookingLinks.js';
 import { syncSelectedPackageToHubspot } from '../utils/hubspotTickets.js';
+import { getStripeClient } from '../utils/stripeClient.js';
+import { hasActiveAuthorization, recordPendingAuthorization } from '../utils/paymentAuthorizations.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const router = express.Router();
@@ -200,6 +202,117 @@ router.post('/api/confirm', async (req, res) => {
   } catch (err) {
     console.error('Booking confirmation error', err);
     res.status(500).json({ error: 'We could not confirm your selection. Please contact our team.' });
+  }
+});
+
+// Creates a Stripe Checkout Session (manual capture — an authorization
+// hold, never an immediate charge) for the package already confirmed in
+// booking_selections. The amount and package are both read server-side
+// from Supabase, never from the request body — req.body.package, if a
+// client ever sent one, is never consulted anywhere in this handler.
+router.post('/api/create-checkout-session-by-token', async (req, res) => {
+  try {
+    const result = verifyBookingToken(req.body?.token);
+    if (!result.valid) {
+      if (result.reason === 'expired') return res.status(401).json({ error: 'This booking link has expired.', expired: true });
+      return res.status(401).json({ error: 'This booking link is not valid.' });
+    }
+    const referenceId = result.referenceId;
+
+    const quote = await getQuote(referenceId);
+    if (!quote) return res.status(404).json({ error: 'We could not find that quote.' });
+    if (!isBookable(quote)) return res.status(409).json({ error: 'This quote requires review. Please contact our team.' });
+
+    const { data: selection, error: selectionErr } = await supabase
+      .from('booking_selections')
+      .select('package')
+      .eq('reference_id', referenceId)
+      .maybeSingle();
+    if (selectionErr) throw selectionErr;
+    if (!selection) return res.status(409).json({ error: 'Please select a package before continuing to payment.' });
+    const pkg = selection.package;
+
+    if (await hasActiveAuthorization(referenceId)) {
+      return res.status(409).json({ error: 'This booking has already been authorized for payment.' });
+    }
+
+    const amount = pkg === 'silver' ? quote.silverFee : quote.goldTotal;
+    if (amount == null || amount === '') return res.status(409).json({ error: 'Pricing is not ready. Please contact our team.' });
+    const amountCents = Math.round(Number(amount) * 100);
+    if (!Number.isFinite(amountCents) || amountCents <= 0) {
+      console.error('Invalid authorization amount for', referenceId, amount);
+      return res.status(500).json({ error: 'Unable to start payment authorization right now.' });
+    }
+
+    const baseUrl = process.env.BOOKING_SITE_URL || 'https://www.roadamericatransport.com';
+    const rawToken = req.body.token;
+    const stripe = getStripeClient();
+    const session = await stripe.checkout.sessions.create({
+      mode: 'payment',
+      payment_method_types: ['card'],
+      client_reference_id: referenceId,
+      metadata: { reference_id: referenceId, package: pkg },
+      payment_intent_data: {
+        capture_method: 'manual',
+        metadata: { reference_id: referenceId, package: pkg },
+      },
+      line_items: [{
+        price_data: {
+          currency: 'usd',
+          product_data: {
+            name: `${pkg === 'gold' ? 'Gold' : 'Silver'} package booking authorization — ${referenceId}`,
+          },
+          unit_amount: amountCents,
+        },
+        quantity: 1,
+      }],
+      success_url: `${baseUrl}/book/${pkg}?token=${encodeURIComponent(rawToken)}&payment=success`,
+      cancel_url: `${baseUrl}/book/${pkg}?token=${encodeURIComponent(rawToken)}&payment=canceled`,
+    });
+
+    await recordPendingAuthorization({
+      referenceId,
+      pkg,
+      stripeCheckoutSessionId: session.id,
+      stripePaymentIntentId: session.payment_intent || null,
+      amountCents,
+      currency: 'usd',
+    });
+
+    res.json({ url: session.url });
+  } catch (err) {
+    console.error('Create checkout session error', err);
+    res.status(500).json({ error: 'Unable to start payment authorization right now.' });
+  }
+});
+
+// Lets booking.html poll the real, server-confirmed authorization status
+// after returning from Stripe Checkout — the redirect itself proves
+// nothing (a customer can navigate to the success URL without having
+// completed payment), so this is what the UI actually trusts, not the
+// URL it landed on. Returns the most recent attempt for this reference,
+// since repeated checkout attempts are expected (abandoned sessions).
+router.post('/api/payment-status-by-token', async (req, res) => {
+  try {
+    const result = verifyBookingToken(req.body?.token);
+    if (!result.valid) {
+      if (result.reason === 'expired') return res.status(401).json({ error: 'This booking link has expired.', expired: true });
+      return res.status(401).json({ error: 'This booking link is not valid.' });
+    }
+
+    const { data, error } = await supabase
+      .from('payment_authorizations')
+      .select('status, package, amount_cents, authorized_at')
+      .eq('reference_id', result.referenceId)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (error) throw error;
+
+    res.json({ authorization: data || null });
+  } catch (err) {
+    console.error('Payment status lookup error', err);
+    res.status(500).json({ error: 'Unable to check payment status right now.' });
   }
 });
 

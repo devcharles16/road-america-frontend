@@ -12,6 +12,7 @@ import { sendNewQuoteAlert, sendQuoteConfirmationEmail } from "./notifications/a
 import shipmentsRouter from "./routes/shipmentsRouter.js";
 import bookingRouter from "./routes/bookingRouter.js";
 import hubspotSyncRouter from "./routes/hubspotSyncRouter.js";
+import stripeWebhookRouter from "./routes/stripeWebhookRouter.js";
 
 dotenv.config();
 
@@ -59,6 +60,14 @@ const corsOptions = {
 app.use(cors(corsOptions));
 // Handle all preflight requests
 app.options(/.*/, cors(corsOptions));
+
+// Stripe webhook: MUST be mounted before express.json() below. Signature
+// verification needs the exact raw request body; express.json() would
+// otherwise parse and consume it first, since app.use(express.json())
+// applies to every path registered after it. The router itself defines
+// express.raw() on its one route, so nothing else mounted here needs to
+// change — this is the only ordering-sensitive line in this file.
+app.use("/api/stripe", stripeWebhookRouter);
 
 // Parse JSON
 app.use(express.json());
