@@ -17,11 +17,24 @@
 --   * status starts 'pending' the moment we create the Checkout Session
 --     (before the customer has done anything) and is only ever moved to
 --     'authorized' by the webhook handler AFTER it independently retrieves
---     the PaymentIntent from Stripe and confirms status = 'requires_capture'
---     — never from the client's return redirect alone, which proves
---     nothing (a customer can navigate to a success URL without having
---     paid). 'canceled' / 'expired' are both terminal, driven by Stripe's
---     payment_intent.canceled event and its cancellation_reason.
+--     the PaymentIntent from Stripe, confirms status = 'requires_capture',
+--     AND confirms the authorized amount still matches what the currently
+--     approved quote/package would compute — never from the client's
+--     return redirect alone, which proves nothing (a customer can navigate
+--     to a success URL without having paid), and never purely from the
+--     webhook payload's own amount field.
+--   * Terminal states: 'authorized' (reached requires_capture, matches
+--     expected amount), 'canceled' (explicitly canceled after having been
+--     authorized), 'expired' (Stripe's automatic 7-day post-authorization
+--     expiry, cancellation_reason = 'automatic', on a row that HAD reached
+--     authorized), 'failed' (never reached authorized at all — a declined
+--     card, an abandoned/timed-out Checkout Session, or any cancellation
+--     that happened before authorization), 'amount_mismatch' (reached
+--     requires_capture, but the authorized amount no longer matches what
+--     the quote/package currently compute to — never auto-resolved,
+--     always needs manual review). 'failed' is distinguished from
+--     'expired'/'canceled' specifically so an abandoned checkout doesn't
+--     read as "a real authorization was lost" when none ever existed.
 --   * No foreign key to booking_selections, and no modification of
 --     quotes or booking_selections anywhere in this file — this table is
 --     purely additive, same posture as booking_selections_setup.sql and
@@ -43,10 +56,20 @@ create table if not exists public.payment_authorizations (
   amount_cents bigint not null,
   currency text not null default 'usd',
 
-  status text not null default 'pending'
-    check (status in ('pending', 'authorized', 'canceled', 'expired')),
+  -- From Stripe's own `livemode` field on the session/event — not derived
+  -- from the key prefix or any local assumption, so this column is always
+  -- an accurate record of which Stripe mode actually created the row,
+  -- independent of whatever the server's current configuration is.
+  livemode boolean not null,
 
-  cancellation_reason text,
+  status text not null default 'pending'
+    check (status in ('pending', 'authorized', 'canceled', 'expired', 'failed', 'amount_mismatch')),
+
+  -- Renamed from cancellation_reason — now holds the reason/context for
+  -- any terminal state, not just cancellation (a failure message, an
+  -- amount-mismatch detail, etc.), since the status enum grew beyond
+  -- cancel/expire.
+  status_reason text,
   authorized_at timestamptz,
   canceled_at timestamptz,
   -- Our own estimate only (authorized_at + up to 7 days, per Stripe's

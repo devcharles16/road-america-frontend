@@ -6,6 +6,7 @@ import { verifyBookingToken } from '../utils/bookingLinks.js';
 import { syncSelectedPackageToHubspot } from '../utils/hubspotTickets.js';
 import { getStripeClient } from '../utils/stripeClient.js';
 import { hasActiveAuthorization, recordPendingAuthorization } from '../utils/paymentAuthorizations.js';
+import { computeAuthorizationAmountCents } from '../utils/packagePricing.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const router = express.Router();
@@ -236,12 +237,9 @@ router.post('/api/create-checkout-session-by-token', async (req, res) => {
       return res.status(409).json({ error: 'This booking has already been authorized for payment.' });
     }
 
-    const amount = pkg === 'silver' ? quote.silverFee : quote.goldTotal;
-    if (amount == null || amount === '') return res.status(409).json({ error: 'Pricing is not ready. Please contact our team.' });
-    const amountCents = Math.round(Number(amount) * 100);
-    if (!Number.isFinite(amountCents) || amountCents <= 0) {
-      console.error('Invalid authorization amount for', referenceId, amount);
-      return res.status(500).json({ error: 'Unable to start payment authorization right now.' });
+    const amountCents = computeAuthorizationAmountCents(quote, pkg);
+    if (amountCents == null) {
+      return res.status(409).json({ error: 'Pricing is not ready. Please contact our team.' });
     }
 
     const baseUrl = process.env.BOOKING_SITE_URL || 'https://www.roadamericatransport.com';
@@ -277,6 +275,7 @@ router.post('/api/create-checkout-session-by-token', async (req, res) => {
       stripePaymentIntentId: session.payment_intent || null,
       amountCents,
       currency: 'usd',
+      livemode: session.livemode,
     });
 
     res.json({ url: session.url });
