@@ -49,7 +49,7 @@ router.post('/hubspot-pricing', requireWebhookSecret, async (req, res) => {
 
     const { data: quote, error: fetchErr } = await supabase
       .from('quotes')
-      .select('id, reference_id, pricing_synced_at')
+      .select('id, reference_id, pricing_synced_at, pricing_status')
       .eq('reference_id', quoteNumber)
       .maybeSingle();
     if (fetchErr) throw fetchErr;
@@ -58,9 +58,20 @@ router.post('/hubspot-pricing', requireWebhookSecret, async (req, res) => {
     // Reject stale/duplicate/out-of-order automation runs: only apply this
     // update if it is strictly newer than whatever we last applied for this
     // quote. This is what stops an older "Approved" event that arrives late
-    // from clobbering a newer "Review Required" state.
+    // from clobbering a newer "Review Required" state. Pricing itself is
+    // NEVER re-applied here, regardless of what's in this request's body —
+    // that's the whole point of this guard.
     if (quote.pricing_synced_at && new Date(quote.pricing_synced_at).getTime() >= lastModified.getTime()) {
-      return res.status(200).json({ ok: true, applied: false, reason: 'stale_or_duplicate' });
+      // Still safe to hand back booking URLs on a duplicate, but only if
+      // the quote is ALREADY approved from whatever sync actually applied
+      // this pricing_synced_at value. The signed link encodes no pricing
+      // data (see bookingLinks.js) — regenerating it here trusts nothing
+      // from this (possibly stale) request body, only the quote's current,
+      // already-safely-set pricing_status. Never generated for anything
+      // other than a currently-approved quote.
+      const alreadyApproved = safe(quote.pricing_status).toLowerCase() === 'approved';
+      const bookingUrls = alreadyApproved ? generateBookingUrls(quote.reference_id) : {};
+      return res.status(200).json({ ok: true, applied: false, reason: 'stale_or_duplicate', ...bookingUrls });
     }
 
     const cdStatusRaw = safe(body.cd_pricing_status);
