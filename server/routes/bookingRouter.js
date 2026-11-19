@@ -247,7 +247,14 @@ router.post('/api/create-checkout-session-by-token', async (req, res) => {
     const stripe = getStripeClient();
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
-      payment_method_types: ['card'],
+      // payment_method_types is no longer accepted on Checkout Session
+      // creation for this account — Stripe rejects it with a 400
+      // ("Payment methods are now managed from your Dashboard settings").
+      // Omitting it lets Stripe use whatever's enabled in Settings ->
+      // Payment methods instead. Stripe itself automatically excludes any
+      // enabled method that doesn't support capture_method: 'manual' from
+      // a given session, so this is safe without re-adding the parameter —
+      // but see the deployment report for what to verify in the Dashboard.
       client_reference_id: referenceId,
       metadata: { reference_id: referenceId, package: pkg },
       payment_intent_data: {
