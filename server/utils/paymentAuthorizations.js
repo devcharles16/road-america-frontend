@@ -40,12 +40,19 @@ export async function recordPendingAuthorization({
  * 'pending', and no-ops) and out-of-order delivery (if a cancellation was
  * somehow processed first, the row is 'canceled'/'failed', not 'pending',
  * so this also no-ops rather than resurrecting it back to 'authorized').
+ *
+ * stripePaymentIntentId must be the ID the caller already independently
+ * verified via stripe.paymentIntents.retrieve() (see stripeWebhookRouter.js)
+ * — persisted here so the row reflects the actual confirmed PaymentIntent,
+ * not whatever (possibly absent) value was captured at session-creation
+ * time.
  */
-export async function markAuthorized(stripeCheckoutSessionId, { authorizedAt, expiresAtEstimate }) {
+export async function markAuthorized(stripeCheckoutSessionId, { stripePaymentIntentId, authorizedAt, expiresAtEstimate }) {
   const { data, error } = await supabase
     .from('payment_authorizations')
     .update({
       status: 'authorized',
+      stripe_payment_intent_id: stripePaymentIntentId,
       authorized_at: authorizedAt,
       expires_at_estimate: expiresAtEstimate,
       updated_at: new Date().toISOString(),

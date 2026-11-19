@@ -126,6 +126,7 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
         const authorizedAt = new Date();
         const expiresAtEstimate = new Date(authorizedAt.getTime() + SEVEN_DAYS_MS);
         const applied = await markAuthorized(session.id, {
+          stripePaymentIntentId: paymentIntentId,
           authorizedAt: authorizedAt.toISOString(),
           expiresAtEstimate: expiresAtEstimate.toISOString(),
         });
