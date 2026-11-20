@@ -5,6 +5,7 @@ import {
   sendNewBusinessInquiryAlert,
   sendBusinessInquiryConfirmationEmail,
 } from "../notifications/adminAlerts.js";
+import { resolveMaterialChangeReview } from "../utils/bookingDetails.js";
 
 
 const router = express.Router();
@@ -691,6 +692,119 @@ router.delete(
     } catch (err) {
       console.error("Reset booking selection error:", err);
       return res.status(500).json({ message: "Server error resetting booking selection" });
+    }
+  }
+);
+
+/**
+ * ADMIN ONLY: Resolve a material-change review flag on a guided booking's
+ * details. Calls resolve_material_change_review(), which locks the row,
+ * verifies expectedRevision still matches the row's current revision (the
+ * admin must be approving the exact state they reviewed, not whatever the
+ * row happens to be now — a stale approval is rejected, not silently
+ * applied), then atomically approves every material field currently on
+ * the row and writes a booking_audit_log entry in the same transaction.
+ * This does NOT clear pending_customer_confirmation — that requires the
+ * customer's own confirm_booking_revision() call. Employees only get read
+ * access per the access-level requirements; discrepancy resolution is an
+ * admin action.
+ * POST /api/admin/booking-details/:referenceId/resolve-review
+ * Body: { expectedRevision: number }
+ */
+router.post(
+  "/admin/booking-details/:referenceId/resolve-review",
+  requireAuth,
+  requireOneOf(["admin"]),
+  async (req, res) => {
+    try {
+      const referenceId = String(req.params.referenceId || "").trim().toUpperCase();
+      if (!/^RA-\d{5,12}$/i.test(referenceId)) {
+        return res.status(400).json({ message: "Invalid reference id." });
+      }
+
+      const expectedRevision = Number(req.body?.expectedRevision);
+      if (!Number.isInteger(expectedRevision) || expectedRevision < 1) {
+        return res.status(400).json({ message: "A valid expectedRevision is required." });
+      }
+
+      const outcome = await resolveMaterialChangeReview(referenceId, req.user?.id || null, expectedRevision);
+      if (!outcome.resolved) {
+        if (outcome.reason === "stale_revision") {
+          return res.status(409).json({
+            message: "This booking has changed since you reviewed it. Please reload and review the latest details before approving.",
+            currentRevision: outcome.currentRevision,
+          });
+        }
+        if (outcome.reason === "not_found") {
+          return res.status(404).json({ message: "No booking details found for that reference." });
+        }
+        return res.status(409).json({ message: "This booking is not currently awaiting review." });
+      }
+
+      return res.json({ ok: true, status: outcome.status });
+    } catch (err) {
+      console.error("Resolve booking-details review error:", err);
+      return res.status(500).json({ message: "Server error resolving review." });
+    }
+  }
+);
+
+/**
+ * ADMIN/EMPLOYEE: Full booking view by reference, for the admin dashboard's
+ * Booking Details section — quote, selected package, and booking details
+ * in one response, so the dashboard doesn't need direct Supabase access.
+ * Audit history is admin-only, per the access-level requirements (employees
+ * get everything needed for operational duties, not audit visibility).
+ * GET /api/admin/bookings/:referenceId
+ */
+router.get(
+  "/admin/bookings/:referenceId",
+  requireAuth,
+  requireOneOf(["admin", "employee"]),
+  async (req, res) => {
+    try {
+      const referenceId = String(req.params.referenceId || "").trim().toUpperCase();
+      if (!/^RA-\d{5,12}$/i.test(referenceId)) {
+        return res.status(400).json({ message: "Invalid reference id." });
+      }
+
+      const { data: quote, error: quoteErr } = await supabase
+        .from("quotes")
+        .select("*")
+        .eq("reference_id", referenceId)
+        .maybeSingle();
+      if (quoteErr) throw quoteErr;
+      if (!quote) return res.status(404).json({ message: "No quote found for that reference." });
+
+      const { data: selection, error: selectionErr } = await supabase
+        .from("booking_selections")
+        .select("package, created_at")
+        .eq("reference_id", referenceId)
+        .maybeSingle();
+      if (selectionErr) throw selectionErr;
+
+      const { data: details, error: detailsErr } = await supabase
+        .from("booking_details")
+        .select("*")
+        .eq("reference_id", referenceId)
+        .maybeSingle();
+      if (detailsErr) throw detailsErr;
+
+      let auditLog = null;
+      if (req.userRole === "admin") {
+        const { data: log, error: logErr } = await supabase
+          .from("booking_audit_log")
+          .select("action, performed_by, performed_at, details")
+          .eq("reference_id", referenceId)
+          .order("performed_at", { ascending: false });
+        if (logErr) throw logErr;
+        auditLog = log;
+      }
+
+      return res.json({ quote, selection: selection || null, details: details || null, auditLog });
+    } catch (err) {
+      console.error("Admin booking lookup error:", err);
+      return res.status(500).json({ message: "Server error retrieving booking." });
     }
   }
 );

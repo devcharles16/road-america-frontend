@@ -17,6 +17,10 @@ import {
   getAuthorizationBySession,
   applyTerminalStatus,
 } from '../utils/paymentAuthorizations.js';
+import {
+  lockBookingDetailsForAuthorizedPayment,
+  unlockBookingDetailsAfterAuthorizationLoss,
+} from '../utils/bookingDetails.js';
 
 const router = express.Router();
 
@@ -135,6 +139,19 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
           // was no longer 'pending' for some other reason — both are safe
           // no-ops, not an error.
           console.log(`checkout.session.completed for ${session.id} did not change any row (already applied, or no matching pending row).`);
+          break;
+        }
+
+        // Locks the approved pickup/delivery details now that payment is
+        // authorized — see lockBookingDetailsForAuthorizedPayment for why
+        // this is what makes them immutable going forward. Logged, not
+        // thrown: payment_authorizations is already the source of truth
+        // for the authorization itself, and must not be rolled back or
+        // retried over a failure in this separate, non-critical table.
+        try {
+          await lockBookingDetailsForAuthorizedPayment(referenceId);
+        } catch (lockErr) {
+          console.error(`Failed to lock booking_details for ${referenceId} after authorization:`, lockErr);
         }
         break;
       }
@@ -203,11 +220,28 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
 
         const reason = paymentIntent.cancellation_reason || null;
         if (existing.status === 'authorized') {
-          await applyTerminalStatus(existing.id, 'authorized', {
+          const applied = await applyTerminalStatus(existing.id, 'authorized', {
             status: reason === 'automatic' ? 'expired' : 'canceled',
             reason,
             at: new Date().toISOString(),
           });
+
+          // A real authorization was just lost — reopen booking_details
+          // for a new payment attempt. metadata.reference_id is set on the
+          // PaymentIntent at session creation (bookingRouter.js), so it's
+          // available directly on this event without an extra lookup.
+          if (applied) {
+            const referenceId = paymentIntent.metadata?.reference_id;
+            if (referenceId) {
+              try {
+                await unlockBookingDetailsAfterAuthorizationLoss(referenceId);
+              } catch (unlockErr) {
+                console.error(`Failed to unlock booking_details for ${referenceId} after authorization loss:`, unlockErr);
+              }
+            } else {
+              console.error(`payment_intent.canceled for ${paymentIntent.id} has no metadata.reference_id — cannot unlock booking_details.`);
+            }
+          }
         } else if (existing.status === 'pending') {
           await applyTerminalStatus(existing.id, 'pending', {
             status: 'failed',

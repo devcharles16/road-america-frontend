@@ -5,6 +5,7 @@ import Header from "../components/Header";
 const adminNavItems = [
   { label: "Dashboard", to: "/admin" },
   { label: "Shipments", to: "/admin/shipments" },
+  { label: "Bookings", to: "/admin/bookings" },
   { label: "Blog Articles", to: "/admin/blog" },
   { label: "Banner", to: "/admin/banner" },
   { label: "Users", to: "/admin/users" },

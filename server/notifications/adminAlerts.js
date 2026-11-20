@@ -407,6 +407,55 @@ export async function sendNewBusinessInquiryAlert(payload) {
 }
 
 
+// Staff alert for a guided-booking-details submission whose pickup/delivery
+// city or state no longer matches the baseline (original quote, or the
+// last-saved booking details) — flags that Central Dispatch pricing may
+// need re-evaluation before this quote can proceed to payment.
+export async function sendRouteChangeReviewAlert({ referenceId, pickup, delivery }) {
+  const adminEmail = process.env.ADMIN_ALERT_EMAIL;
+  if (!adminEmail) {
+    console.error("ADMIN_ALERT_EMAIL is not set.");
+    return { success: false, error: "ADMIN_ALERT_EMAIL not configured" };
+  }
+
+  const subject = `⚠️ Route change needs review — ${referenceId}`;
+  const html = `
+    <!doctype html>
+    <html>
+      <head><meta charset="utf-8" /></head>
+      <body style="margin:0; padding:0; background-color:#f4f4f5;">
+        <div style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background-color:#f4f4f5; padding:20px;">
+          <div style="max-width:600px; margin:0 auto; background-color:#ffffff; border:1px solid #e5e7eb; border-radius:8px; padding:20px;">
+            <h2 style="margin-top:0; color:#111827;">Route change requires review</h2>
+            <p style="color:#374151;">
+              A guided-booking submission for <strong>${referenceId}</strong> has a pickup or
+              delivery city/state that no longer matches what was priced. This quote has been
+              placed in review and will not be eligible for payment authorization until a
+              Road America team member resolves it in HubSpot/Central Dispatch and clears the
+              review flag.
+            </p>
+            <table style="border-collapse:collapse; font-size:14px; width:100%; background-color:#ffffff;">
+              <tbody>
+                <tr>
+                  <td style="padding:4px 8px; font-weight:600; color:#374151;">New Pickup:</td>
+                  <td style="padding:4px 8px; color:#111827;">${pickup || "-"}</td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 8px; font-weight:600; color:#374151;">New Delivery:</td>
+                  <td style="padding:4px 8px; color:#111827;">${delivery || "-"}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </body>
+    </html>
+  `;
+
+  return await sendEmail({ to: adminEmail, subject, html });
+}
+
+
 // Customer-facing confirmation for the B2B business inquiry form
 export async function sendBusinessInquiryConfirmationEmail(payload) {
   const {

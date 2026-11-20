@@ -29,6 +29,7 @@ import AdminBlogPage from "./pages/AdminBlogPage";
 import AdminUsersPage from "./pages/AdminUsersPage";
 import PostLoginRedirectPage from "./pages/PostLoginRedirectPage";
 import AdminQuotesPage from "./pages/AdminQuotesPage";
+import AdminBookingDetailsPage from "./pages/AdminBookingDetailsPage";
 import RequireRoles from "./routes/RequireRoles";
 import LandingPage from "./pages/LandingPage";
 import GlobalBanner from "./components/GlobalBanner";
@@ -107,6 +108,7 @@ function App() {
           <Route path="/admin/*" element={<AdminLayout />}>
             <Route index element={<AdminDashboardPage />} />
             <Route path="quotes" element={<AdminQuotesPage />} />
+            <Route path="bookings" element={<AdminBookingDetailsPage />} />
             <Route path="shipments" element={<AdminShipmentsPage />} />
             <Route path="blog" element={<AdminBlogPage />} />
             <Route path="banner" element={<AdminBannerPage />} />

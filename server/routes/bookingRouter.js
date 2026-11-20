@@ -7,6 +7,8 @@ import { syncSelectedPackageToHubspot } from '../utils/hubspotTickets.js';
 import { getStripeClient } from '../utils/stripeClient.js';
 import { hasActiveAuthorization, recordPendingAuthorization } from '../utils/paymentAuthorizations.js';
 import { computeAuthorizationAmountCents } from '../utils/packagePricing.js';
+import { validateBookingDetails, upsertBookingDetails, confirmBookingRevision } from '../utils/bookingDetails.js';
+import { sendRouteChangeReviewAlert } from '../notifications/adminAlerts.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const router = express.Router();
@@ -206,9 +208,152 @@ router.post('/api/confirm', async (req, res) => {
   }
 });
 
+async function hasConfirmedSelection(referenceId) {
+  const { data, error } = await supabase
+    .from('booking_selections')
+    .select('package')
+    .eq('reference_id', referenceId)
+    .maybeSingle();
+  if (error) throw error;
+  return !!data;
+}
+
+// Guided booking details: pickup/delivery address, contacts, vehicle
+// availability, terms acceptance. Token-only — no email-fallback path.
+// This step collects street addresses and phone numbers, which is more
+// sensitive than the existing package-confirmation step, so it does not
+// carry over the confirm/lookup routes' weaker email-fallback pattern.
+router.post('/api/submit-details-by-token', async (req, res) => {
+  try {
+    const result = verifyBookingToken(req.body?.token);
+    if (!result.valid) {
+      if (result.reason === 'expired') return res.status(401).json({ error: 'This booking link has expired.', expired: true });
+      return res.status(401).json({ error: 'This booking link is not valid.' });
+    }
+    const referenceId = result.referenceId;
+
+    const quote = await getQuote(referenceId);
+    if (!quote) return res.status(404).json({ error: 'We could not find that quote.' });
+    if (!isBookable(quote)) return res.status(409).json({ error: 'This quote requires review. Please contact our team.' });
+    if (!(await hasConfirmedSelection(referenceId))) {
+      return res.status(409).json({ error: 'Please select a package before continuing.' });
+    }
+
+    const validation = validateBookingDetails(req.body || {});
+    if (!validation.valid) return res.status(400).json({ error: validation.error });
+    const { fields } = validation;
+
+    // actorType/actorId are NOT read from req.body anywhere in this file —
+    // this customer-facing endpoint always writes as 'customer' (the
+    // upsertBookingDetails default below). An employee-assisted editing
+    // endpoint, when built, must derive actorType/actorId from the
+    // authenticated session, never from the request body.
+    const outcome = await upsertBookingDetails(referenceId, fields);
+
+    if (outcome.locked) {
+      return res.status(409).json({
+        error: 'Your booking details are finalized and can no longer be edited online. Please contact our team for any corrections.',
+        locked: true,
+      });
+    }
+
+    if (outcome.justEnteredReview) {
+      try {
+        await sendRouteChangeReviewAlert({
+          referenceId,
+          pickup: `${fields.pickupCity}, ${fields.pickupState}`,
+          delivery: `${fields.deliveryCity}, ${fields.deliveryState}`,
+        });
+      } catch (err) {
+        console.error('Material-change review alert failed for', referenceId, err);
+      }
+    }
+
+    // Both halves are required: status alone doesn't prove the latest
+    // revision was ever confirmed, and pendingCustomerConfirmation alone
+    // doesn't prove staff approved it. See booking_details_setup.sql.
+    const readyForPayment = outcome.status === 'ready_for_payment' && !outcome.pendingCustomerConfirmation;
+
+    return res.json({
+      ok: true,
+      status: outcome.status,
+      readyForPayment,
+      reviewRequired: outcome.status === 'review_required',
+      pendingCustomerConfirmation: outcome.pendingCustomerConfirmation,
+      revision: outcome.revision,
+    });
+  } catch (err) {
+    console.error('Booking details submission error', err);
+    res.status(500).json({ error: 'We could not save your booking details right now.' });
+  }
+});
+
+// Confirms a specific revision of this booking's details, clearing
+// pending_customer_confirmation only if the revision named still matches
+// what's currently on the row. Token-only, same reasoning as the submit
+// endpoint.
+router.post('/api/confirm-revision-by-token', async (req, res) => {
+  try {
+    const result = verifyBookingToken(req.body?.token);
+    if (!result.valid) {
+      if (result.reason === 'expired') return res.status(401).json({ error: 'This booking link has expired.', expired: true });
+      return res.status(401).json({ error: 'This booking link is not valid.' });
+    }
+
+    const revision = Number(req.body?.revision);
+    if (!Number.isInteger(revision) || revision < 1) {
+      return res.status(400).json({ error: 'A valid revision number is required.' });
+    }
+
+    const outcome = await confirmBookingRevision(result.referenceId, revision);
+    if (!outcome.confirmed) {
+      if (outcome.reason === 'stale_revision') {
+        return res.status(409).json({
+          error: 'Your booking details have changed since you last reviewed them. Please review the latest version before confirming.',
+          currentRevision: outcome.currentRevision,
+        });
+      }
+      return res.status(404).json({ error: 'We could not find that booking.' });
+    }
+
+    return res.json({ ok: true, confirmedRevision: outcome.currentRevision });
+  } catch (err) {
+    console.error('Booking revision confirmation error', err);
+    res.status(500).json({ error: 'We could not confirm your booking details right now.' });
+  }
+});
+
+// Prefill/resume support: returns the previously-saved booking details, if
+// any, for this token's reference — including status and
+// pending_customer_confirmation, so the client can decide whether to
+// re-show the form, jump straight to payment, or show a review-pending
+// banner, instead of always starting from a blank form. Token-only.
+router.post('/api/booking-details-by-token', async (req, res) => {
+  try {
+    const result = verifyBookingToken(req.body?.token);
+    if (!result.valid) {
+      if (result.reason === 'expired') return res.status(401).json({ error: 'This booking link has expired.', expired: true });
+      return res.status(401).json({ error: 'This booking link is not valid.' });
+    }
+
+    const { data, error } = await supabase
+      .from('booking_details')
+      .select('pickup_address, pickup_unit, pickup_city, pickup_state, pickup_zip, pickup_contact_name, pickup_contact_phone, delivery_address, delivery_unit, delivery_city, delivery_state, delivery_zip, delivery_contact_name, delivery_contact_phone, vehicle_available_date, special_instructions, status, revision, pending_customer_confirmation')
+      .eq('reference_id', result.referenceId)
+      .maybeSingle();
+    if (error) throw error;
+
+    res.json({ details: data || null });
+  } catch (err) {
+    console.error('Booking details lookup error', err);
+    res.status(500).json({ error: 'Unable to retrieve your booking details right now.' });
+  }
+});
+
 // Creates a Stripe Checkout Session (manual capture — an authorization
 // hold, never an immediate charge) for the package already confirmed in
-// booking_selections. The amount and package are both read server-side
+// booking_selections, and the guided booking details already confirmed as
+// ready for payment. The amount and package are both read server-side
 // from Supabase, never from the request body — req.body.package, if a
 // client ever sent one, is never consulted anywhere in this handler.
 router.post('/api/create-checkout-session-by-token', async (req, res) => {
@@ -232,6 +377,22 @@ router.post('/api/create-checkout-session-by-token', async (req, res) => {
     if (selectionErr) throw selectionErr;
     if (!selection) return res.status(409).json({ error: 'Please select a package before continuing to payment.' });
     const pkg = selection.package;
+
+    // Guided booking details (pickup/delivery address, contacts,
+    // availability, terms) must be confirmed and clear of any pending
+    // material-change review before Stripe is ever reached. This is the
+    // one new gate on the existing, already-verified Stripe flow — it
+    // does not change amount computation, session creation, or webhook
+    // handling for a reference that already passes it.
+    const { data: details, error: detailsErr } = await supabase
+      .from('booking_details')
+      .select('status, pending_customer_confirmation')
+      .eq('reference_id', referenceId)
+      .maybeSingle();
+    if (detailsErr) throw detailsErr;
+    if (!details || details.status !== 'ready_for_payment' || details.pending_customer_confirmation) {
+      return res.status(409).json({ error: 'Please complete your pickup and delivery details before continuing to payment.' });
+    }
 
     if (await hasActiveAuthorization(referenceId)) {
       return res.status(409).json({ error: 'This booking has already been authorized for payment.' });
