@@ -141,7 +141,7 @@ begin
       and tc.table_name = 'booking_details'
       and tc.constraint_type = 'UNIQUE'
     group by tc.constraint_name
-    having array_agg(kcu.column_name) = array['reference_id']
+    having array_agg(kcu.column_name::text) = array['reference_id']::text[]
   ) then
     raise exception 'public.booking_details exists but has no UNIQUE constraint on (reference_id) alone. This likely means an incompatible table already exists under this name — resolve that before rerunning this migration.';
   end if;
