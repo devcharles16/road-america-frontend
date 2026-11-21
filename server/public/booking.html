@@ -225,12 +225,16 @@
    if (!r.ok) return;
    if (data.details) {
     $('confirm').textContent=`${title} package confirmed`;$('confirm').disabled=true;
-    revealDetailsStep(!returningFromSuccess);
+    // Resume paths (page load, not a click) never auto-scroll — the
+    // customer should land at the top of the page (summary + pricing)
+    // and choose to scroll down themselves. Only an active confirm click
+    // triggers the scroll (see the 'confirm' click handler below).
+    revealDetailsStep(false);
     fillDetailsForm(data.details, { fromReturn: returningFromSuccess });
    } else if (data.confirmedPackage === pkg) {
     $('confirm').textContent=`${title} package confirmed`;$('confirm').disabled=true;
     msg(`${title} package confirmed! You're almost done. Please complete the pickup and delivery details form below to continue to secure payment authorization.`,true);
-    revealDetailsStep(true);
+    revealDetailsStep(false);
    }
   } catch (err) { /* best-effort resume; a fresh "Confirm selection" is still available */ }
  }
