@@ -14,14 +14,75 @@
 import supabase from '../supabaseClient.js';
 
 const ZIP_RE = /^\d{5}(-\d{4})?$/;
-const PHONE_DIGITS_MIN = 10;
-const PHONE_DIGITS_MAX = 15;
+// NANP decimal form: optional leading country code 1, then area code and
+// exchange code, neither of which may start with 0 or 1 in a real US
+// number. Deliberately stricter than "10-15 digits" — this is "valid U.S.
+// format", not "plausible length for some country".
+const US_PHONE_RE = /^[2-9]\d{2}[2-9]\d{6}$/;
 
 const safe = s => String(s ?? '').trim();
 
 function isValidPhone(value) {
-  const digits = safe(value).replace(/\D/g, '');
-  return digits.length >= PHONE_DIGITS_MIN && digits.length <= PHONE_DIGITS_MAX;
+  let digits = safe(value).replace(/\D/g, '');
+  if (digits.length === 11 && digits.startsWith('1')) digits = digits.slice(1);
+  return US_PHONE_RE.test(digits);
+}
+
+// Placeholder text a customer should never actually submit as their real
+// information — kept in sync with the <input placeholder="..."> values in
+// booking.html. The browser's placeholder attribute is never sent as a
+// field's value in ordinary use, so this exists only as a backend-enforced
+// backstop against autofill, copy-paste, or a client that skips the UI
+// entirely; the frontend's own looksLikePlaceholder() check is the same
+// list and only a convenience, not the security boundary.
+const PLACEHOLDER_VALUES = new Set([
+  'e.g., 123 main street',
+  'apt, suite, or unit #',
+  '5-digit zip code',
+  'first and last name',
+  '(555) 555-0123',
+  'e.g., gated community, call before arrival',
+]);
+const PLACEHOLDER_GUARDED_FIELDS = [
+  'pickupAddress', 'pickupUnit', 'pickupContactName', 'pickupContactPhone',
+  'deliveryAddress', 'deliveryUnit', 'deliveryContactName', 'deliveryContactPhone',
+  'specialInstructions',
+];
+
+// Coarse ZIP3-prefix -> state sanity check, not an authoritative database.
+// USPS allocates 3-digit ZIP prefixes to states in large, mostly
+// contiguous blocks; this catches an obviously wrong ZIP (e.g. a Texas ZIP
+// entered for a Miami, FL address) without needing a full ZIP/city/state
+// dataset. Numbers are written without leading zeros (039 -> 39) since
+// leading-zero numeric literals are best avoided in JS; matching is done
+// against parseInt(zip.slice(0,3)), which parses "039" as 39 the same way.
+const ZIP3_RANGES_BY_STATE = {
+  AL: [[350, 369]], AK: [[995, 999]], AZ: [[850, 865]], AR: [[716, 729]],
+  CA: [[900, 961]], CO: [[800, 816]], CT: [[60, 69]], DE: [[197, 199]],
+  DC: [[200, 205]], FL: [[320, 349]], GA: [[300, 319], [398, 399]], HI: [[967, 968]],
+  ID: [[832, 838]], IL: [[600, 629]], IN: [[460, 479]], IA: [[500, 528]],
+  KS: [[660, 679]], KY: [[400, 427]], LA: [[700, 715]], ME: [[39, 49]],
+  MD: [[206, 219]], MA: [[10, 27], [55, 55]], MI: [[480, 499]], MN: [[550, 567]],
+  MS: [[386, 397]], MO: [[630, 658]], MT: [[590, 599]], NE: [[680, 693]],
+  NV: [[889, 898]], NH: [[30, 38]], NJ: [[70, 89]], NM: [[870, 884]],
+  NY: [[100, 149]], NC: [[270, 289]], ND: [[580, 588]], OH: [[430, 459]],
+  OK: [[730, 749]], OR: [[970, 979]], PA: [[150, 196]], RI: [[28, 29]],
+  SC: [[290, 299]], SD: [[570, 577]], TN: [[370, 385]], TX: [[750, 799], [885, 885]],
+  UT: [[840, 847]], VT: [[50, 59]], VA: [[201, 201], [220, 246]], WA: [[980, 994]],
+  WV: [[247, 268]], WI: [[530, 549]], WY: [[820, 831]],
+  PR: [[6, 9]], VI: [[8, 8]], GU: [[969, 969]], AS: [[967, 969]], MP: [[969, 969]],
+  AE: [[90, 98]], AP: [[962, 966]],
+};
+
+// Unrecognized state codes (a typo, an uncommon military designation, etc.)
+// fail open rather than blocking the customer outright — this table isn't
+// exhaustive, and ZIP_RE above already enforces the basic 5-digit shape.
+function isZipConsistentWithState(zip, state) {
+  const ranges = ZIP3_RANGES_BY_STATE[safe(state).toUpperCase()];
+  if (!ranges) return true;
+  const prefix = parseInt(safe(zip).slice(0, 3), 10);
+  if (Number.isNaN(prefix)) return false;
+  return ranges.some(([lo, hi]) => prefix >= lo && prefix <= hi);
 }
 
 function isValidFutureOrTodayDate(value) {
@@ -58,6 +119,13 @@ export function validateBookingDetails(body) {
     termsVersion: safe(body.termsVersion),
   };
 
+  for (const key of PLACEHOLDER_GUARDED_FIELDS) {
+    const v = fields[key];
+    if (v && PLACEHOLDER_VALUES.has(v.toLowerCase())) {
+      return { valid: false, error: `${key} looks like the example placeholder text, not your actual information.` };
+    }
+  }
+
   const requiredText = [
     'pickupAddress', 'pickupCity', 'pickupState', 'pickupContactName',
     'deliveryAddress', 'deliveryCity', 'deliveryState', 'deliveryContactName',
@@ -70,8 +138,15 @@ export function validateBookingDetails(body) {
   if (!ZIP_RE.test(fields.pickupZip)) return { valid: false, error: 'pickupZip is not a valid ZIP code.' };
   if (!ZIP_RE.test(fields.deliveryZip)) return { valid: false, error: 'deliveryZip is not a valid ZIP code.' };
 
-  if (!isValidPhone(fields.pickupContactPhone)) return { valid: false, error: 'pickupContactPhone is not a valid phone number.' };
-  if (!isValidPhone(fields.deliveryContactPhone)) return { valid: false, error: 'deliveryContactPhone is not a valid phone number.' };
+  if (!isZipConsistentWithState(fields.pickupZip, fields.pickupState)) {
+    return { valid: false, error: 'pickupZip does not match the selected pickup state.' };
+  }
+  if (!isZipConsistentWithState(fields.deliveryZip, fields.deliveryState)) {
+    return { valid: false, error: 'deliveryZip does not match the selected delivery state.' };
+  }
+
+  if (!isValidPhone(fields.pickupContactPhone)) return { valid: false, error: 'pickupContactPhone is not a valid U.S. phone number.' };
+  if (!isValidPhone(fields.deliveryContactPhone)) return { valid: false, error: 'deliveryContactPhone is not a valid U.S. phone number.' };
 
   if (!isValidFutureOrTodayDate(fields.vehicleAvailableDate)) {
     return { valid: false, error: 'vehicleAvailableDate must be a valid date, today or later.' };

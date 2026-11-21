@@ -327,7 +327,13 @@ router.post('/api/confirm-revision-by-token', async (req, res) => {
 // any, for this token's reference — including status and
 // pending_customer_confirmation, so the client can decide whether to
 // re-show the form, jump straight to payment, or show a review-pending
-// banner, instead of always starting from a blank form. Token-only.
+// banner, instead of always starting from a blank form. Also reports the
+// confirmed package (if any) even when no booking_details row exists yet —
+// a reference can have a confirmed booking_selections row with nothing in
+// booking_details (e.g. confirmed before this step existed, or an earlier
+// visit that didn't get that far), and the client needs that to resume
+// straight into the details form instead of re-showing "Confirm selection".
+// Token-only.
 router.post('/api/booking-details-by-token', async (req, res) => {
   try {
     const result = verifyBookingToken(req.body?.token);
@@ -336,14 +342,18 @@ router.post('/api/booking-details-by-token', async (req, res) => {
       return res.status(401).json({ error: 'This booking link is not valid.' });
     }
 
-    const { data, error } = await supabase
-      .from('booking_details')
-      .select('pickup_address, pickup_unit, pickup_city, pickup_state, pickup_zip, pickup_contact_name, pickup_contact_phone, delivery_address, delivery_unit, delivery_city, delivery_state, delivery_zip, delivery_contact_name, delivery_contact_phone, vehicle_available_date, special_instructions, status, revision, pending_customer_confirmation')
-      .eq('reference_id', result.referenceId)
-      .maybeSingle();
-    if (error) throw error;
+    const [detailsResult, selectionResult] = await Promise.all([
+      supabase
+        .from('booking_details')
+        .select('pickup_address, pickup_unit, pickup_city, pickup_state, pickup_zip, pickup_contact_name, pickup_contact_phone, delivery_address, delivery_unit, delivery_city, delivery_state, delivery_zip, delivery_contact_name, delivery_contact_phone, vehicle_available_date, special_instructions, status, revision, pending_customer_confirmation')
+        .eq('reference_id', result.referenceId)
+        .maybeSingle(),
+      supabase.from('booking_selections').select('package').eq('reference_id', result.referenceId).maybeSingle(),
+    ]);
+    if (detailsResult.error) throw detailsResult.error;
+    if (selectionResult.error) throw selectionResult.error;
 
-    res.json({ details: data || null });
+    res.json({ details: detailsResult.data || null, confirmedPackage: selectionResult.data?.package || null });
   } catch (err) {
     console.error('Booking details lookup error', err);
     res.status(500).json({ error: 'Unable to retrieve your booking details right now.' });

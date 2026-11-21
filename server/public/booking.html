@@ -17,21 +17,22 @@
 <p class="muted" style="text-align:center">You will receive a confirmation of your selection.</p></div></section>
 <section id="detailsStep">
 <div class="card"><div id="detailsBanner"></div>
+<h2 id="detailsHeading">Complete your pickup &amp; delivery details</h2>
 <div class="section-title">Pickup details</div>
-<div class="grid2"><div><label for="pickupAddress">Street address</label><input id="pickupAddress" required autocomplete="address-line1"></div><div><label for="pickupUnit">Apt / suite / unit (optional)</label><input id="pickupUnit" autocomplete="address-line2"></div></div>
+<div class="grid2"><div><label for="pickupAddress">Street address</label><input id="pickupAddress" required autocomplete="address-line1" placeholder="e.g., 123 Main Street"></div><div><label for="pickupUnit">Apt / suite / unit (optional)</label><input id="pickupUnit" autocomplete="address-line2" placeholder="Apt, Suite, or Unit #"></div></div>
 <div class="grid2"><div><label for="pickupCity">City</label><input id="pickupCity" required autocomplete="address-level2"></div><div><label for="pickupState">State</label><input id="pickupState" required autocomplete="address-level1" maxlength="2" placeholder="FL"></div></div>
-<label for="pickupZip">ZIP code</label><input id="pickupZip" required autocomplete="postal-code" inputmode="numeric" placeholder="33101">
-<div class="grid2"><div><label for="pickupContactName">Pickup contact name</label><input id="pickupContactName" required autocomplete="name"></div><div><label for="pickupContactPhone">Pickup contact phone</label><input id="pickupContactPhone" required type="tel" autocomplete="tel" placeholder="(305) 555-0123"></div></div>
+<label for="pickupZip">ZIP code</label><input id="pickupZip" required autocomplete="postal-code" inputmode="numeric" placeholder="5-digit ZIP code">
+<div class="grid2"><div><label for="pickupContactName">Pickup contact name</label><input id="pickupContactName" required autocomplete="name" placeholder="First and last name"></div><div><label for="pickupContactPhone">Pickup contact phone</label><input id="pickupContactPhone" required type="tel" autocomplete="tel" placeholder="(555) 555-0123"></div></div>
 
 <div class="section-title">Delivery details</div>
-<div class="grid2"><div><label for="deliveryAddress">Street address</label><input id="deliveryAddress" required autocomplete="address-line1"></div><div><label for="deliveryUnit">Apt / suite / unit (optional)</label><input id="deliveryUnit" autocomplete="address-line2"></div></div>
+<div class="grid2"><div><label for="deliveryAddress">Street address</label><input id="deliveryAddress" required autocomplete="address-line1" placeholder="e.g., 123 Main Street"></div><div><label for="deliveryUnit">Apt / suite / unit (optional)</label><input id="deliveryUnit" autocomplete="address-line2" placeholder="Apt, Suite, or Unit #"></div></div>
 <div class="grid2"><div><label for="deliveryCity">City</label><input id="deliveryCity" required autocomplete="address-level2"></div><div><label for="deliveryState">State</label><input id="deliveryState" required autocomplete="address-level1" maxlength="2" placeholder="TX"></div></div>
-<label for="deliveryZip">ZIP code</label><input id="deliveryZip" required autocomplete="postal-code" inputmode="numeric" placeholder="78701">
-<div class="grid2"><div><label for="deliveryContactName">Delivery contact name</label><input id="deliveryContactName" required autocomplete="name"></div><div><label for="deliveryContactPhone">Delivery contact phone</label><input id="deliveryContactPhone" required type="tel" autocomplete="tel" placeholder="(512) 555-0199"></div></div>
+<label for="deliveryZip">ZIP code</label><input id="deliveryZip" required autocomplete="postal-code" inputmode="numeric" placeholder="5-digit ZIP code">
+<div class="grid2"><div><label for="deliveryContactName">Delivery contact name</label><input id="deliveryContactName" required autocomplete="name" placeholder="First and last name"></div><div><label for="deliveryContactPhone">Delivery contact phone</label><input id="deliveryContactPhone" required type="tel" autocomplete="tel" placeholder="(555) 555-0123"></div></div>
 
 <div class="section-title">Vehicle availability &amp; instructions</div>
-<label for="vehicleAvailableDate">Earliest date your vehicle is available for pickup</label><input id="vehicleAvailableDate" required type="date">
-<label for="specialInstructions">Special instructions or transporter access restrictions (optional)</label><textarea id="specialInstructions" placeholder="e.g. gated community, call ahead; low-clearance driveway; no large trucks past the mailbox"></textarea>
+<label for="vehicleAvailableDate">Earliest date your vehicle is available for pickup</label><input id="vehicleAvailableDate" required type="date" placeholder="MM/DD/YYYY">
+<label for="specialInstructions">Special instructions or transporter access restrictions (optional)</label><textarea id="specialInstructions" placeholder="e.g., Gated community, call before arrival"></textarea>
 
 <div class="section-title">Review &amp; terms</div>
 <p class="muted">By submitting, you confirm the pickup and delivery details above are accurate to the best of your knowledge.</p>
@@ -54,6 +55,19 @@
  $('ref').value = params.get('quote') || '';
  $('refTop').textContent = $('ref').value || '—';
  $('switch').href = `/book/${pkg === 'gold' ? 'silver' : 'gold'}${location.search}`;
+ // Native-UI guard against picking a past date; the server independently
+ // re-validates this (see bookingDetails.js's isValidFutureOrTodayDate),
+ // since a client-side min= attribute is only a convenience, not security.
+ $('vehicleAvailableDate').min = new Date().toISOString().slice(0, 10);
+ // Placeholder text is never submitted as a real value in normal use, but
+ // this is cheap insurance against autofill or a pasted literal example
+ // slipping through — the server enforces the same list authoritatively
+ // (see PLACEHOLDER_VALUES in bookingDetails.js).
+ const PLACEHOLDER_VALUES = new Set([
+  'e.g., 123 main street', 'apt, suite, or unit #', '5-digit zip code',
+  'first and last name', '(555) 555-0123', 'e.g., gated community, call before arrival',
+ ]);
+ const looksLikePlaceholder = v => PLACEHOLDER_VALUES.has(String(v || '').trim().toLowerCase());
  let verifiedEmail = '';
  let activeToken = '';
  function msg(s,ok=false){$('message').textContent=s;$('message').className=ok?'notice ok':'notice';$('message').style.display='block'}
@@ -105,13 +119,17 @@
      const body = activeToken ? {token:activeToken,package:pkg} : {reference:$('ref').value.trim().toUpperCase(),email:verifiedEmail,package:pkg};
      const endpoint = activeToken ? '/book/api/confirm-by-token' : '/book/api/confirm';
      const r=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const d=await r.json();if(!r.ok)throw Error(d.error||'Unable to confirm');
-     $('confirm').textContent='Selection received';
+     $('confirm').textContent=`${title} package confirmed`;
      // Payment authorization and the guided details step both require the
      // signed-link token — the email fallback path can confirm a package
-     // but can't proceed any further.
+     // but can't proceed any further. The backend's own message (d.message)
+     // is written for the "our team will follow up" world before this form
+     // existed, so the token path replaces it with wording that actually
+     // points at the next action, instead of implying the customer should
+     // stop and wait.
      if (activeToken) {
-      msg(d.message||'Your selection has been received.',true);
-      $('detailsStep').style.display='block';
+      msg(`${title} package confirmed! You're almost done. Please complete the pickup and delivery details form below to continue to secure payment authorization.`,true);
+      revealDetailsStep(true);
      } else {
       msg((d.message||'Your selection has been received.')+' To continue your booking, please use the original link we emailed you.',true);
      }
@@ -129,6 +147,15 @@
  }
  function showPayStep(){$('payStep').style.display='block'}
  function hidePayStep(){$('payStep').style.display='none'}
+
+ // Makes the next action unmissable: brings the form on screen instead of
+ // leaving the customer to scroll down and find it themselves. Suppressed
+ // during the post-Stripe-return poll (checkPaymentReturn owns the page's
+ // attention then via the top #message banner instead).
+ function revealDetailsStep(scroll) {
+  $('detailsStep').style.display = 'block';
+  if (scroll) requestAnimationFrame(() => $('detailsHeading').scrollIntoView({ behavior: 'smooth', block: 'start' }));
+ }
 
  // Reflects a booking_details status (from either a resume fetch or a
  // fresh submit response) into the banner, field lock state, and whether
@@ -150,7 +177,7 @@
    banner('Our team is reviewing the pickup or delivery location on this booking before it can proceed. You can still update the details below.');
    hidePayStep();
   } else if (status === 'ready_for_payment' && !pendingConfirmation) {
-   banner('Your booking details are on file and ready for the next step.', true);
+   banner('Your booking details are on file. Click "Proceed to secure payment authorization" below to continue.', true);
    showPayStep();
   } else {
    banner('Your booking details have been saved.', true);
@@ -180,20 +207,31 @@
  }
 
  // Runs right after a successful token lookup, before the customer clicks
- // anything. A booking_details row only ever exists once a package
- // selection has already been confirmed (enforced server-side), so its
- // presence alone proves this reference already completed that step on a
- // prior visit — this is what lets a returning or interrupted customer
- // skip straight back to where they left off instead of starting over.
+ // anything. Resumes a returning or interrupted customer straight into
+ // whichever step they left off at, instead of making them start over (or,
+ // worse, re-click "Confirm selection" into a dead end):
+ //  - a booking_details row exists -> jump straight to that step (its
+ //    status drives the banner/lock/pay-button state via applyStatusUI).
+ //  - no booking_details row, but booking_selections already has THIS
+ //    package confirmed (e.g. confirmed on a prior visit before this form
+ //    existed, or an earlier attempt that didn't reach the details step) ->
+ //    the package step is done; reveal the form to pick up from there.
+ //  - neither exists yet -> leave "Confirm selection" as the first step.
  async function syncDetailsState() {
   if (!activeToken) return;
   try {
    const r = await fetch('/book/api/booking-details-by-token',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:activeToken})});
    const data = await r.json();
-   if (!r.ok || !data.details) return;
-   $('confirm').textContent='Selection received';$('confirm').disabled=true;
-   $('detailsStep').style.display='block';
-   fillDetailsForm(data.details, { fromReturn: returningFromSuccess });
+   if (!r.ok) return;
+   if (data.details) {
+    $('confirm').textContent=`${title} package confirmed`;$('confirm').disabled=true;
+    revealDetailsStep(!returningFromSuccess);
+    fillDetailsForm(data.details, { fromReturn: returningFromSuccess });
+   } else if (data.confirmedPackage === pkg) {
+    $('confirm').textContent=`${title} package confirmed`;$('confirm').disabled=true;
+    msg(`${title} package confirmed! You're almost done. Please complete the pickup and delivery details form below to continue to secure payment authorization.`,true);
+    revealDetailsStep(true);
+   }
   } catch (err) { /* best-effort resume; a fresh "Confirm selection" is still available */ }
  }
 
@@ -203,6 +241,14 @@
   // Native browser validation (required/type=date/etc.) before we bother the server.
   const inputs = form.querySelectorAll('input[required],textarea');
   for (const el of inputs) { if (!el.checkValidity()) { el.reportValidity(); return; } }
+  for (const el of form.querySelectorAll('input,textarea')) {
+   if (looksLikePlaceholder(el.value)) {
+    el.setCustomValidity('Please replace the example text with your actual information.');
+    el.reportValidity();
+    el.setCustomValidity('');
+    return;
+   }
+  }
 
   $('detailsSubmit').disabled = true;
   banner('Saving your booking details…');
