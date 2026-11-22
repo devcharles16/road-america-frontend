@@ -121,6 +121,45 @@ export async function getAuthorizationBySession(stripeCheckoutSessionId) {
 }
 
 /**
+ * Pure selection logic for stripeWebhookRouter.js's duplicate-authorization
+ * defense: given every row currently 'authorized' for one reference_id,
+ * decides which one to keep (the earliest by authorized_at — the first
+ * authorization to actually land, regardless of the order rows happen to
+ * be passed in) and which are duplicates to cancel. Takes no dependency on
+ * Supabase or Stripe so it can be unit tested directly.
+ */
+export function selectDuplicateAuthorizations(authorizedRows) {
+  if (!authorizedRows || authorizedRows.length < 2) return { keep: authorizedRows?.[0] || null, duplicates: [] };
+  const sorted = [...authorizedRows].sort((a, b) => new Date(a.authorized_at) - new Date(b.authorized_at));
+  const [keep, ...duplicates] = sorted;
+  return { keep, duplicates };
+}
+
+/**
+ * Marks a row as a detected duplicate: it independently reached
+ * 'authorized', but another row for the same reference_id got there
+ * first. Guarded by WHERE status = 'authorized' so this is a safe no-op
+ * if a concurrent/retried delivery of the same detection already applied
+ * it (or moved it on some other way) — matches applyTerminalStatus's
+ * optimistic-concurrency reasoning. The caller is responsible for also
+ * canceling the underlying Stripe PaymentIntent (see
+ * stripeWebhookRouter.js) — this function only ever updates this table.
+ */
+export async function markDuplicateCanceled(id, reason) {
+  const { error } = await supabase
+    .from('payment_authorizations')
+    .update({
+      status: 'duplicate_canceled',
+      status_reason: reason,
+      canceled_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', id)
+    .eq('status', 'authorized');
+  if (error) throw error;
+}
+
+/**
  * Applies a terminal status transition, guarded by the exact prior status
  * the caller read (optimistic concurrency) — if the row has moved on since
  * (e.g. a concurrent webhook already resolved it), this is a safe no-op:

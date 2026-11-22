@@ -6,7 +6,7 @@ import { verifyBookingToken } from '../utils/bookingLinks.js';
 import { syncSelectedPackageToHubspot } from '../utils/hubspotTickets.js';
 import { getStripeClient } from '../utils/stripeClient.js';
 import { hasActiveAuthorization, recordPendingAuthorization } from '../utils/paymentAuthorizations.js';
-import { computeAuthorizationAmountCents } from '../utils/packagePricing.js';
+import { computeAuthorizationAmountCents, buildCheckoutIdempotencyKey } from '../utils/packagePricing.js';
 import { validateBookingDetails, upsertBookingDetails, confirmBookingRevision } from '../utils/bookingDetails.js';
 import { sendRouteChangeReviewAlert } from '../notifications/adminAlerts.js';
 
@@ -416,6 +416,12 @@ router.post('/api/create-checkout-session-by-token', async (req, res) => {
     const baseUrl = process.env.BOOKING_SITE_URL || 'https://www.roadamericatransport.com';
     const rawToken = req.body.token;
     const stripe = getStripeClient();
+
+    // See buildCheckoutIdempotencyKey for why this is deterministic rather
+    // than random. Stripe retains idempotency keys for 24h, matching this
+    // Checkout Session's own expiry window, so a later genuine retry (old
+    // session expired) correctly creates a fresh one.
+    const idempotencyKey = buildCheckoutIdempotencyKey({ referenceId, pkg, amountCents });
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
       // payment_method_types is no longer accepted on Checkout Session
@@ -444,17 +450,46 @@ router.post('/api/create-checkout-session-by-token', async (req, res) => {
       }],
       success_url: `${baseUrl}/book/${pkg}?token=${encodeURIComponent(rawToken)}&payment=success`,
       cancel_url: `${baseUrl}/book/${pkg}?token=${encodeURIComponent(rawToken)}&payment=canceled`,
-    });
+    }, { idempotencyKey });
 
-    await recordPendingAuthorization({
-      referenceId,
-      pkg,
-      stripeCheckoutSessionId: session.id,
-      stripePaymentIntentId: session.payment_intent || null,
-      amountCents,
-      currency: 'usd',
-      livemode: session.livemode,
-    });
+    try {
+      await recordPendingAuthorization({
+        referenceId,
+        pkg,
+        stripeCheckoutSessionId: session.id,
+        stripePaymentIntentId: session.payment_intent || null,
+        amountCents,
+        currency: 'usd',
+        livemode: session.livemode,
+      });
+    } catch (insertErr) {
+      // Two distinct conflicts are possible here, and only one of them is
+      // actually a problem:
+      //   - stripe_checkout_session_id already recorded: Stripe's own
+      //     idempotency dedup (see idempotencyKey above) returned the
+      //     identical, already-recorded session — the common double-
+      //     click/retry case. Not an error; the row already exists and
+      //     session.url is still correct to return as-is.
+      //   - payment_authorizations_active_reference_idx (see
+      //     payment_authorizations_dedupe.sql): a DIFFERENT active
+      //     (pending or authorized) attempt for this same reference
+      //     already exists. That means Stripe just created a genuinely
+      //     new, live, payable session for a booking that must only ever
+      //     have one active attempt at a time — since it was never
+      //     recorded, nothing else will ever reference it, so expire it
+      //     immediately rather than silently leaving an un-tracked,
+      //     payable session behind.
+      if (insertErr.code === '23505' && String(insertErr.message || '').includes('active_reference')) {
+        try {
+          await stripe.checkout.sessions.expire(session.id);
+        } catch (expireErr) {
+          console.error(`Failed to expire orphaned duplicate Checkout Session ${session.id} for ${referenceId}:`, expireErr);
+        }
+        return res.status(409).json({ error: 'A payment attempt for this booking is already in progress. Please wait a moment and try again.' });
+      }
+      if (insertErr.code !== '23505') throw insertErr;
+      // Else: conflict was on stripe_checkout_session_id — fine, fall through.
+    }
 
     res.json({ url: session.url });
   } catch (err) {

@@ -13,6 +13,8 @@ import { computeAuthorizationAmountCents } from '../utils/packagePricing.js';
 import {
   markAuthorized,
   markAmountMismatch,
+  markDuplicateCanceled,
+  selectDuplicateAuthorizations,
   getAuthorizationByPaymentIntent,
   getAuthorizationBySession,
   applyTerminalStatus,
@@ -140,6 +142,44 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
           // no-ops, not an error.
           console.log(`checkout.session.completed for ${session.id} did not change any row (already applied, or no matching pending row).`);
           break;
+        }
+
+        // Duplicate-authorization defense in depth: payment_authorizations_
+        // dedupe.sql's partial unique index (unique on reference_id WHERE
+        // status in ('pending','authorized')) should make it impossible
+        // for two rows for the same reference to both reach 'authorized',
+        // but this closes the gap for anything that predates that
+        // migration, or any other path that somehow still got here twice.
+        // Keep only the earliest-authorized row for this reference, and
+        // safely cancel (never capture) every later PaymentIntent.
+        const { data: authorizedRows, error: dupErr } = await supabase
+          .from('payment_authorizations')
+          .select('id, stripe_payment_intent_id, authorized_at')
+          .eq('reference_id', referenceId)
+          .eq('status', 'authorized');
+        if (dupErr) throw dupErr;
+
+        const { keep, duplicates } = selectDuplicateAuthorizations(authorizedRows);
+        for (const dup of duplicates) {
+          console.error(
+            `Duplicate authorization detected for ${referenceId}: canceling PaymentIntent ${dup.stripe_payment_intent_id} (row ${dup.id}), keeping the earliest authorization (row ${keep.id}).`
+          );
+          try {
+            await stripe.paymentIntents.cancel(dup.stripe_payment_intent_id);
+          } catch (cancelErr) {
+            console.error(
+              `Failed to cancel duplicate PaymentIntent ${dup.stripe_payment_intent_id} for ${referenceId} (it will still auto-expire in 7 days uncaptured if this cancel never succeeds):`,
+              cancelErr
+            );
+          }
+          try {
+            await markDuplicateCanceled(
+              dup.id,
+              `Automatically canceled: reference ${referenceId} already had an earlier authorization (row ${keep.id}).`
+            );
+          } catch (markErr) {
+            console.error(`Failed to mark duplicate row ${dup.id} as duplicate_canceled for ${referenceId}:`, markErr);
+          }
         }
 
         // Locks the approved pickup/delivery details now that payment is
