@@ -3,7 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import supabase from '../supabaseClient.js';
 import { verifyBookingToken } from '../utils/bookingLinks.js';
-import { syncSelectedPackageToHubspot } from '../utils/hubspotTickets.js';
+import { syncSelectedPackageToHubspot, syncBookingDetailsToHubspot } from '../utils/hubspotTickets.js';
 import { getStripeClient } from '../utils/stripeClient.js';
 import { hasActiveAuthorization, recordPendingAuthorization } from '../utils/paymentAuthorizations.js';
 import { computeAuthorizationAmountCents, buildCheckoutIdempotencyKey } from '../utils/packagePricing.js';
@@ -267,6 +267,17 @@ router.post('/api/submit-details-by-token', async (req, res) => {
       } catch (err) {
         console.error('Material-change review alert failed for', referenceId, err);
       }
+    }
+
+    // Pickup/Delivery POC, Earliest Pickup Date, Special Instructions
+    // only — Customer Card Hold Status is deliberately never touched
+    // here. It has exactly one pair of writers, the Stripe webhook's
+    // authorization/cancellation handlers, so this sync (which can be
+    // delayed or retried) can never overwrite a confirmed authorization.
+    try {
+      await syncBookingDetailsToHubspot(referenceId, fields);
+    } catch (err) {
+      console.error(`HubSpot booking-details sync failed for ${referenceId}:`, err.message);
     }
 
     // Both halves are required: status alone doesn't prove the latest

@@ -23,6 +23,7 @@ import {
   lockBookingDetailsForAuthorizedPayment,
   unlockBookingDetailsAfterAuthorizationLoss,
 } from '../utils/bookingDetails.js';
+import { syncCardHoldStatusToHubspot } from '../utils/hubspotTickets.js';
 
 const router = express.Router();
 
@@ -193,6 +194,10 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
         } catch (lockErr) {
           console.error(`Failed to lock booking_details for ${referenceId} after authorization:`, lockErr);
         }
+
+        // Employee-facing HubSpot display of the card hold. Never
+        // throws — see syncCardHoldStatusToHubspot.
+        await syncCardHoldStatusToHubspot(referenceId, 'Authorized');
         break;
       }
 
@@ -278,6 +283,11 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
               } catch (unlockErr) {
                 console.error(`Failed to unlock booking_details for ${referenceId} after authorization loss:`, unlockErr);
               }
+
+              // A real hold was just lost — make sure the employee-facing
+              // status reflects that rather than incorrectly staying
+              // "Authorized". Never throws.
+              await syncCardHoldStatusToHubspot(referenceId, 'Not Authorized');
             } else {
               console.error(`payment_intent.canceled for ${paymentIntent.id} has no metadata.reference_id — cannot unlock booking_details.`);
             }
