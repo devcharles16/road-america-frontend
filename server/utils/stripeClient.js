@@ -1,31 +1,37 @@
 // Thin wrapper so every caller gets the same configured client, plus an
 // explicit environment safeguard: STRIPE_ENVIRONMENT must be set to
 // 'sandbox' or 'live', and must AGREE with what STRIPE_SECRET_KEY's own
-// prefix says it is. A live key (sk_live_...) is refused unless
-// STRIPE_ENVIRONMENT is explicitly 'live' — so accidentally dropping a
-// live key into a sandbox deployment (or vice versa) fails loudly at
-// startup instead of silently processing real charges as if they were
-// sandbox test transactions.
+// prefix says it is. A live key (sk_live_... or rk_live_...) is refused
+// unless STRIPE_ENVIRONMENT is explicitly 'live' — so accidentally
+// dropping a live key into a sandbox deployment (or vice versa) fails
+// loudly at startup instead of silently processing real charges as if
+// they were sandbox test transactions. Both standard secret keys
+// (sk_...) and restricted keys (rk_...) are accepted identically — the
+// Stripe SDK itself treats them the same (just a string in the
+// Authorization header); actual permission enforcement for a restricted
+// key happens server-side on Stripe's end, independent of this check.
 import Stripe from 'stripe';
 
 let client = null;
 let cachedMode = null;
 
-export function getStripeClient() {
-  if (client) return client;
-
-  const secretKey = process.env.STRIPE_SECRET_KEY;
+/**
+ * Pure validation, extracted from getStripeClient() so it can be unit
+ * tested directly without constructing a real Stripe client or touching
+ * the module-level cache below. Throws on any violation; callers that
+ * want the actual client call getStripeClient() instead.
+ */
+export function validateStripeKeyEnvironment(secretKey, environment) {
   if (!secretKey) throw new Error('STRIPE_SECRET_KEY is not set');
 
-  const environment = process.env.STRIPE_ENVIRONMENT;
   if (environment !== 'sandbox' && environment !== 'live') {
     throw new Error("STRIPE_ENVIRONMENT must be set to 'sandbox' or 'live'");
   }
 
-  const keyLooksLive = secretKey.startsWith('sk_live_');
-  const keyLooksTest = secretKey.startsWith('sk_test_');
+  const keyLooksLive = secretKey.startsWith('sk_live_') || secretKey.startsWith('rk_live_');
+  const keyLooksTest = secretKey.startsWith('sk_test_') || secretKey.startsWith('rk_test_');
   if (!keyLooksLive && !keyLooksTest) {
-    throw new Error('STRIPE_SECRET_KEY does not look like a Stripe secret key (expected sk_test_... or sk_live_...)');
+    throw new Error('STRIPE_SECRET_KEY does not look like a Stripe secret key (expected sk_test_/rk_test_... or sk_live_/rk_live_...)');
   }
   if (keyLooksLive && environment !== 'live') {
     throw new Error("STRIPE_SECRET_KEY is a live key but STRIPE_ENVIRONMENT is not 'live' — refusing to start to avoid accidentally processing real charges.");
@@ -33,6 +39,14 @@ export function getStripeClient() {
   if (keyLooksTest && environment !== 'sandbox') {
     throw new Error("STRIPE_SECRET_KEY is a sandbox/test key but STRIPE_ENVIRONMENT is not 'sandbox' — refusing to start.");
   }
+}
+
+export function getStripeClient() {
+  if (client) return client;
+
+  const secretKey = process.env.STRIPE_SECRET_KEY;
+  const environment = process.env.STRIPE_ENVIRONMENT;
+  validateStripeKeyEnvironment(secretKey, environment);
 
   cachedMode = environment;
   client = new Stripe(secretKey);
