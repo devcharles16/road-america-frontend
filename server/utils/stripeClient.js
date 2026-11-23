@@ -43,3 +43,27 @@ export function getStripeClient() {
 export function getStripeEnvironment() {
   return cachedMode;
 }
+
+// Used by the capture flow (hubspotSyncRouter.js) to decide whether a
+// failed stripe.paymentIntents.capture() call means "Stripe definitely
+// did not process this" (safe to record as a clean failure) or "we don't
+// actually know what Stripe's server did" (never safe to assume either
+// way — must retrieve the PaymentIntent directly to find out). A
+// StripeConnectionError means the request may never have reached Stripe,
+// or may have reached it but the response was lost — genuinely ambiguous
+// either way. A StripeAPIError (Stripe's own 5xx) means Stripe itself
+// hit an error, which can likewise happen before or after the capture
+// was actually applied internally. Every other Stripe error type (an
+// invalid-request rejection, e.g. "already canceled", a rate limit which
+// means the request never started, etc.) is a certain, trustworthy
+// answer — no retrieve needed. An error with no `.type` at all (not a
+// Stripe SDK error — e.g. a raw network exception) is treated the same
+// as ambiguous, out of caution: better to double-check with Stripe than
+// to assume a failure that didn't happen.
+const AMBIGUOUS_STRIPE_ERROR_TYPES = new Set(['StripeConnectionError', 'StripeAPIError']);
+
+export function isAmbiguousStripeError(err) {
+  if (!err) return false;
+  if (!err.type) return true;
+  return AMBIGUOUS_STRIPE_ERROR_TYPES.has(err.type);
+}

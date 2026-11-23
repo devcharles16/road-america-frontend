@@ -6,12 +6,21 @@
 // function's comment for exactly how.
 import supabase from '../supabaseClient.js';
 
+// 'authorized' alone used to be the only active state. Now that capture
+// exists, 'capturing' (in flight), 'captured' (done — must never be
+// re-authorized), and 'capture_uncertain' (unresolved — must not be
+// re-authorized while the real outcome is still unknown) are active too.
+// Matches exactly what payment_authorizations_active_reference_idx
+// enforces at the database layer — this is the application-level mirror
+// of that same rule, not a separate decision.
+const ACTIVE_AUTHORIZATION_STATUSES = ['authorized', 'capturing', 'captured', 'capture_uncertain'];
+
 export async function hasActiveAuthorization(referenceId) {
   const { data, error } = await supabase
     .from('payment_authorizations')
     .select('id')
     .eq('reference_id', referenceId)
-    .eq('status', 'authorized')
+    .in('status', ACTIVE_AUTHORIZATION_STATUSES)
     .maybeSingle();
   if (error) throw error;
   return !!data;
@@ -182,4 +191,97 @@ export async function applyTerminalStatus(id, fromStatus, { status, reason, at }
     .maybeSingle();
   if (error) throw error;
   return !!data;
+}
+
+/**
+ * Claims the one authorized row for this reference for a capture attempt,
+ * atomically flipping it to 'capturing'. WHERE status = 'authorized' is
+ * the entire duplicate-capture safeguard: two near-simultaneous requests
+ * (a real double-click, or the HubSpot workflow re-firing) can't both
+ * match this UPDATE, so at most one ever proceeds to call Stripe. Backed
+ * at the database layer by payment_authorizations_active_reference_idx,
+ * which also now covers 'capturing'/'captured'/'capture_uncertain' — see
+ * payment_authorizations_capture.sql.
+ *
+ * Returns the row's own id, package, amount_cents, and
+ * stripe_payment_intent_id on success (never trust a PaymentIntent ID or
+ * amount supplied by the caller — this is the only place those values
+ * come from), or null if there was nothing to claim (never authorized,
+ * already capturing/captured/uncertain, or a confirmed capture_failed
+ * that would need a fresh authorization first).
+ */
+export async function beginCapture(referenceId) {
+  const { data, error } = await supabase
+    .from('payment_authorizations')
+    .update({ status: 'capturing', updated_at: new Date().toISOString() })
+    .eq('reference_id', referenceId)
+    .eq('status', 'authorized')
+    .select('id, package, amount_cents, stripe_payment_intent_id')
+    .maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
+/**
+ * Confirmed success — either from the direct capture() response, or from
+ * an explicit follow-up retrieve() after an ambiguous/timeout response.
+ * WHERE status = 'capturing' guards against this running twice for the
+ * same row.
+ */
+export async function markCaptured(id, { capturedAmountCents, capturedAt }) {
+  const { error } = await supabase
+    .from('payment_authorizations')
+    .update({
+      status: 'captured',
+      captured_amount_cents: capturedAmountCents,
+      captured_at: capturedAt,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', id)
+    .eq('status', 'capturing');
+  if (error) throw error;
+}
+
+/**
+ * A clear, certain answer that the capture did not happen — either a
+ * direct rejection from Stripe (not ambiguous — see
+ * isAmbiguousStripeError in stripeClient.js), or an ambiguous response
+ * that a follow-up retrieve() then confirmed was never actually applied.
+ * Deliberately does NOT reset status back to 'authorized' — a fresh
+ * authorization attempt (a brand new row) is what makes a retry
+ * possible, never an automatic reset of this one.
+ */
+export async function markCaptureFailed(id, reason) {
+  const { error } = await supabase
+    .from('payment_authorizations')
+    .update({
+      status: 'capture_failed',
+      status_reason: reason,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', id)
+    .eq('status', 'capturing');
+  if (error) throw error;
+}
+
+/**
+ * The capture outcome could not be determined — an ambiguous/timeout
+ * response from capture(), AND the follow-up retrieve() either also
+ * failed or returned something that doesn't clearly answer the
+ * question. Per explicit requirement, this is a dead end: nothing in
+ * this codebase ever moves a row out of this status automatically,
+ * including back to 'authorized'. Resolving it requires a human to
+ * check Stripe directly.
+ */
+export async function markCaptureUncertain(id, reason) {
+  const { error } = await supabase
+    .from('payment_authorizations')
+    .update({
+      status: 'capture_uncertain',
+      status_reason: reason,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', id)
+    .eq('status', 'capturing');
+  if (error) throw error;
 }
