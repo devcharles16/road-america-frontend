@@ -2,8 +2,8 @@ import express from 'express';
 import supabase from '../supabaseClient.js';
 import { generateBookingUrls } from '../utils/bookingLinks.js';
 import { getStripeClient, isAmbiguousStripeError } from '../utils/stripeClient.js';
-import { beginCapture, markCaptured, markCaptureFailed, markCaptureUncertain } from '../utils/paymentAuthorizations.js';
-import { syncCaptureResultToHubspot } from '../utils/hubspotTickets.js';
+import { beginCapture, getLatestAuthorization, markCaptured, markCaptureFailed, markCaptureUncertain } from '../utils/paymentAuthorizations.js';
+import { finalizeCaptureOutcome } from '../utils/hubspotTickets.js';
 
 const router = express.Router();
 
@@ -133,36 +133,93 @@ router.post('/hubspot-pricing', requireWebhookSecret, async (req, res) => {
   }
 });
 
+// Maps a row's current status, when beginCapture() found nothing to
+// claim, to one of this endpoint's distinguished outcomes.
+const STATUS_TO_RESULT = {
+  captured: 'already_captured',
+  capturing: 'capture_in_progress',
+  capture_failed: 'capture_failed',
+  capture_uncertain: 'capture_uncertain',
+};
+
+const RESULT_MESSAGES = {
+  already_captured: 'This booking has already been captured.',
+  capture_in_progress: 'A capture is already in progress for this booking. Try again shortly.',
+  capture_failed:
+    'The prior authorization could not be captured (expired, canceled, or rejected). A new authorization is required before capture can be attempted again.',
+  capture_uncertain:
+    'A previous capture attempt for this booking has an uncertain outcome and requires manual review in Stripe before any further action.',
+  no_active_authorization: 'No active authorization is available to capture for this reference.',
+};
+
+// 'captured' and 'already_captured' are not errors — the money is
+// authorized-and-captured either way, which is the actually-desired end
+// state. Everything else needs some other action (wait, re-authorize, or
+// a human in Stripe) before it can be resolved.
+const RESULT_HTTP_STATUS = {
+  captured: 200,
+  already_captured: 200,
+  capture_in_progress: 409,
+  capture_failed: 409,
+  capture_uncertain: 409,
+  no_active_authorization: 409,
+};
+
+function captureResponse(res, result, extra = {}) {
+  return res.status(RESULT_HTTP_STATUS[result] || 500).json({ result, message: RESULT_MESSAGES[result], ...extra });
+}
+
 /**
  * POST /api/integrations/hubspot-capture-request
  *
  * Called by a HubSpot workflow when an authorized employee sets the
  * Payment Capture Request property to "Request Capture". HubSpot is
- * trusted for exactly one thing here — that a capture was requested for
- * this reference — and nothing else: the PaymentIntent ID, the amount,
- * and the authorization's current status are always looked up
- * server-side from payment_authorizations, never accepted from this
- * request body. See the capture-flow design notes for the full
- * reasoning; this endpoint is the simplified MVP of that design.
+ * trusted for exactly two things here — that a capture was requested for
+ * this reference, and optionally which ticket asked (validated against
+ * the reference before ever being used — see resolveTicketId) — nothing
+ * else: the PaymentIntent ID, the amount, and the authorization's
+ * current status are always looked up server-side from
+ * payment_authorizations, never accepted from this request body.
+ *
+ * Every response carries a `result` the Zap can branch on directly:
+ * captured, already_captured, capture_in_progress, capture_failed,
+ * capture_uncertain, no_active_authorization, invalid_request, or
+ * server_error (see README/deployment notes for the full table).
  */
 router.post('/hubspot-capture-request', requireCaptureWebhookSecret, async (req, res) => {
   const referenceId = safeUpper(req.body?.quote_number);
+  const ticketId = req.body?.ticket_id ? String(req.body.ticket_id).trim() : null;
+
   if (!/^RA-\d{5,12}$/i.test(referenceId)) {
-    return res.status(400).json({ error: 'quote_number is missing or not a valid RA reference.' });
+    // No valid reference to look anything up by, and nothing to validate
+    // a supplied ticket id against — deliberately not attempting any
+    // HubSpot write here (including the reset): a malformed request
+    // means the Zap itself is misconfigured, and leaving the ticket at
+    // "Request Capture" is an honest, visible signal of that, same
+    // reasoning as the unexpected-error path below.
+    return res.status(400).json({ result: 'invalid_request', message: 'quote_number is missing or not a valid RA reference.' });
   }
 
   try {
     const claimed = await beginCapture(referenceId);
     if (!claimed) {
-      // Nothing to capture — never authorized, already capturing/
-      // captured/uncertain, or a confirmed capture_failed that would
-      // need a fresh authorization first. Not distinguishing further
-      // for this MVP; the HubSpot-visible error is the same either way.
-      await syncCaptureResultToHubspot(referenceId, {
-        status: 'Failed',
-        error: 'No active authorization available to capture for this reference.',
+      const latest = await getLatestAuthorization(referenceId);
+      const result = STATUS_TO_RESULT[latest?.status] || 'no_active_authorization';
+
+      const extra = {};
+      if (result === 'already_captured' && latest) {
+        extra.amountCents = latest.captured_amount_cents;
+        extra.capturedAt = latest.captured_at;
+      }
+
+      await finalizeCaptureOutcome(referenceId, {
+        ticketId,
+        result,
+        amountCents: extra.amountCents,
+        capturedAt: extra.capturedAt,
+        error: result === 'already_captured' ? null : RESULT_MESSAGES[result],
       });
-      return res.status(409).json({ error: 'No active authorization available to capture for this reference.' });
+      return captureResponse(res, result, extra);
     }
 
     const stripe = getStripeClient();
@@ -181,8 +238,8 @@ router.post('/hubspot-capture-request', requireCaptureWebhookSecret, async (req,
         // expired or was canceled) — no ambiguity, no need to check again.
         const reason = captureErr.message || 'Stripe rejected the capture request.';
         await markCaptureFailed(claimed.id, reason);
-        await syncCaptureResultToHubspot(referenceId, { status: 'Failed', error: reason });
-        return res.status(409).json({ error: reason });
+        await finalizeCaptureOutcome(referenceId, { ticketId, result: 'capture_failed', error: reason });
+        return captureResponse(res, 'capture_failed', { detail: reason });
       }
 
       // Ambiguous/timeout response — we genuinely don't know whether
@@ -192,23 +249,18 @@ router.post('/hubspot-capture-request', requireCaptureWebhookSecret, async (req,
       try {
         resolved = await stripe.paymentIntents.retrieve(claimed.stripe_payment_intent_id);
       } catch (retrieveErr) {
-        await markCaptureUncertain(
-          claimed.id,
-          `Capture response was ambiguous (${captureErr.message}) and the follow-up retrieve also failed (${retrieveErr.message}). Requires manual review in Stripe.`
-        );
-        await syncCaptureResultToHubspot(referenceId, {
-          status: 'Failed',
-          error: 'Capture outcome could not be confirmed. Needs manual review in Stripe.',
-        });
-        return res.status(502).json({ error: 'Capture outcome could not be confirmed. Flagged for manual review.' });
+        const reason = `Capture response was ambiguous (${captureErr.message}) and the follow-up retrieve also failed (${retrieveErr.message}). Requires manual review in Stripe.`;
+        await markCaptureUncertain(claimed.id, reason);
+        await finalizeCaptureOutcome(referenceId, { ticketId, result: 'capture_uncertain', error: RESULT_MESSAGES.capture_uncertain });
+        return captureResponse(res, 'capture_uncertain');
       }
 
       if (resolved.status === 'succeeded') {
         const capturedAt = new Date();
         const capturedAmountCents = resolved.amount_received ?? claimed.amount_cents;
         await markCaptured(claimed.id, { capturedAmountCents, capturedAt: capturedAt.toISOString() });
-        await syncCaptureResultToHubspot(referenceId, { status: 'Succeeded', amountCents: capturedAmountCents, capturedAt });
-        return res.json({ ok: true, status: 'captured' });
+        await finalizeCaptureOutcome(referenceId, { ticketId, result: 'captured', amountCents: capturedAmountCents, capturedAt });
+        return captureResponse(res, 'captured', { amountCents: capturedAmountCents, capturedAt });
       }
 
       // Confirmed NOT captured. Per explicit requirement, this never
@@ -217,37 +269,34 @@ router.post('/hubspot-capture-request', requireCaptureWebhookSecret, async (req,
       // of this one.
       const reason = `Capture attempt was ambiguous (${captureErr.message}); retrieve confirmed it was not captured (PaymentIntent status "${resolved.status}").`;
       await markCaptureFailed(claimed.id, reason);
-      await syncCaptureResultToHubspot(referenceId, {
-        status: 'Failed',
-        error: 'Capture did not go through. Contact support before retrying.',
-      });
-      return res.status(502).json({ error: 'Capture did not go through; confirmed via Stripe.' });
+      await finalizeCaptureOutcome(referenceId, { ticketId, result: 'capture_failed', error: 'Capture did not go through. Contact support before retrying.' });
+      return captureResponse(res, 'capture_failed', { detail: reason });
     }
 
     if (captureResult.status === 'succeeded') {
       const capturedAt = new Date();
       const capturedAmountCents = captureResult.amount_received ?? claimed.amount_cents;
       await markCaptured(claimed.id, { capturedAmountCents, capturedAt: capturedAt.toISOString() });
-      await syncCaptureResultToHubspot(referenceId, { status: 'Succeeded', amountCents: capturedAmountCents, capturedAt });
-      return res.json({ ok: true, status: 'captured' });
+      await finalizeCaptureOutcome(referenceId, { ticketId, result: 'captured', amountCents: capturedAmountCents, capturedAt });
+      return captureResponse(res, 'captured', { amountCents: capturedAmountCents, capturedAt });
     }
 
     // capture() returned without throwing, but with a status other than
     // 'succeeded' — not expected, but handled conservatively as
     // uncertain rather than assumed failed, since no error was actually
     // raised.
-    await markCaptureUncertain(
-      claimed.id,
-      `Capture call returned without error but PaymentIntent status is "${captureResult.status}", not "succeeded". Requires manual review.`
-    );
-    await syncCaptureResultToHubspot(referenceId, {
-      status: 'Failed',
-      error: 'Unexpected capture result. Needs manual review in Stripe.',
-    });
-    return res.status(502).json({ error: 'Unexpected capture result. Flagged for manual review.' });
+    const reason = `Capture call returned without error but PaymentIntent status is "${captureResult.status}", not "succeeded". Requires manual review.`;
+    await markCaptureUncertain(claimed.id, reason);
+    await finalizeCaptureOutcome(referenceId, { ticketId, result: 'capture_uncertain', error: RESULT_MESSAGES.capture_uncertain });
+    return captureResponse(res, 'capture_uncertain');
   } catch (err) {
-    console.error('HubSpot capture request error', err);
-    return res.status(500).json({ error: 'Unable to process capture request.' });
+    // A genuinely unexpected failure — deliberately does NOT call
+    // finalizeCaptureOutcome: Payment Capture Request is left as
+    // "Request Capture" rather than reset, so the stuck state itself is
+    // a visible signal that this needs human attention, instead of
+    // silently clearing it over an error nobody classified.
+    console.error(`HubSpot capture request error for ${referenceId}:`, err);
+    return res.status(500).json({ result: 'server_error', message: 'Unable to process capture request.' });
   }
 });
 

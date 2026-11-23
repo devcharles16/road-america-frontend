@@ -20,6 +20,13 @@ const CAPTURED_AMOUNT_PROPERTY = 'captured_amount';
 const CAPTURED_DATE_PROPERTY = 'captured_date';
 const CAPTURE_ERROR_PROPERTY = 'capture_error';
 
+// The INPUT property the HubSpot workflow sets to trigger a capture, and
+// the label (not yet confirmed to also be the internal value — see
+// getNoRequestOptionValue) it gets reset to afterward so the trigger can
+// fire again for a future legitimate request on the same ticket.
+const PAYMENT_CAPTURE_REQUEST_PROPERTY = 'payment_capture_request';
+const NO_REQUEST_LABEL = 'No Request';
+
 function getToken() {
   const token = process.env.HUBSPOT_PRIVATE_APP_TOKEN;
   if (!token) throw new Error('HUBSPOT_PRIVATE_APP_TOKEN is not set');
@@ -84,6 +91,103 @@ async function findTicketIdByQuoteNumber(referenceId) {
   return results[0].id;
 }
 
+/**
+ * Reads a ticket's own quote_number property directly by id — used to
+ * validate a caller-supplied ticket id actually belongs to the reference
+ * being processed, before ever writing to it. Returns null (never
+ * throws) on any failure, so the caller falls back to the search-based
+ * lookup instead of blocking on this.
+ */
+async function getTicketQuoteNumber(ticketId) {
+  try {
+    const res = await fetchWithTimeout(
+      `${HUBSPOT_API_BASE}/crm/v3/objects/tickets/${ticketId}?properties=${QUOTE_NUMBER_PROPERTY}`,
+      { method: 'GET', headers: { Authorization: `Bearer ${getToken()}` } }
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data?.properties?.[QUOTE_NUMBER_PROPERTY] ?? null;
+  } catch (err) {
+    console.error(`Failed to read quote_number for HubSpot ticket ${ticketId}:`, err);
+    return null;
+  }
+}
+
+/**
+ * Resolves the ticket to write to for a given reference. If a ticket id
+ * was supplied (e.g. by the Zapier capture workflow, which already has
+ * it from its own trigger), it's used ONLY after confirming that
+ * ticket's own quote_number actually matches this reference — a
+ * mismatch or failed check silently falls back to the existing
+ * search-by-quote_number lookup rather than ever writing to an
+ * unverified ticket.
+ */
+async function resolveTicketId(referenceId, suppliedTicketId) {
+  if (suppliedTicketId) {
+    const quoteNumber = await getTicketQuoteNumber(suppliedTicketId);
+    if (quoteNumber && String(quoteNumber).trim().toUpperCase() === String(referenceId).trim().toUpperCase()) {
+      return suppliedTicketId;
+    }
+    console.error(
+      `Supplied ticketId ${suppliedTicketId} does not match reference ${referenceId} (ticket's quote_number: ${quoteNumber ?? 'unavailable'}); falling back to search-by-quote_number.`
+    );
+  }
+  return await findTicketIdByQuoteNumber(referenceId);
+}
+
+// Cached for the life of the process — the option's internal value for a
+// given label won't change at runtime, and this avoids one extra
+// HubSpot API call per capture request after the first.
+let cachedNoRequestValue = null;
+
+/**
+ * Looks up the ACTUAL internal value behind the "No Request" option on
+ * the Payment Capture Request property, rather than assuming the label
+ * and the internal value are the same string. Throws if the property or
+ * that exact label can't be found — callers must treat that as "don't
+ * reset," not as "guess a value and write it anyway."
+ */
+async function getNoRequestOptionValue() {
+  if (cachedNoRequestValue) return cachedNoRequestValue;
+
+  const res = await fetchWithTimeout(
+    `${HUBSPOT_API_BASE}/crm/v3/properties/tickets/${PAYMENT_CAPTURE_REQUEST_PROPERTY}`,
+    { method: 'GET', headers: { Authorization: `Bearer ${getToken()}` } }
+  );
+  if (!res.ok) {
+    throw new Error(`HubSpot property lookup failed for ${PAYMENT_CAPTURE_REQUEST_PROPERTY} (${res.status}): ${await res.text()}`);
+  }
+  const data = await res.json();
+  const option = (data.options || []).find(o => o.label === NO_REQUEST_LABEL);
+  if (!option) {
+    throw new Error(`No option labeled "${NO_REQUEST_LABEL}" found on property ${PAYMENT_CAPTURE_REQUEST_PROPERTY}.`);
+  }
+  cachedNoRequestValue = option.value;
+  return cachedNoRequestValue;
+}
+
+/**
+ * Resets Payment Capture Request back to its idle option after
+ * processing, so the HubSpot workflow's trigger can fire again for a
+ * future legitimate request on the same ticket. Never throws — see
+ * finalizeCaptureOutcome for why a failure here must never affect
+ * anything already decided about the capture itself.
+ */
+async function resetPaymentCaptureRequest(ticketId) {
+  const noRequestValue = await getNoRequestOptionValue();
+  const res = await fetchWithTimeout(`${HUBSPOT_API_BASE}/crm/v3/objects/tickets/${ticketId}`, {
+    method: 'PATCH',
+    headers: {
+      Authorization: `Bearer ${getToken()}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ properties: { [PAYMENT_CAPTURE_REQUEST_PROPERTY]: noRequestValue } }),
+  });
+  if (!res.ok) {
+    throw new Error(`HubSpot Payment Capture Request reset failed (${res.status}): ${await res.text()}`);
+  }
+}
+
 async function setSelectedPackage(ticketId, packageValue) {
   const res = await fetchWithTimeout(`${HUBSPOT_API_BASE}/crm/v3/objects/tickets/${ticketId}`, {
     method: 'PATCH',
@@ -120,37 +224,78 @@ export async function syncSelectedPackageToHubspot(referenceId, pkg) {
   }
 }
 
+// Maps this codebase's internal capture outcomes to the two Capture
+// Status values HubSpot is known to display (Succeeded/Failed — see the
+// original capture-flow proposal). The real distinction between e.g.
+// "capture_failed" and "capture_uncertain" lives in the free-text
+// Capture Error message, not in this property, unless Capture Status is
+// later given more options — update this map if so.
+const CAPTURE_STATUS_LABELS = {
+  captured: 'Succeeded',
+  already_captured: 'Succeeded',
+  capture_in_progress: 'Failed',
+  capture_failed: 'Failed',
+  capture_uncertain: 'Failed',
+  no_active_authorization: 'Failed',
+};
+
+async function setCaptureProperties(ticketId, { result, amountCents, capturedAt, error }) {
+  const properties = { [CAPTURE_STATUS_PROPERTY]: CAPTURE_STATUS_LABELS[result] || 'Failed' };
+  if (amountCents != null) properties[CAPTURED_AMOUNT_PROPERTY] = (amountCents / 100).toFixed(2);
+  if (capturedAt) properties[CAPTURED_DATE_PROPERTY] = new Date(capturedAt).toISOString();
+  if (error) properties[CAPTURE_ERROR_PROPERTY] = error;
+
+  const res = await fetchWithTimeout(`${HUBSPOT_API_BASE}/crm/v3/objects/tickets/${ticketId}`, {
+    method: 'PATCH',
+    headers: {
+      Authorization: `Bearer ${getToken()}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ properties }),
+  });
+  if (!res.ok) {
+    throw new Error(`HubSpot ticket update failed (${res.status}): ${await res.text()}`);
+  }
+}
+
 /**
- * Writes the outcome of a capture attempt (Succeeded or Failed) back to
- * the matching ticket's Capture Status/Captured Amount/Captured Date/
- * Capture Error properties. One-directional, same as
- * syncSelectedPackageToHubspot — the backend only ever writes these
- * properties, never reads them back as input to anything, and this never
- * throws: by the time this runs, Supabase already durably reflects the
- * real outcome, so a HubSpot sync failure must not affect that.
+ * Writes the outcome of a capture request back to HubSpot: the four
+ * Capture Status/Amount/Date/Error properties, then resets Payment
+ * Capture Request back to idle so the workflow's trigger can fire again
+ * later. Called only AFTER Supabase already durably reflects the real
+ * outcome (see hubspotSyncRouter.js) — never throws, and the two writes
+ * are independently try/caught, so a failure in either (or both) can
+ * never cause the caller to attempt another Stripe capture; it only
+ * means this specific HubSpot sync needs a manual look and retry later.
+ * `ticketId` is the optional caller-supplied id (validated against
+ * referenceId inside resolveTicketId before use); omit it to always use
+ * the existing search-by-quote_number lookup.
  */
-export async function syncCaptureResultToHubspot(referenceId, { status, amountCents, capturedAt, error }) {
+export async function finalizeCaptureOutcome(referenceId, { ticketId, result, amountCents, capturedAt, error } = {}) {
+  let resolvedTicketId;
   try {
-    const ticketId = await findTicketIdByQuoteNumber(referenceId);
-    if (!ticketId) return;
-
-    const properties = { [CAPTURE_STATUS_PROPERTY]: status };
-    if (amountCents != null) properties[CAPTURED_AMOUNT_PROPERTY] = (amountCents / 100).toFixed(2);
-    if (capturedAt) properties[CAPTURED_DATE_PROPERTY] = new Date(capturedAt).toISOString();
-    if (error) properties[CAPTURE_ERROR_PROPERTY] = error;
-
-    const res = await fetchWithTimeout(`${HUBSPOT_API_BASE}/crm/v3/objects/tickets/${ticketId}`, {
-      method: 'PATCH',
-      headers: {
-        Authorization: `Bearer ${getToken()}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ properties }),
-    });
-    if (!res.ok) {
-      throw new Error(`HubSpot ticket update failed (${res.status}): ${await res.text()}`);
-    }
+    resolvedTicketId = await resolveTicketId(referenceId, ticketId);
   } catch (err) {
-    console.error(`HubSpot capture-result sync failed for ${referenceId}:`, err);
+    console.error(`Could not resolve a HubSpot ticket for ${referenceId}; skipping HubSpot sync entirely:`, err);
+    return;
+  }
+  if (!resolvedTicketId) return;
+
+  try {
+    await setCaptureProperties(resolvedTicketId, { result, amountCents, capturedAt, error });
+  } catch (err) {
+    console.error(
+      `HubSpot capture-result sync failed for ${referenceId} (ticket ${resolvedTicketId}); Supabase already durably reflects "${result}" — this HubSpot write needs a manual retry:`,
+      err
+    );
+  }
+
+  try {
+    await resetPaymentCaptureRequest(resolvedTicketId);
+  } catch (err) {
+    console.error(
+      `Failed to reset Payment Capture Request for ${referenceId} (ticket ${resolvedTicketId}) after processing — may need a manual reset in HubSpot before a future request on this ticket can trigger again:`,
+      err
+    );
   }
 }

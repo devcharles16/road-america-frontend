@@ -223,6 +223,25 @@ export async function beginCapture(referenceId) {
 }
 
 /**
+ * Read-only — used only when beginCapture() found nothing to claim, to
+ * report WHY (already captured, mid-capture, confirmed failed, or
+ * unresolved) instead of a single generic "nothing to capture" message.
+ * Returns the most recently created row for this reference, or null if
+ * there's never been one at all.
+ */
+export async function getLatestAuthorization(referenceId) {
+  const { data, error } = await supabase
+    .from('payment_authorizations')
+    .select('status, captured_amount_cents, captured_at')
+    .eq('reference_id', referenceId)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
+/**
  * Confirmed success — either from the direct capture() response, or from
  * an explicit follow-up retrieve() after an ambiguous/timeout response.
  * WHERE status = 'capturing' guards against this running twice for the
