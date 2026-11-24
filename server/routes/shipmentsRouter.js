@@ -6,6 +6,7 @@ import {
   sendBusinessInquiryConfirmationEmail,
 } from "../notifications/adminAlerts.js";
 import { resolveMaterialChangeReview } from "../utils/bookingDetails.js";
+import { notifyShipmentStatusChange } from "../notifications/shipmentStatusNotifications.js";
 
 
 const router = express.Router();
@@ -641,6 +642,40 @@ router.get(
  * ADMIN/EMPLOYEE: Update shipment status
  * PATCH /api/shipments/:id/status
  */
+function mapShipmentRow(data) {
+  return {
+    id: data.id,
+    referenceId: data.reference_id,
+
+    customerName: data.customer_name,
+    customerEmail: data.customer_email,
+    customerPhone: data.customer_phone,
+
+    pickupCity: data.pickup_city,
+    pickupState: data.pickup_state,
+    deliveryCity: data.delivery_city,
+    deliveryState: data.delivery_state,
+
+    vehicleYear: data.vehicle_year,
+    vehicleMake: data.vehicle_make,
+    vehicleModel: data.vehicle_model,
+    vin: data.vin,
+
+    runningCondition: data.running_condition,
+    transportType: data.transport_type,
+    pickupWindow: data.pickup_window,
+    vehicleHeightMod: data.vehicle_height_mod,
+
+    notes: data.notes,
+    status: data.status,
+    eta: data.eta,
+
+    userId: data.user_id,
+    createdAt: data.created_at,
+    updatedAt: data.updated_at,
+  };
+}
+
 router.patch(
   "/shipments/:id/status",
   requireAuth,
@@ -656,46 +691,42 @@ router.patch(
         });
       }
 
+      // update_shipment_status (SQL function) does the write and the
+      // change-detection atomically, using IS DISTINCT FROM — not
+      // PostgREST's .neq() filter, which compiles to a plain SQL <>
+      // and would never match when the stored status is NULL, wrongly
+      // treating that as "no change" forever.
+      const { data: rpcData, error: rpcErr } = await supabase.rpc("update_shipment_status", {
+        p_id: id,
+        p_status: status,
+      });
+      if (rpcErr) throw rpcErr;
+
+      const outcome = Array.isArray(rpcData) ? rpcData[0] : rpcData;
+      if (!outcome || !outcome.applied) {
+        return res.status(404).json({ message: "Shipment not found." });
+      }
+
       const { data, error } = await supabase
         .from("shipments")
-        .update({ status, updated_at: new Date().toISOString() })
-        .eq("id", id)
         .select("*")
+        .eq("id", id)
         .single();
-
       if (error) throw error;
 
-      return res.json({
-        id: data.id,
-        referenceId: data.reference_id,
+      if (outcome.status_changed) {
+        // A real change — notify. Never blocks or retries the
+        // already-successful write over a notification failure
+        // (notifyShipmentStatusChange never throws).
+        await notifyShipmentStatusChange({
+          referenceId: data.reference_id,
+          status: data.status,
+          customerEmail: data.customer_email,
+          customerName: data.customer_name,
+        });
+      }
 
-        customerName: data.customer_name,
-        customerEmail: data.customer_email,
-        customerPhone: data.customer_phone,
-
-        pickupCity: data.pickup_city,
-        pickupState: data.pickup_state,
-        deliveryCity: data.delivery_city,
-        deliveryState: data.delivery_state,
-
-        vehicleYear: data.vehicle_year,
-        vehicleMake: data.vehicle_make,
-        vehicleModel: data.vehicle_model,
-        vin: data.vin,
-
-        runningCondition: data.running_condition,
-        transportType: data.transport_type,
-        pickupWindow: data.pickup_window,
-        vehicleHeightMod: data.vehicle_height_mod,
-
-        notes: data.notes,
-        status: data.status,
-        eta: data.eta,
-
-        userId: data.user_id,
-        createdAt: data.created_at,
-        updatedAt: data.updated_at,
-      });
+      return res.json(mapShipmentRow(data));
     } catch (err) {
       console.error("Update status error:", err);
       return res.status(500).json({ message: "Server error updating status" });

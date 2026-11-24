@@ -15,7 +15,7 @@ const STATUS_MESSAGES = {
   Expired: "Your transport request or quote has expired.",
 };
 
-export async function sendStatusUpdate(customerEmail, customerName, status, orderId) {
+export async function sendStatusUpdate(customerEmail, customerName, status, orderId, manageNotificationsUrl) {
   const message =
     STATUS_MESSAGES[status] ||
     "There has been an update to your vehicle transport status.";
@@ -64,6 +64,7 @@ export async function sendStatusUpdate(customerEmail, customerName, status, orde
         </div>
         <div style="padding:14px 24px;border-top:1px solid rgba(255,255,255,0.06);font-size:11px;color:#777;">
           <p style="margin:0;">This is an automated notification. If you did not request this update, please contact us.</p>
+          ${manageNotificationsUrl ? `<p style="margin:8px 0 0;"><a href="${manageNotificationsUrl}" style="color:#999;">Manage shipment notifications</a></p>` : ""}
         </div>
       </div>
     </div>

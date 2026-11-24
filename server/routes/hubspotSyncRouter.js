@@ -5,6 +5,7 @@ import { getStripeClient, isAmbiguousStripeError } from '../utils/stripeClient.j
 import { beginCapture, getLatestAuthorization, markCaptured, markCaptureFailed, markCaptureUncertain } from '../utils/paymentAuthorizations.js';
 import { finalizeCaptureOutcome, resolveTicketId, getLatestTrackingStatusFromHubspot } from '../utils/hubspotTickets.js';
 import { ALLOWED_STATUSES } from './shipmentsRouter.js';
+import { notifyShipmentStatusChange } from '../notifications/shipmentStatusNotifications.js';
 
 const router = express.Router();
 
@@ -387,9 +388,44 @@ router.post('/hubspot-tracking-status', requireTrackingWebhookSecret, async (req
       return res.status(404).json({ error: 'No quote or shipment found for that reference.' });
     }
     if (!result.applied) {
-      return res.status(200).json({ ok: true, applied: false, reason: 'stale_or_duplicate', target: result.target });
+      // A genuinely stale/duplicate delivery — the WHERE guard rejected
+      // it outright, nothing was written, no notification either.
+      return res.status(200).json({ ok: true, applied: false, statusChanged: false, reason: 'stale_or_duplicate', target: result.target });
     }
-    return res.status(200).json({ ok: true, applied: true, target: result.target });
+
+    // Applied (not stale) and status_changed are two different
+    // questions now: a newer HubSpot timestamp for the SAME status
+    // still applies (website_tracking_status_at advances, so future
+    // out-of-order events keep comparing against an accurate
+    // watermark), but must never send a duplicate "nothing changed"
+    // email. Only notify when the value itself actually changed.
+    if (result.status_changed) {
+      // Fetch the contact info needed for the email from whichever
+      // table the RPC actually applied to. Never blocks or retries the
+      // already-applied write over a failure here.
+      try {
+        const { data: contact, error: contactErr } = await supabase
+          .from(result.target === 'shipment' ? 'shipments' : 'quotes')
+          .select('customer_name, customer_email')
+          .eq('reference_id', referenceId)
+          .maybeSingle();
+        if (contactErr) throw contactErr;
+        if (contact) {
+          await notifyShipmentStatusChange({
+            referenceId,
+            status: latest.value,
+            customerEmail: contact.customer_email,
+            customerName: contact.customer_name,
+          });
+        } else {
+          console.error(`Tracking status changed for ${referenceId} but no contact row found on ${result.target} — skipping notification.`);
+        }
+      } catch (err) {
+        console.error(`Failed to look up contact info for notification after tracking update on ${referenceId}:`, err);
+      }
+    }
+
+    return res.status(200).json({ ok: true, applied: true, statusChanged: !!result.status_changed, target: result.target });
   } catch (err) {
     console.error('HubSpot tracking-status sync error', err);
     return res.status(500).json({ error: 'Unable to process tracking status update.' });

@@ -190,6 +190,18 @@ const TrackingPage = () => {
 
   const currentStatus = shipment ? normalizeStatus(shipment.status) : "Request Submitted";
 
+  // Canceled/Expired are alternative outcomes, not steps reached after
+  // Delivered — rendering them in the same linear checklist as the
+  // others would show every earlier step (including Delivered) as
+  // "completed" on the way to a shipment that was never actually
+  // delivered. normalizeStatus() already folds the legacy alias
+  // ("Cancelled") into the canonical "Canceled" before this check runs.
+  const outcomeStep =
+    currentStatus === "Canceled" || currentStatus === "Expired"
+      ? STATUS_STEPS.find((s) => s.id === currentStatus) ?? null
+      : null;
+  const OutcomeIcon = outcomeStep ? getStepIcon(outcomeStep.id) : null;
+
   return (
     <section className="bg-tracking-bg py-12 text-text-primary">
       <div className="mx-auto max-w-5xl px-4">
@@ -302,70 +314,89 @@ const TrackingPage = () => {
                   </div>
                 </div>
 
-                <ol
-                  className="relative mt-4 space-y-5 pl-0
-                    before:absolute before:left-[14px] before:top-0 before:bottom-0
-                    before:w-px before:bg-[#172B3D]/15"
-                >
-                  {/* Filled progress line */}
-                  <span
-                    className="absolute left-[14px] top-0 w-px bg-brand-red/40"
-                    style={{
-                      height: `${Math.max(activeStepIndex, 0) * 48 + 14}px`,
-                    }}
-                    aria-hidden="true"
-                  />
+                {outcomeStep && OutcomeIcon ? (
+                  <div className="mt-4 flex items-start gap-4 rounded-xl border border-brand-red/30 bg-brand-red/5 p-4">
+                    <span
+                      className="relative z-10 flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border border-brand-red/40 bg-brand-red/10 text-brand-redSoft"
+                      aria-hidden="true"
+                    >
+                      <OutcomeIcon className="h-5 w-5" />
+                    </span>
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-brand-redSoft">
+                        {outcomeStep.label}
+                      </p>
+                      <p className="mt-1 text-[11px] text-text-muted">
+                        {outcomeStep.description}
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <ol
+                    className="relative mt-4 space-y-5 pl-0
+                      before:absolute before:left-[14px] before:top-0 before:bottom-0
+                      before:w-px before:bg-[#172B3D]/15"
+                  >
+                    {/* Filled progress line */}
+                    <span
+                      className="absolute left-[14px] top-0 w-px bg-brand-red/40"
+                      style={{
+                        height: `${Math.max(activeStepIndex, 0) * 48 + 14}px`,
+                      }}
+                      aria-hidden="true"
+                    />
 
-                  {STATUS_STEPS.map((step, index) => {
-                    const isActive = index === activeStepIndex;
-                    const isCompleted = index < activeStepIndex;
+                    {STATUS_STEPS.map((step, index) => {
+                      const isActive = index === activeStepIndex;
+                      const isCompleted = index < activeStepIndex;
 
-                    const StepIcon = getStepIcon(step.id);
+                      const StepIcon = getStepIcon(step.id);
 
-                    const bubbleClasses = [
-                      "relative z-10 flex h-7 w-7 items-center justify-center rounded-full border",
-                      isActive
-                        ? "border-brand-red/60 bg-brand-red/20 text-brand-redSoft shadow-[0_0_18px_rgba(255,0,0,0.22)]"
-                        : isCompleted
-                          ? "border-brand-red/40 bg-brand-red/10 text-text-primary"
-                          : "border-[#172B3D]/25 bg-brand-dark text-text-muted",
-                    ].join(" ");
+                      const bubbleClasses = [
+                        "relative z-10 flex h-7 w-7 items-center justify-center rounded-full border",
+                        isActive
+                          ? "border-brand-red/60 bg-brand-red/20 text-brand-redSoft shadow-[0_0_18px_rgba(255,0,0,0.22)]"
+                          : isCompleted
+                            ? "border-brand-red/40 bg-brand-red/10 text-text-primary"
+                            : "border-[#172B3D]/25 bg-brand-dark text-text-muted",
+                      ].join(" ");
 
-                    return (
-                      <li key={step.id} className="flex items-start gap-4">
-                        <span className={bubbleClasses} aria-hidden="true">
-                          {isCompleted ? (
-                            <Check className="h-4 w-4" />
-                          ) : (
-                            <StepIcon className="h-4 w-4" />
-                          )}
-                        </span>
+                      return (
+                        <li key={step.id} className="flex items-start gap-4">
+                          <span className={bubbleClasses} aria-hidden="true">
+                            {isCompleted ? (
+                              <Check className="h-4 w-4" />
+                            ) : (
+                              <StepIcon className="h-4 w-4" />
+                            )}
+                          </span>
 
-                        <div className="min-w-0 pt-[1px]">
-                          <p
-                            className={[
-                              "text-xs font-semibold",
-                              isActive
-                                ? "text-brand-redSoft"
-                                : "text-text-primary",
-                            ].join(" ")}
-                          >
-                            {step.label}
-                          </p>
-                          <p className="mt-1 text-[11px] text-text-muted">
-                            {step.description}
-                          </p>
+                          <div className="min-w-0 pt-[1px]">
+                            <p
+                              className={[
+                                "text-xs font-semibold",
+                                isActive
+                                  ? "text-brand-redSoft"
+                                  : "text-text-primary",
+                              ].join(" ")}
+                            >
+                              {step.label}
+                            </p>
+                            <p className="mt-1 text-[11px] text-text-muted">
+                              {step.description}
+                            </p>
 
-                          {isActive && (
-                            <span className="mt-2 inline-flex items-center rounded-full border border-brand-red/30 bg-brand-red/10 px-2 py-0.5 text-[10px] font-semibold text-brand-redSoft">
-                              Current
-                            </span>
-                          )}
-                        </div>
-                      </li>
-                    );
-                  })}
-                </ol>
+                            {isActive && (
+                              <span className="mt-2 inline-flex items-center rounded-full border border-brand-red/30 bg-brand-red/10 px-2 py-0.5 text-[10px] font-semibold text-brand-redSoft">
+                                Current
+                              </span>
+                            )}
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ol>
+                )}
               </>
             )}
           </div>

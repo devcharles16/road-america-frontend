@@ -1,7 +1,6 @@
 // src/pages/AdminShipmentsPage.tsx
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { API_BASE_URL } from "../config/api";
 
 import {
   listShipments,
@@ -127,33 +126,17 @@ const AdminShipmentsPage = () => {
       setSavingId(id);
       setShipmentsError(null);
 
-      // 1) Update status in backend
+      // Update status in backend — the backend itself now decides
+      // whether this was a genuine change and, if so, sends the
+      // customer notification server-side (see
+      // server/notifications/shipmentStatusNotifications.js). There is
+      // no separate browser-side notification call anymore: the old
+      // one depended on this tab staying open and hit an endpoint with
+      // no authentication at all.
       const updated = await updateShipmentStatus(id, status);
 
-      // 2) Update UI
+      // Update UI
       setShipments((prev) => prev.map((s) => (s.id === id ? updated : s)));
-
-      // 3) Fire Status Update Email Notification (non-blocking)
-      const pickup = `${updated.pickupCity}, ${updated.pickupState}`;
-      const dropoff = `${updated.deliveryCity}, ${updated.deliveryState}`;
-      const vehicle = `${updated.vehicleYear ?? ""} ${updated.vehicleMake ?? ""} ${updated.vehicleModel ?? ""
-        }`.trim();
-
-      fetch(`${API_BASE_URL}/api/notifications/status`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          orderId: updated.referenceId,
-          status: updated.status,
-          customerEmail: updated.customerEmail,
-          customerName: updated.customerName,
-          pickup,
-          dropoff,
-          vehicle,
-        }),
-      }).catch((err) =>
-        console.error("Failed to send status update email:", err)
-      );
     } catch (err) {
       console.error(err);
       setShipmentsError("Something went wrong while updating status.");

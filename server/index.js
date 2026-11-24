@@ -6,12 +6,12 @@ import dotenv from "dotenv";
 import supabase from "./supabaseClient.js";
 import { requireAuth, requireRole, requireOneOf } from "./middleware/auth.js";
 
-import { sendStatusUpdate } from "./notifications/transportStatus.js";
 import { sendNewQuoteAlert, sendQuoteConfirmationEmail } from "./notifications/adminAlerts.js";
 
 import shipmentsRouter from "./routes/shipmentsRouter.js";
 import bookingRouter from "./routes/bookingRouter.js";
 import hubspotSyncRouter from "./routes/hubspotSyncRouter.js";
+import notificationPreferencesRouter from "./routes/notificationPreferencesRouter.js";
 import stripeWebhookRouter from "./routes/stripeWebhookRouter.js";
 
 dotenv.config();
@@ -85,42 +85,15 @@ app.get("/api/health", (_req, res) => {
   res.json({ status: "ok", service: "road-america-email-api" });
 });
 
-/**
- * POST /api/notifications/status
- * Body: { customerEmail, customerName, status, orderId }
- */
-app.post("/api/notifications/status", async (req, res) => {
-  try {
-    const { customerEmail, customerName, status, orderId } = req.body;
-
-    if (!customerEmail || !status || !orderId) {
-      return res.status(400).json({
-        success: false,
-        message: "customerEmail, status, and orderId are required",
-      });
-    }
-
-    const result = await sendStatusUpdate(
-      customerEmail,
-      customerName || "Customer",
-      status,
-      orderId
-    );
-
-    if (!result.success) {
-      return res.status(500).json({
-        success: false,
-        message: "Failed to send status email",
-        error: result.error || result.err,
-      });
-    }
-
-    return res.json({ success: true });
-  } catch (err) {
-    console.error("Status notification error:", err);
-    return res.status(500).json({ success: false, message: "Server error" });
-  }
-});
+// POST /api/notifications/status has been retired — it had no
+// authentication at all (anyone could send an email to any address
+// claiming to be a Road America status update) and was only ever
+// called from the admin browser as a second, separate request after
+// the status PATCH. Status-change notifications are now sent
+// server-side, from within the write itself — see
+// shipmentsRouter.js's PATCH /shipments/:id/status and
+// hubspotSyncRouter.js's /hubspot-tracking-status, both calling
+// notifyShipmentStatusChange (server/notifications/shipmentStatusNotifications.js).
 
 /**
  * POST /api/notifications/new-quote
@@ -452,6 +425,7 @@ app.use("/book", bookingRouter);
 
 // Zapier -> HubSpot pricing sync: POST /api/integrations/hubspot-pricing
 app.use("/api/integrations", hubspotSyncRouter);
+app.use("/api", notificationPreferencesRouter);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

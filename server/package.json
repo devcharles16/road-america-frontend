@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "nodemon index.js",
     "start": "node index.js",
-    "test": "SUPABASE_URL=\"${SUPABASE_URL:-https://placeholder.supabase.co}\" SUPABASE_SERVICE_ROLE_KEY=\"${SUPABASE_SERVICE_ROLE_KEY:-placeholder}\" node --test utils/__tests__/*.test.js"
+    "test": "SUPABASE_URL=\"${SUPABASE_URL:-https://placeholder.supabase.co}\" SUPABASE_SERVICE_ROLE_KEY=\"${SUPABASE_SERVICE_ROLE_KEY:-placeholder}\" NOTIFICATION_PREFERENCES_SECRET=\"${NOTIFICATION_PREFERENCES_SECRET:-placeholder}\" node --test utils/__tests__/*.test.js"
   },
   "keywords": [],
   "author": "",
