@@ -1,4 +1,5 @@
 import { sendEmail } from "../utils/email.js";
+import { buildGreeting } from "../utils/emailGreeting.js";
 
 const STATUS_MESSAGES = {
   "Request Submitted": "Your transport request has been received and is now in our system.",
@@ -15,10 +16,12 @@ const STATUS_MESSAGES = {
   Expired: "Your transport request or quote has expired.",
 };
 
-export async function sendStatusUpdate(customerEmail, customerName, status, orderId, manageNotificationsUrl) {
+export async function sendStatusUpdate(customerEmail, customerName, status, orderId, manageNotificationsUrl, customerFirstName) {
   const message =
     STATUS_MESSAGES[status] ||
     "There has been an update to your vehicle transport status.";
+
+  const greeting = buildGreeting({ firstName: customerFirstName, customerName });
 
   const subject = `Your Transport Status: ${status}`;
 
@@ -34,7 +37,7 @@ export async function sendStatusUpdate(customerEmail, customerName, status, orde
           </p>
         </div>
         <div style="padding:24px;">
-          <p style="font-size:15px;margin:0 0 16px;">Hi ${customerName},</p>
+          <p style="font-size:15px;margin:0 0 16px;">${greeting}</p>
           <p style="font-size:14px;margin:0 0 16px;">${message}</p>
 
     <div style="margin:20px 0;padding:12px 16px;border-radius:10px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);">

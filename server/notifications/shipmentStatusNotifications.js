@@ -48,7 +48,7 @@ async function isEnabledForCustomer(normalizedEmail) {
  * reflects the new status regardless of what happens in this function;
  * nothing here can undo or roll that back.
  */
-export async function notifyShipmentStatusChange({ referenceId, status, customerEmail, customerName }) {
+export async function notifyShipmentStatusChange({ referenceId, status, customerEmail, customerName, customerFirstName }) {
   const normalizedEmail = normalizeEmail(customerEmail);
   if (!normalizedEmail) {
     console.error(`Skipping status notification for ${referenceId}: no customer email on file.`);
@@ -63,7 +63,7 @@ export async function notifyShipmentStatusChange({ referenceId, status, customer
     }
 
     const manageUrl = generateNotificationPreferencesUrl(normalizedEmail);
-    const result = await sendStatusUpdate(customerEmail, customerName, status, referenceId, manageUrl);
+    const result = await sendStatusUpdate(customerEmail, customerName, status, referenceId, manageUrl, customerFirstName);
     if (!result?.success) {
       console.error(`Status notification email failed for ${referenceId} (${normalizedEmail}):`, result?.error);
     }

@@ -404,9 +404,14 @@ router.post('/hubspot-tracking-status', requireTrackingWebhookSecret, async (req
       // table the RPC actually applied to. Never blocks or retries the
       // already-applied write over a failure here.
       try {
+        // shipments has no first_name/last_name of its own — only
+        // quotes does — so the select is per-table rather than a
+        // single column list that would error against whichever table
+        // doesn't have first_name.
+        const isShipment = result.target === 'shipment';
         const { data: contact, error: contactErr } = await supabase
-          .from(result.target === 'shipment' ? 'shipments' : 'quotes')
-          .select('customer_name, customer_email')
+          .from(isShipment ? 'shipments' : 'quotes')
+          .select(isShipment ? 'customer_name, customer_email' : 'first_name, customer_name, customer_email')
           .eq('reference_id', referenceId)
           .maybeSingle();
         if (contactErr) throw contactErr;
@@ -416,6 +421,7 @@ router.post('/hubspot-tracking-status', requireTrackingWebhookSecret, async (req
             status: latest.value,
             customerEmail: contact.customer_email,
             customerName: contact.customer_name,
+            customerFirstName: contact.first_name,
           });
         } else {
           console.error(`Tracking status changed for ${referenceId} but no contact row found on ${result.target} — skipping notification.`);
