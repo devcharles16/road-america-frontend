@@ -10,7 +10,18 @@ import { resolveMaterialChangeReview } from "../utils/bookingDetails.js";
 
 const router = express.Router();
 
-const ALLOWED_STATUSES = [
+// Escapes ilike's wildcard metacharacters (%, _) in a value before it's
+// used as the comparison target, not the pattern — case-insensitive
+// EXACT matching, with none of ilike's wildcard-interpretation risk. Used
+// instead of assuming existing customer_email values are already stored
+// lowercase/normalized (unverified), which a plain .eq() would require.
+// Must escape the backslash itself first, or a value already containing
+// one would be double-escaped incorrectly.
+export function escapeIlikeWildcards(value) {
+  return String(value).replace(/\\/g, "\\\\").replace(/%/g, "\\%").replace(/_/g, "\\_");
+}
+
+export const ALLOWED_STATUSES = [
   "Request Submitted",
   "Quoted",
   "Pending Booking",
@@ -392,36 +403,97 @@ router.get("/track", async (req, res) => {
       .maybeSingle();
 
     if (error) throw error;
-    if (!data) return res.status(404).json({ message: "Shipment not found" });
+
+    if (data) {
+      return res.json({
+        id: data.id,
+        referenceId: data.reference_id,
+
+        customerName: data.customer_name,
+        customerEmail: data.customer_email,
+        customerPhone: data.customer_phone,
+
+        pickupCity: data.pickup_city,
+        pickupState: data.pickup_state,
+        deliveryCity: data.delivery_city,
+        deliveryState: data.delivery_state,
+
+        vehicleYear: data.vehicle_year,
+        vehicleMake: data.vehicle_make,
+        vehicleModel: data.vehicle_model,
+        vin: data.vin,
+
+        runningCondition: data.running_condition,
+        transportType: data.transport_type,
+
+        status: data.status,
+        eta: data.eta,
+
+        userId: data.user_id,
+
+        createdAt: data.created_at,
+        updatedAt: data.updated_at,
+      });
+    }
+
+    // Not booked yet — no shipment exists under this reference. Fall back
+    // to the quote itself, which carries the same reference_id (unique on
+    // both tables) from creation through booking. This never calls
+    // convert_quote_to_shipment — that remains a deliberate, staff-
+    // triggered action, completely decoupled from read-only tracking.
+    // Same response shape as the shipment branch above; fields with no
+    // quote-side equivalent (eta, userId — shipment-only concepts) are
+    // simply null, and `status` is returned exactly as stored (including
+    // null), same as the shipment branch — the frontend's existing
+    // normalizeStatus() already treats a null/unrecognized status as
+    // "Request Submitted", so no new default is introduced here.
+    // Case-insensitive EXACT match on the value, not a pattern — the
+    // value's own wildcard metacharacters (%, _) are escaped first, so
+    // an email containing either can never match more broadly than
+    // intended. Doesn't assume existing customer_email rows are already
+    // stored lowercase (unverified), which a plain .eq() would require;
+    // this works correctly regardless. The existing shipments-side
+    // lookup above is left exactly as it was — unchanged, out of this
+    // task's scope — this fix applies only to the new quote fallback.
+    const normalizedEmail = escapeIlikeWildcards(String(email).trim().toLowerCase());
+    const { data: quote, error: quoteErr } = await supabase
+      .from("quotes")
+      .select("*")
+      .eq("reference_id", referenceId)
+      .ilike("customer_email", normalizedEmail)
+      .maybeSingle();
+
+    if (quoteErr) throw quoteErr;
+    if (!quote) return res.status(404).json({ message: "Shipment not found" });
 
     return res.json({
-      id: data.id,
-      referenceId: data.reference_id,
+      id: quote.id,
+      referenceId: quote.reference_id,
 
-      customerName: data.customer_name,
-      customerEmail: data.customer_email,
-      customerPhone: data.customer_phone,
+      customerName: quote.customer_name,
+      customerEmail: quote.customer_email,
+      customerPhone: quote.customer_phone,
 
-      pickupCity: data.pickup_city,
-      pickupState: data.pickup_state,
-      deliveryCity: data.delivery_city,
-      deliveryState: data.delivery_state,
+      pickupCity: quote.pickup_city,
+      pickupState: quote.pickup_state,
+      deliveryCity: quote.delivery_city,
+      deliveryState: quote.delivery_state,
 
-      vehicleYear: data.vehicle_year,
-      vehicleMake: data.vehicle_make,
-      vehicleModel: data.vehicle_model,
-      vin: data.vin,
+      vehicleYear: quote.vehicle_year,
+      vehicleMake: quote.vehicle_make,
+      vehicleModel: quote.vehicle_model,
+      vin: quote.vin,
 
-      runningCondition: data.running_condition,
-      transportType: data.transport_type,
+      runningCondition: quote.running_condition,
+      transportType: quote.transport_type,
 
-      status: data.status,
-      eta: data.eta,
+      status: quote.website_tracking_status,
+      eta: null,
 
-      userId: data.user_id,
+      userId: null,
 
-      createdAt: data.created_at,
-      updatedAt: data.updated_at,
+      createdAt: quote.created_at,
+      updatedAt: quote.updated_at,
     });
 
   } catch (err) {

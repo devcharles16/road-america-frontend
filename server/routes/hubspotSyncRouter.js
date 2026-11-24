@@ -3,7 +3,8 @@ import supabase from '../supabaseClient.js';
 import { generateBookingUrls } from '../utils/bookingLinks.js';
 import { getStripeClient, isAmbiguousStripeError } from '../utils/stripeClient.js';
 import { beginCapture, getLatestAuthorization, markCaptured, markCaptureFailed, markCaptureUncertain } from '../utils/paymentAuthorizations.js';
-import { finalizeCaptureOutcome } from '../utils/hubspotTickets.js';
+import { finalizeCaptureOutcome, resolveTicketId, getLatestTrackingStatusFromHubspot } from '../utils/hubspotTickets.js';
+import { ALLOWED_STATUSES } from './shipmentsRouter.js';
 
 const router = express.Router();
 
@@ -13,7 +14,7 @@ const APPROVED_VALUE = process.env.HUBSPOT_APPROVED_STATUS_VALUE || 'Approved';
 // rotated without affecting the other — the capture endpoint moves real
 // money and deliberately doesn't share a trust boundary with the pricing
 // sync.
-function requireSharedSecret(envVarName) {
+export function requireSharedSecret(envVarName) {
   return (req, res, next) => {
     const expected = process.env[envVarName];
     if (!expected) {
@@ -30,6 +31,7 @@ function requireSharedSecret(envVarName) {
 
 const requireWebhookSecret = requireSharedSecret('HUBSPOT_SYNC_WEBHOOK_SECRET');
 const requireCaptureWebhookSecret = requireSharedSecret('HUBSPOT_CAPTURE_WEBHOOK_SECRET');
+const requireTrackingWebhookSecret = requireSharedSecret('HUBSPOT_TRACKING_WEBHOOK_SECRET');
 
 function toNumberOrNull(v) {
   if (v === null || v === undefined || v === '') return null;
@@ -297,6 +299,100 @@ router.post('/hubspot-capture-request', requireCaptureWebhookSecret, async (req,
     // silently clearing it over an error nobody classified.
     console.error(`HubSpot capture request error for ${referenceId}:`, err);
     return res.status(500).json({ result: 'server_error', message: 'Unable to process capture request.' });
+  }
+});
+
+// Pure, exported for direct unit testing — no Supabase/HubSpot call in any
+// of the three.
+export function isValidReferenceId(referenceId) {
+  return /^RA-\d{5,12}$/i.test(String(referenceId || ''));
+}
+
+export function isValidTrackingStatus(status) {
+  return ALLOWED_STATUSES.includes(String(status || ''));
+}
+
+/**
+ * POST /api/integrations/hubspot-tracking-status
+ *
+ * The verified Zapier trigger for this property (a polling "New Ticket
+ * Property Change" trigger) exposes only Quote Number and Website
+ * Tracking Status — no property-specific change timestamp at all, and
+ * a composite Zap/polling id is not a timestamp and is never treated
+ * as one. So this endpoint never trusts the trigger's own payload for
+ * either the status value or when it changed — it treats the POST as
+ * nothing more than "go check this ticket," then calls HubSpot's own
+ * property-history API directly (getLatestTrackingStatusFromHubspot)
+ * for the authoritative current value and its real change timestamp.
+ * If that lookup fails for any reason, this fails visibly (502) —
+ * never applies anything without a timestamp it can actually trust.
+ *
+ * Applies the result to whichever of quotes/shipments currently
+ * represents the reference — shipments once booked, quotes before
+ * that — via a single Postgres function, apply_website_tracking_status
+ * (see tracking_bridge_setup.sql), not separate Node-level calls. That
+ * matters for a specific, verified reason: a per-table atomic UPDATE
+ * alone does not prevent an update landing on the quote in the window
+ * between "no shipment found yet" and a concurrent
+ * convert_quote_to_shipment call creating one. Both functions take a
+ * transaction-scoped advisory lock keyed on the reference id — verified
+ * against an isolated local Postgres database, against the actual
+ * patched convert_quote_to_shipment, not a stand-in; see this round's
+ * report for the exact results. Never calls convert_quote_to_shipment
+ * itself — booking stays a separate, staff-triggered action.
+ */
+router.post('/hubspot-tracking-status', requireTrackingWebhookSecret, async (req, res) => {
+  try {
+    const referenceId = safeUpper(req.body?.quote_number);
+    if (!isValidReferenceId(referenceId)) {
+      return res.status(400).json({ error: 'quote_number is missing or not a valid RA reference.' });
+    }
+
+    const ticketId = req.body?.ticket_id ? String(req.body.ticket_id).trim() : null;
+
+    let resolvedTicketId;
+    try {
+      resolvedTicketId = await resolveTicketId(referenceId, ticketId);
+    } catch (err) {
+      console.error(`Could not resolve a HubSpot ticket for ${referenceId}:`, err);
+      return res.status(502).json({ error: 'Could not resolve the HubSpot ticket for this reference.' });
+    }
+    if (!resolvedTicketId) {
+      return res.status(404).json({ error: 'No HubSpot ticket found for that reference.' });
+    }
+
+    let latest;
+    try {
+      latest = await getLatestTrackingStatusFromHubspot(resolvedTicketId);
+    } catch (err) {
+      console.error(`HubSpot property-history lookup failed for ${referenceId} (ticket ${resolvedTicketId}):`, err);
+      return res.status(502).json({ error: 'Could not confirm the tracking status change from HubSpot.' });
+    }
+
+    if (!isValidTrackingStatus(latest.value)) {
+      return res.status(400).json({
+        error: `HubSpot's current website_tracking_status ("${latest.value}") is not recognized. Allowed: ${ALLOWED_STATUSES.join(', ')}`,
+      });
+    }
+
+    const { data, error } = await supabase.rpc('apply_website_tracking_status', {
+      p_reference_id: referenceId,
+      p_status: latest.value,
+      p_property_changed_at: latest.changedAt,
+    });
+    if (error) throw error;
+
+    const result = Array.isArray(data) ? data[0] : data;
+    if (!result || result.target === 'not_found') {
+      return res.status(404).json({ error: 'No quote or shipment found for that reference.' });
+    }
+    if (!result.applied) {
+      return res.status(200).json({ ok: true, applied: false, reason: 'stale_or_duplicate', target: result.target });
+    }
+    return res.status(200).json({ ok: true, applied: true, target: result.target });
+  } catch (err) {
+    console.error('HubSpot tracking-status sync error', err);
+    return res.status(500).json({ error: 'Unable to process tracking status update.' });
   }
 });
 

@@ -108,6 +108,68 @@ async function findTicketIdByQuoteNumber(referenceId) {
  * throws) on any failure, so the caller falls back to the search-based
  * lookup instead of blocking on this.
  */
+/**
+ * Reads the AUTHORITATIVE current value and change timestamp for
+ * Website Tracking Status directly from HubSpot's own property history
+ * — used because the verified Zapier trigger for this property (a
+ * polling "New Ticket Property Change" trigger) exposes only Quote
+ * Number and Website Tracking Status, with no property-specific change
+ * timestamp at all. The trigger's own payload is never trusted for
+ * either value here; this is the verified source instead. Throws on
+ * any failure (network, permissions, missing/malformed history) —
+ * callers must treat that as "cannot confirm, do not apply anything,"
+ * never as a reason to fall back to an untrusted value or a missing
+ * timestamp.
+ *
+ * NOT YET EMPIRICALLY CONFIRMED: whether this Private App's current
+ * HubSpot scopes actually permit propertiesWithHistory on tickets.
+ * Ticket search/read already works (see findTicketIdByQuoteNumber);
+ * property-history specifically has not been tested — see this round's
+ * report for the exact read-only check prepared (not run by me; I have
+ * no access to the token) and what it would confirm.
+ */
+/**
+ * Picks the entry with the latest valid timestamp from a HubSpot
+ * property-history array — never by array position/order. Pure, no
+ * HubSpot call, directly unit-testable. Returns null if nothing in the
+ * array has both a value and a parseable timestamp.
+ */
+export function selectLatestPropertyHistoryEntry(history) {
+  if (!Array.isArray(history) || history.length === 0) return null;
+
+  const candidates = history
+    .map(entry => {
+      const t = entry?.timestamp ? new Date(entry.timestamp) : null;
+      return { value: entry?.value, changedAt: t, t: t ? t.getTime() : NaN };
+    })
+    .filter(entry => entry.value && entry.changedAt && !Number.isNaN(entry.t));
+
+  if (candidates.length === 0) return null;
+  return candidates.reduce((max, entry) => (entry.t > max.t ? entry : max), candidates[0]);
+}
+
+export async function getLatestTrackingStatusFromHubspot(ticketId) {
+  const res = await fetchWithTimeout(
+    `${HUBSPOT_API_BASE}/crm/v3/objects/tickets/${ticketId}?propertiesWithHistory=website_tracking_status`,
+    { method: 'GET', headers: { Authorization: `Bearer ${getToken()}` } }
+  );
+  if (!res.ok) {
+    throw new Error(`HubSpot property-history lookup failed for ticket ${ticketId} (${res.status}): ${await res.text()}`);
+  }
+
+  const data = await res.json();
+  const history = data?.propertiesWithHistory?.website_tracking_status;
+  // Selected explicitly by the latest valid timestamp — never by array
+  // position. HubSpot's documented order (most-recent-first) is not
+  // assumed here at all, regardless of whether it turns out to hold.
+  const latest = selectLatestPropertyHistoryEntry(history);
+  if (!latest) {
+    throw new Error(`No usable property history (value + timestamp) returned for website_tracking_status on ticket ${ticketId}.`);
+  }
+
+  return { value: latest.value, changedAt: latest.changedAt.toISOString() };
+}
+
 async function getTicketQuoteNumber(ticketId) {
   try {
     const res = await fetchWithTimeout(
@@ -132,7 +194,7 @@ async function getTicketQuoteNumber(ticketId) {
  * search-by-quote_number lookup rather than ever writing to an
  * unverified ticket.
  */
-async function resolveTicketId(referenceId, suppliedTicketId) {
+export async function resolveTicketId(referenceId, suppliedTicketId) {
   if (suppliedTicketId) {
     const quoteNumber = await getTicketQuoteNumber(suppliedTicketId);
     if (quoteNumber && String(quoteNumber).trim().toUpperCase() === String(referenceId).trim().toUpperCase()) {
